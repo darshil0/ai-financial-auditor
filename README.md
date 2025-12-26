@@ -1,22 +1,27 @@
+# 📈 FinAnalyzer Pro
 
-# FinAnalyzer Pro 📈
+**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for analysts and investors. It leverages **Gemini 3 Pro** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with visual analytics and real-time market grounding.
 
-FinAnalyzer Pro is an elite financial intelligence platform that transforms raw earnings PDFs into professional insights using **Gemini 3 Pro**.
+## 🚀 Key Features
 
-## 🌟 Enhanced Features
-- **Pro Analysis**: Powered by Gemini 3 Pro with a dedicated Thinking Budget for high-precision financial auditing.
-- **Real-Time Context**: Integrated Google Search Grounding to contrast historical filings with current market news.
-- **Sentiment Gauge**: Quantifies management's confidence and tone using advanced NLP reasoning.
-- **YoY Growth Engine**: Automatic variance calculation for Revenue, Net Income, and EPS.
-- **Print Optimization**: Board-room ready PDF exports via a custom print engine.
+- **AI-Driven KPI Extraction**: Uses Gemini 3 Pro with a dedicated Thinking Budget to extract Revenue, Net Income, EPS, and Margins with forensic precision.
+- **Narrative Sentiment Analysis**: Quantifies management's verbal confidence and forward-looking statements into a 0-100 Bullishness score.
+- **Market Grounding**: Integrated Google Search tools to contrast historical report data with real-time market developments.
+- **Comparative Intelligence**: Side-by-side benchmarking of quarterly or yearly performance with automatic delta variance calculation.
+- **Visual Analytics Suite**: Interactive Recharts-powered visualizations including Revenue YoY, Expense Allocation, and Growth Trajectories.
+- **Export Engine**: boardroom-ready PNG summaries, CSV data exports, and print-optimized PDF reports.
 
-## 📁 File Structure
-- `/components`: High-performance React UI modules.
-- `/docs`: Comprehensive Test Cases and Evidence.
-- `geminiService.ts`: Core AI logic and grounding tool configuration.
-- `types.ts`: Strictly typed financial schemas.
+## 🛠️ Technical Architecture
 
-## 🛠️ Getting Started
-1. Ensure `process.env.API_KEY` is set.
-2. Visit the **Upload** section to ingest a 10-Q or 10-K report.
-3. Use **Market Context** on the Dashboard for real-time web grounding.
+- **Engine**: Gemini 3 Pro (Multimodal Reasoning)
+- **Frontend**: React 19 (Strict Mode)
+- **Styling**: Tailwind CSS (JIT) with Dark Mode Support
+- **Charts**: Recharts (Responsive SVG)
+- **Data Persistence**: LocalStorage for historical report vaulting
+- **APIs**: `@google/genai` (SDK 1.34.0)
+
+## 📦 Deployment & Setup
+
+1. **Environment**: Ensure `process.env.API_KEY` is configured in your secure context.
+2. **Launch**: Open the application and navigate to **Upload Report**.
+3. **Analyze**: Ingest 10-Q or 10-K PDFs to generate instant intelligence.
