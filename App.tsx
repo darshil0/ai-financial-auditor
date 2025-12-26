@@ -7,11 +7,13 @@ import Dashboard from './components/Dashboard';
 import ComparisonView from './components/ComparisonView';
 import HistoryView from './components/HistoryView';
 import ReportUploader from './components/ReportUploader';
+import DiagnosticsOverlay from './components/DiagnosticsOverlay';
 
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.DASHBOARD);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
   
-  // Use lazy initializer to avoid unnecessary localStorage access on every render
   const [reports, setReports] = useState<FinancialReport[]>(() => {
     const saved = localStorage.getItem('fin_reports');
     return saved ? JSON.parse(saved) : [];
@@ -50,7 +52,6 @@ const App: React.FC = () => {
     if (saved) {
       const parsed = JSON.parse(saved);
       setReports(parsed);
-      // Ensure active report ID is still valid
       if (activeReportId && !parsed.find((r: FinancialReport) => r.id === activeReportId)) {
         setActiveReportId(parsed.length > 0 ? parsed[0].id : null);
       }
@@ -79,7 +80,20 @@ const App: React.FC = () => {
 
   return (
     <div className={`min-h-screen flex transition-colors duration-200 ${isDarkMode ? 'bg-slate-900 text-slate-100' : 'bg-slate-50 text-slate-900'}`}>
-      <Sidebar view={view} setView={setView} />
+      {/* Mobile Sidebar Overlay */}
+      {isMobileMenuOpen && (
+        <div 
+          className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] lg:hidden"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      <Sidebar 
+        view={view} 
+        setView={(v) => { setView(v); setIsMobileMenuOpen(false); }} 
+        isOpen={isMobileMenuOpen}
+        onRunDiagnostics={() => setShowDiagnostics(true)}
+      />
       
       <div className="flex-1 flex flex-col min-w-0">
         <Header 
@@ -87,6 +101,12 @@ const App: React.FC = () => {
           setIsDarkMode={setIsDarkMode} 
           companyName={activeReport?.companyName}
           ticker={activeReport?.ticker}
+          reports={reports}
+          onSelectReport={(id) => {
+            setActiveReportId(id);
+            setView(AppView.DASHBOARD);
+          }}
+          onToggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
         />
         
         <main className="flex-1 overflow-y-auto p-4 md:p-8">
@@ -118,6 +138,10 @@ const App: React.FC = () => {
           )}
         </main>
       </div>
+
+      {showDiagnostics && (
+        <DiagnosticsOverlay onClose={() => setShowDiagnostics(false)} />
+      )}
     </div>
   );
 };

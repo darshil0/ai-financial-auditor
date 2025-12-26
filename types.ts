@@ -30,6 +30,7 @@ export interface FinancialReport {
   id: string;
   companyName: string;
   ticker: string;
+  reportType: string; // e.g., "10-Q", "10-K", "Press Release"
   reportPeriod: string;
   reportYear: number;
   revenue: number;

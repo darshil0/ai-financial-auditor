@@ -43,9 +43,9 @@ const HistoryView: React.FC<HistoryViewProps> = ({ reports, setActiveReportId, d
             <thead>
               <tr className="bg-slate-50/50 dark:bg-slate-900/50 border-b border-slate-100 dark:border-slate-800">
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Company Intelligence</th>
+                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Classification</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Period</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Total Revenue</th>
-                <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Analysis Date</th>
                 <th className="px-8 py-6 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 text-right">Actions</th>
               </tr>
             </thead>
@@ -69,15 +69,17 @@ const HistoryView: React.FC<HistoryViewProps> = ({ reports, setActiveReportId, d
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      <span className="px-4 py-1.5 bg-slate-100 dark:bg-slate-700 text-slate-800 dark:text-slate-200 rounded-xl text-[10px] font-black uppercase tracking-widest">
+                      <span className="px-3 py-1 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-lg text-[10px] font-black uppercase tracking-widest">
+                        {r.reportType || 'N/A'}
+                      </span>
+                    </td>
+                    <td className="px-8 py-6">
+                      <span className="px-4 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl text-[10px] font-black uppercase tracking-widest">
                         {r.reportPeriod} {r.reportYear}
                       </span>
                     </td>
                     <td className="px-8 py-6 font-black text-slate-900 dark:text-slate-100">
                       {formatCurrency(r.revenue)}
-                    </td>
-                    <td className="px-8 py-6 text-sm text-slate-400 font-medium">
-                      {new Date(r.timestamp).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                     </td>
                     <td className="px-8 py-6 text-right">
                       <div className="flex justify-end gap-3">

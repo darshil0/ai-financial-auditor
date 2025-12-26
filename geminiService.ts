@@ -6,7 +6,6 @@ import { FinancialReport, MarketInsight } from "./types";
  * Initialize Gemini API with process.env.API_KEY.
  * Using gemini-3-pro-preview for high-stakes financial data extraction and reasoning.
  */
-// Fix: Use process.env.API_KEY directly as per guidelines
 const getAIClient = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const reportSchema = {
@@ -14,6 +13,7 @@ const reportSchema = {
   properties: {
     companyName: { type: Type.STRING },
     ticker: { type: Type.STRING },
+    reportType: { type: Type.STRING, description: "Classification of the document, e.g., '10-Q', '10-K', or 'Press Release'." },
     reportPeriod: { type: Type.STRING, description: "e.g., Q3" },
     reportYear: { type: Type.INTEGER },
     revenue: { type: Type.NUMBER },
@@ -56,7 +56,7 @@ const reportSchema = {
     managementCommentary: { type: Type.STRING }
   },
   required: [
-    "companyName", "ticker", "reportPeriod", "reportYear", "revenue", 
+    "companyName", "ticker", "reportType", "reportPeriod", "reportYear", "revenue", 
     "revenuePrior", "netIncome", "eps", "grossMargin", "expenses", "trends", "highlights", "sentimentScore"
   ]
 };
@@ -72,7 +72,6 @@ export async function analyzeEarningsReport(file: File): Promise<FinancialReport
     reader.readAsDataURL(file);
   });
 
-  // Fix: Align contents structure with recommended SDK examples and guidelines
   const response = await ai.models.generateContent({
     model: 'gemini-3-pro-preview',
     contents: {
@@ -84,19 +83,18 @@ export async function analyzeEarningsReport(file: File): Promise<FinancialReport
           }
         },
         {
-          text: "Conduct a rigorous financial analysis of this earnings report. Extract all numerical KPIs with 100% accuracy. Use your thinking capacity to ensure year-over-year calculations are correct. Determine a 'sentimentScore' (0-100) based on management's verbal confidence during the call/release transcript."
+          text: "Conduct a rigorous financial analysis of this earnings report. Extract all numerical KPIs with 100% accuracy. Identify the document type (e.g., 10-Q, 10-K, Press Release). Use your thinking capacity to ensure year-over-year calculations are correct. Determine a 'sentimentScore' (0-100) based on management's verbal confidence during the call/release transcript."
         }
       ]
     },
     config: {
       responseMimeType: "application/json",
       responseSchema: reportSchema,
-      thinkingConfig: { thinkingBudget: 8192 }, // Ample budget for financial auditing
+      thinkingConfig: { thinkingBudget: 8192 },
       temperature: 0.1
     }
   });
 
-  // Fix: Access response.text property directly (not a method)
   const rawData = JSON.parse(response.text || '{}');
   
   return {
@@ -119,7 +117,6 @@ export async function getMarketContext(ticker: string, company: string) {
     }
   });
 
-  // Fix: Access response.text property directly
   const summary = response.text || "No market context available at this time.";
   const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
   

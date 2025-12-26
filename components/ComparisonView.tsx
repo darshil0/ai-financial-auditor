@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useRef } from 'react';
 import { FinancialReport } from '../types';
 import { 
@@ -14,7 +15,10 @@ import {
   ShieldAlert,
   Image as ImageIcon,
   Loader2,
-  RefreshCw
+  RefreshCw,
+  Filter,
+  CheckCircle2,
+  ChevronRight
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
 import { formatCurrency, calculateGrowth } from '../utils';
@@ -35,11 +39,27 @@ interface MetricRowProps {
 const ComparisonView: React.FC<ComparisonViewProps> = ({ reports, onRefresh }) => {
   const [report1Id, setReport1Id] = useState<string>(reports[0]?.id || '');
   const [report2Id, setReport2Id] = useState<string>(reports[1]?.id || '');
+  const [typeFilter, setTypeFilter] = useState<string>('All Types');
   const [dismissedWarnings, setDismissedWarnings] = useState<Set<number>>(new Set());
   const [isExportingPng, setIsExportingPng] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   
   const summaryCardsRef = useRef<HTMLDivElement>(null);
+
+  // Derive unique report types for filtering
+  const reportTypes = useMemo(() => {
+    const types = new Set<string>();
+    reports.forEach(r => {
+      if (r.reportType) types.add(r.reportType);
+    });
+    return ['All Types', ...Array.from(types).sort()];
+  }, [reports]);
+
+  // Filter reports based on the selected document type
+  const filteredReports = useMemo(() => {
+    if (typeFilter === 'All Types') return reports;
+    return reports.filter(r => r.reportType === typeFilter);
+  }, [reports, typeFilter]);
 
   const report1 = reports.find(r => r.id === report1Id);
   const report2 = reports.find(r => r.id === report2Id);
@@ -220,26 +240,139 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports, onRefresh }) =
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-sm transition-shadow hover:shadow-md relative overflow-hidden">
-          <div className="absolute left-0 top-0 bottom-0 w-2 bg-blue-500"></div>
-          <div className="flex items-center gap-2 mb-3 pl-2">
-            <BarChart3 size={16} className="text-blue-500" />
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Baseline Selection</label>
-          </div>
-          <select value={report1Id} onChange={(e) => { setReport1Id(e.target.value); setDismissedWarnings(new Set()); }} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 font-bold outline-none appearance-none cursor-pointer focus:ring-2 focus:ring-blue-500">
-            {reports.map(r => <option key={r.id} value={r.id}>{r.companyName} ({r.ticker}) — {r.reportPeriod} {r.reportYear}</option>)}
-          </select>
+      {/* Global Filter Bar */}
+      <div className="bg-slate-100/50 dark:bg-slate-800/30 p-2 rounded-[2.5rem] flex flex-col md:flex-row items-center gap-4">
+        <div className="flex items-center gap-3 px-6 py-3">
+          <Filter size={18} className="text-slate-400" />
+          <span className="text-xs font-black uppercase tracking-widest text-slate-500">Filter Repository</span>
         </div>
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-sm transition-shadow hover:shadow-md relative overflow-hidden">
-          <div className="absolute left-0 top-0 bottom-0 w-2 bg-emerald-500"></div>
-          <div className="flex items-center gap-2 mb-3 pl-2">
-            <Target size={16} className="text-emerald-500" />
-            <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Benchmark Target</label>
+        <div className="flex-1 flex gap-2 overflow-x-auto pb-2 md:pb-0 px-2 no-scrollbar">
+          {reportTypes.map((type) => (
+            <button
+              key={type}
+              onClick={() => setTypeFilter(type)}
+              className={`whitespace-nowrap px-6 py-3 rounded-2xl text-xs font-bold transition-all ${
+                typeFilter === type
+                  ? 'bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-400 shadow-md ring-1 ring-slate-200 dark:ring-slate-600'
+                  : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+              }`}
+            >
+              {type}
+              <span className="ml-2 opacity-50 font-medium">
+                ({type === 'All Types' ? reports.length : reports.filter(r => r.reportType === type).length})
+              </span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Baseline Card */}
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 shadow-xl transition-all hover:shadow-2xl relative overflow-hidden group">
+          <div className="absolute left-0 top-0 bottom-0 w-3 bg-blue-500 shadow-[2px_0_10px_rgba(59,130,246,0.5)]"></div>
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
+                  <BarChart3 size={20} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Baseline Report</h3>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-lg font-black text-slate-900 dark:text-white">{report1?.ticker || '---'}</span>
+                    <CheckCircle2 size={14} className="text-blue-500" />
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest block">Primary Reference</span>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Active Selection</span>
+              </div>
+            </div>
+
+            <div className="relative">
+              <select 
+                value={report1Id} 
+                onChange={(e) => { setReport1Id(e.target.value); setDismissedWarnings(new Set()); }} 
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 font-bold outline-none appearance-none cursor-pointer focus:ring-4 focus:ring-blue-500/10 transition-all text-slate-800 dark:text-slate-100 pr-12"
+              >
+                {filteredReports.length > 0 ? (
+                  filteredReports.map(r => (
+                    <option key={r.id} value={r.id}>
+                      {r.ticker} — {r.companyName} ({r.reportPeriod} {r.reportYear})
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No reports matching filter</option>
+                )}
+              </select>
+              {/* Added missing ChevronRight import to fix errors */}
+              <ChevronRight className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" size={20} />
+            </div>
+            
+            {report1 && (
+              <div className="flex items-center gap-2 px-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
+                  Analyzing {report1.reportType || 'Standard'} filing for fiscal year {report1.reportYear}
+                </span>
+              </div>
+            )}
           </div>
-          <select value={report2Id} onChange={(e) => { setReport2Id(e.target.value); setDismissedWarnings(new Set()); }} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 font-bold outline-none appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-500">
-            {reports.map(r => <option key={r.id} value={r.id}>{r.companyName} ({r.ticker}) — {r.reportPeriod} {r.reportYear}</option>)}
-          </select>
+        </div>
+
+        {/* Benchmark Card */}
+        <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] border border-slate-200 dark:border-slate-700 shadow-xl transition-all hover:shadow-2xl relative overflow-hidden group">
+          <div className="absolute left-0 top-0 bottom-0 w-3 bg-emerald-500 shadow-[2px_0_10px_rgba(16,185,129,0.5)]"></div>
+          <div className="flex flex-col gap-6">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl">
+                  <Target size={20} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-[0.2em] text-slate-400">Benchmark Report</h3>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className="text-lg font-black text-slate-900 dark:text-white">{report2?.ticker || '---'}</span>
+                    <CheckCircle2 size={14} className="text-emerald-500" />
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <span className="text-[10px] font-black uppercase text-slate-400 tracking-widest block">Variance Target</span>
+                <span className="text-xs font-bold text-slate-600 dark:text-slate-400">Active Comparison</span>
+              </div>
+            </div>
+
+            <div className="relative">
+              <select 
+                value={report2Id} 
+                onChange={(e) => { setReport2Id(e.target.value); setDismissedWarnings(new Set()); }} 
+                className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-5 font-bold outline-none appearance-none cursor-pointer focus:ring-4 focus:ring-emerald-500/10 transition-all text-slate-800 dark:text-slate-100 pr-12"
+              >
+                {filteredReports.length > 0 ? (
+                  filteredReports.map(r => (
+                    <option key={r.id} value={r.id}>
+                      {r.ticker} — {r.companyName} ({r.reportPeriod} {r.reportYear})
+                    </option>
+                  ))
+                ) : (
+                  <option disabled>No reports matching filter</option>
+                )}
+              </select>
+              {/* Added missing ChevronRight import to fix errors */}
+              <ChevronRight className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 rotate-90 pointer-events-none" size={20} />
+            </div>
+
+            {report2 && (
+              <div className="flex items-center gap-2 px-2">
+                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
+                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
+                  Targeting {report2.reportType || 'Standard'} filing for fiscal year {report2.reportYear}
+                </span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -278,7 +411,10 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports, onRefresh }) =
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h4 className="font-black text-2xl text-slate-900 dark:text-white leading-tight">{report1.companyName}</h4>
-                  <p className="text-xs font-black text-blue-500 uppercase tracking-[0.2em] mt-2">BASELINE: {report1.reportPeriod} {report1.reportYear}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-xs font-black text-blue-500 uppercase tracking-[0.2em]">BASELINE: {report1.reportPeriod} {report1.reportYear}</span>
+                    <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-[9px] font-black rounded-lg text-slate-500">{report1.reportType || 'Standard'}</span>
+                  </div>
                 </div>
                 <div className="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl"><FileText size={24} /></div>
               </div>
@@ -292,7 +428,10 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports, onRefresh }) =
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h4 className="font-black text-2xl text-slate-900 dark:text-white leading-tight">{report2.companyName}</h4>
-                  <p className="text-xs font-black text-emerald-500 uppercase tracking-[0.2em] mt-2">BENCHMARK: {report2.reportPeriod} {report2.reportYear}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className="text-xs font-black text-emerald-500 uppercase tracking-[0.2em]">BENCHMARK: {report2.reportPeriod} {report2.reportYear}</span>
+                    <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-700 text-[9px] font-black rounded-lg text-slate-500">{report2.reportType || 'Standard'}</span>
+                  </div>
                 </div>
                 <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl"><Target size={24} /></div>
               </div>
