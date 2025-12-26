@@ -1,5 +1,7 @@
 {
   "name": "FinAnalyzer Pro",
   "description": "A high-end financial earnings analyzer that uses AI to extract key metrics from earnings reports and visualize performance trends.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [
+    "microphone"
+  ]
 }

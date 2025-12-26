@@ -1,19 +1,11 @@
 
 export interface ExpenseCategory {
-  /**
-   * Added index signature to satisfy Recharts ChartDataInput requirement.
-   * Recharts requires data objects to be indexable when using dynamic keys.
-   */
   [key: string]: string | number;
   category: string;
   amount: number;
 }
 
 export interface QuarterlyTrend {
-  /**
-   * Added index signature to satisfy Recharts ChartDataInput requirement.
-   * Recharts requires data objects to be indexable when using dynamic keys.
-   */
   [key: string]: string | number;
   period: string;
   revenue: number;
@@ -30,7 +22,7 @@ export interface FinancialReport {
   id: string;
   companyName: string;
   ticker: string;
-  reportType: string; // e.g., "10-Q", "10-K", "Press Release"
+  reportType: string;
   reportPeriod: string;
   reportYear: number;
   revenue: number;
@@ -42,7 +34,7 @@ export interface FinancialReport {
   grossMargin: number;
   operatingMargin: number;
   netMargin: number;
-  sentimentScore: number; // 0 to 100
+  sentimentScore: number;
   expenses: ExpenseCategory[];
   trends: QuarterlyTrend[];
   highlights: string[];
@@ -52,6 +44,11 @@ export interface FinancialReport {
     summary: string;
     timestamp: number;
   };
+  audioBriefing?: {
+    base64Audio: string;
+    summary: string;
+  };
+  visualizedGuidance?: string; // URL to generated image
   timestamp: number;
 }
 

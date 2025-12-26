@@ -1,11 +1,7 @@
 
-import { GoogleGenAI, Type } from "@google/genai";
+import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { FinancialReport, MarketInsight } from "./types";
 
-/**
- * Initialize Gemini API with process.env.API_KEY.
- * Using gemini-3-pro-preview for high-stakes financial data extraction and reasoning.
- */
 const getAIClient = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 const reportSchema = {
@@ -13,8 +9,8 @@ const reportSchema = {
   properties: {
     companyName: { type: Type.STRING },
     ticker: { type: Type.STRING },
-    reportType: { type: Type.STRING, description: "Classification of the document, e.g., '10-Q', '10-K', or 'Press Release'." },
-    reportPeriod: { type: Type.STRING, description: "e.g., Q3" },
+    reportType: { type: Type.STRING },
+    reportPeriod: { type: Type.STRING },
     reportYear: { type: Type.INTEGER },
     revenue: { type: Type.NUMBER },
     revenuePrior: { type: Type.NUMBER },
@@ -25,7 +21,7 @@ const reportSchema = {
     grossMargin: { type: Type.NUMBER },
     operatingMargin: { type: Type.NUMBER },
     netMargin: { type: Type.NUMBER },
-    sentimentScore: { type: Type.INTEGER, description: "A score from 0 (very bearish) to 100 (very bullish) based on management tone." },
+    sentimentScore: { type: Type.INTEGER },
     expenses: {
       type: Type.ARRAY,
       items: {
@@ -83,14 +79,14 @@ export async function analyzeEarningsReport(file: File): Promise<FinancialReport
           }
         },
         {
-          text: "Conduct a rigorous financial analysis of this earnings report. Extract all numerical KPIs with 100% accuracy. Identify the document type (e.g., 10-Q, 10-K, Press Release). Use your thinking capacity to ensure year-over-year calculations are correct. Determine a 'sentimentScore' (0-100) based on management's verbal confidence during the call/release transcript."
+          text: "Conduct a rigorous financial analysis of this earnings report. Extract all numerical KPIs with 100% accuracy. Identify the document type. Use your thinking capacity to ensure year-over-year calculations are correct. Determine a 'sentimentScore' (0-100) based on management's verbal confidence."
         }
       ]
     },
     config: {
       responseMimeType: "application/json",
       responseSchema: reportSchema,
-      thinkingConfig: { thinkingBudget: 8192 },
+      thinkingConfig: { thinkingBudget: 16384 },
       temperature: 0.1
     }
   });
@@ -102,6 +98,58 @@ export async function analyzeEarningsReport(file: File): Promise<FinancialReport
     id: crypto.randomUUID(),
     timestamp: Date.now()
   };
+}
+
+export async function generateAudioBriefing(report: FinancialReport) {
+  const ai = getAIClient();
+  const prompt = `Provide a concise 1-minute executive audio briefing for ${report.companyName}'s ${report.reportPeriod} ${report.reportYear} results. 
+  Focus on the most critical takeaways: Revenue of ${report.revenue}, EPS of ${report.eps}, and the overall sentiment which is ${report.sentimentScore}/100. 
+  Sound professional yet engaging, like a high-end financial analyst.`;
+
+  const response = await ai.models.generateContent({
+    model: "gemini-2.5-flash-preview-tts",
+    contents: [{ parts: [{ text: prompt }] }],
+    config: {
+      responseModalities: [Modality.AUDIO],
+      speechConfig: {
+        voiceConfig: {
+          prebuiltVoiceConfig: { voiceName: 'Kore' },
+        },
+      },
+    },
+  });
+
+  const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+  return {
+    base64Audio: base64Audio || '',
+    summary: "Professional analyst audio briefing ready."
+  };
+}
+
+export async function visualizeGuidance(report: FinancialReport): Promise<string> {
+  const ai = getAIClient();
+  const prompt = `A conceptual, futuristic corporate visualization for ${report.companyName} based on their latest guidance. 
+  The theme should be 'Growth and Innovation'. Incorporate professional financial aesthetics, clean lines, and a high-end architectural feel. 
+  Sentiment: ${report.sentimentScore}/100. Ticker: ${report.ticker}. 4k resolution, professional photography style.`;
+
+  const response = await ai.models.generateContent({
+    model: 'gemini-2.5-flash-image',
+    contents: {
+      parts: [{ text: prompt }],
+    },
+    config: {
+      imageConfig: {
+        aspectRatio: "16:9"
+      }
+    },
+  });
+
+  for (const part of response.candidates[0].content.parts) {
+    if (part.inlineData) {
+      return `data:image/png;base64,${part.inlineData.data}`;
+    }
+  }
+  return '';
 }
 
 export async function getMarketContext(ticker: string, company: string) {
@@ -131,4 +179,25 @@ export async function getMarketContext(ticker: string, company: string) {
     insights,
     timestamp: Date.now()
   };
+}
+
+export async function connectLiveAnalyst(report: FinancialReport, callbacks: any) {
+  const ai = getAIClient();
+  const systemInstruction = `You are a high-end senior financial analyst assistant. 
+  The user is reviewing the earnings report for ${report.companyName} (${report.ticker}) for ${report.reportPeriod} ${report.reportYear}.
+  Key data: Revenue ${report.revenue}, Net Income ${report.netIncome}, EPS ${report.eps}, Sentiment ${report.sentimentScore}.
+  Highlights: ${report.highlights.join('; ')}.
+  Provide deep insights, answer complex questions about these results, and maintain a professional, helpful, and objective tone.`;
+
+  return ai.live.connect({
+    model: 'gemini-2.5-flash-native-audio-preview-09-2025',
+    callbacks,
+    config: {
+      responseModalities: [Modality.AUDIO],
+      speechConfig: {
+        voiceConfig: { prebuiltVoiceConfig: { voiceName: 'Zephyr' } },
+      },
+      systemInstruction,
+    },
+  });
 }
