@@ -1,36 +1,42 @@
-# FinAnalyzer Pro: Master Walkthrough
+# FinAnalyzer Pro: Professional Workflow Guide
 
-This guide details the end-to-end workflow of the platform, from data ingestion to boardroom reporting.
+This guide details the end-to-end institutional workflow of the platform, from data ingestion to automated quality verification.
 
 ## Phase 1: Intelligent Ingestion
-1. **Navigation**: Click **Upload Report** in the sidebar.
-2. **File Selection**: Drag or browse for a corporate earnings PDF (e.g., a 10-Q or Press Release).
-3. **AI Extraction**: The system sends the file to Gemini 3 Pro. The model uses its "Thinking Budget" to reconcile GAAP and non-GAAP figures, ensuring year-over-year (YoY) numbers are matched to their correct prior periods.
-4. **Validation**: Once finished, the system automatically redirects you to the Dashboard.
+1. **Launch Analysis**: Click **Upload Report** in the sidebar.
+2. **File Ingestion**: Drag an earnings PDF (10-Q, 10-K, or Press Release) into the drop zone.
+3. **AI Extraction**: Gemini 3 Pro will parse the document. You will see real-time status updates as the engine identifies GAAP vs. non-GAAP metrics.
+4. **Auto-Redirect**: Upon completion, the system automatically transitions to the **Dashboard** for the newly created profile.
 
-## Phase 2: Analyzing the Dashboard
-- **KPI Cards**: Review the 4 core pillars (Revenue, Net Earnings, EPS, Operating Margin). Note the color-coded growth indicators.
-- **Sentiment Gauge**: Observe the AI's assessment of management tone. A score > 70 indicates high confidence in future guidance.
-- **Expense Breakdown**: Hover over the interactive **Pie Chart** to see the exact dollar amount allocated to R&D, SG&A, and other operational categories.
-- **Margin Analysis**: View the vertical bar chart to quickly compare the efficiency of Gross vs. Operating vs. Net margins.
-- **Growth Trajectory**: Use the interactive tooltips on the area chart to track quarterly revenue velocity.
+## Phase 2: Universal Search & Navigation
+1. **Centralized Hub**: Use the search bar in the **Header** to find any report in your vault.
+2. **Keyboard Control**:
+    - Press `Enter` in the search field to focus the dropdown.
+    - Use `Arrow Keys` to navigate recent reports or search results.
+    - Press `Enter` to switch your active workspace instantly.
+3. **Mobile Access**: On smaller screens, use the **Hamburger Menu** to reveal navigation and the **Quick-Toggle** theme icons to switch between Light and Dark modes.
 
-## Phase 3: Market Grounding (The "Real Reality" Check)
-1. On the Dashboard, click **Market Grounding**.
-2. FinAnalyzer Pro performs a live Google Search via Gemini 3 Pro to find developments *published after* the earnings release.
-3. Review the "Grounding Intelligence" summary and click "Contextual Sources" to verify claims against external news outlets or analyst upgrades.
-
-## Phase 4: Comparative Intelligence Hub
+## Phase 3: Comparative Variance Modeling
 1. Navigate to the **Comparison** tab.
-2. Select a **Baseline** report (Blue indicator) and a **Benchmark** target (Green indicator). The dropdowns now display Company Names and Tickers for easy identification.
-3. **Refresh Data**: If you've just uploaded a new report, click the **Refresh** (circular arrow) icon to update the selections.
-4. **Variance Table**: Review the side-by-side KPI comparison. A dedicated **Revenue Growth (YoY)** row helps you benchmark growth acceleration.
-5. **Exporting**: 
-    - Click **Export Summary PNG** to save a high-res image of the comparison cards for presentations.
-    - Click **Export Delta CSV** to download the raw variance data for further Excel analysis.
+2. **Select Entities**:
+    - Select a **Baseline** (Blue indicator).
+    - Select a **Benchmark** (Emerald indicator).
+    - The selectors now display full Company Names and Tickers for rapid identification.
+3. **Analyze Deltas**: Review the variance table. Look for the **Revenue Growth (YoY)** row to see if growth is accelerating compared to the benchmark period.
+4. **Validation Warnings**: If you attempt to compare mismatched tickers or non-chronological periods, the system will provide an actionable alert.
 
-## Phase 5: Historical Vault
-- Visit the **History** tab to search and manage your library of analyzed reports. 
-- Use the **Search bar** to filter by ticker or company name.
-- Click any row to instantly reload that report into your active Dashboard.
-- Delete outdated analysis using the trash icon to keep your LocalStorage vault clean.
+## Phase 4: Market Grounding
+1. On the **Dashboard**, click the **Market Grounding** button.
+2. The system uses Google Search to find developments published *after* the report's timestamp.
+3. Review the "Grounding Intelligence" section to see current stock trends or recent analyst sentiment changes.
+
+## Phase 5: System Health & Diagnostics
+1. **QA Check**: Click **Run UI Diagnostics** at the bottom of the sidebar.
+2. **Verification Sweep**: Click **Run Automated Sweep** to simulate tests for:
+    - Responsive layout integrity.
+    - WCAG color contrast.
+    - LocalStorage persistence.
+3. **Report Generation**: Use the **Generate Report** button if you need to document UI health for audit purposes.
+
+---
+*Optimized for v3.2 Engine - institutional-grade reliability.*
