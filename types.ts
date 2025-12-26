@@ -1,10 +1,20 @@
 
 export interface ExpenseCategory {
+  /**
+   * Added index signature to satisfy Recharts ChartDataInput requirement.
+   * Recharts requires data objects to be indexable when using dynamic keys.
+   */
+  [key: string]: string | number;
   category: string;
   amount: number;
 }
 
 export interface QuarterlyTrend {
+  /**
+   * Added index signature to satisfy Recharts ChartDataInput requirement.
+   * Recharts requires data objects to be indexable when using dynamic keys.
+   */
+  [key: string]: string | number;
   period: string;
   revenue: number;
   netIncome: number;

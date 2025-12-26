@@ -4,9 +4,9 @@ import { FinancialReport } from '../types';
 import SummaryCards from './SummaryCards';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
-  PieChart, Pie, Cell, AreaChart, Area 
+  PieChart, Pie, Cell, AreaChart, Area, ComposedChart, Line
 } from 'recharts';
-import { FileQuestion, Globe, Loader2, Newspaper, ArrowRight, Printer, Info, Sparkles } from 'lucide-react';
+import { FileQuestion, Globe, Loader2, Newspaper, ArrowRight, Printer, Info, Sparkles, PieChart as PieChartIcon, Activity } from 'lucide-react';
 import { getMarketContext } from '../geminiService';
 import { formatCurrency, getSentimentColor, getSentimentLabel } from '../utils';
 
@@ -25,7 +25,7 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
         <div className="bg-blue-100 dark:bg-blue-900/20 p-8 rounded-full mb-8 animate-pulse">
           <FileQuestion size={56} className="text-blue-600 dark:text-blue-400" />
         </div>
-        <h3 className="text-3xl font-black mb-3 tracking-tight">Intelligence Engine Standby</h3>
+        <h3 className="text-3xl font-black mb-3 tracking-tight text-slate-900 dark:text-white">Intelligence Engine Standby</h3>
         <p className="text-slate-500 max-w-md mb-10 text-lg">
           No active analysis detected. Upload an earnings report to initialize the dashboard.
         </p>
@@ -58,6 +58,12 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
   const revenueData = [
     { name: 'Prior Year', revenue: report.revenuePrior },
     { name: 'Current Year', revenue: report.revenue }
+  ];
+
+  const marginData = [
+    { name: 'Gross Margin', value: report.grossMargin },
+    { name: 'Operating Margin', value: report.operatingMargin },
+    { name: 'Net Margin', value: report.netMargin }
   ];
 
   const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
@@ -106,7 +112,7 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
                 <Newspaper size={24} />
               </div>
               <div>
-                <h3 className="font-black text-2xl tracking-tight">Grounding Intelligence</h3>
+                <h3 className="font-black text-2xl tracking-tight text-slate-900 dark:text-white">Grounding Intelligence</h3>
                 <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
                   Gemini Search Integration • Updated {new Date(report.marketContext.timestamp).toLocaleTimeString()}
                 </p>
@@ -147,7 +153,7 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
         {/* Sentiment Gauge */}
         <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm flex flex-col items-center justify-center text-center group">
           <div className="w-full flex justify-between items-center mb-10">
-            <h3 className="text-xl font-black tracking-tight">Narrative Sentiment</h3>
+            <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">Narrative Sentiment</h3>
             <div className="p-2 bg-slate-50 dark:bg-slate-900 rounded-xl text-slate-400">
                <Info size={18} />
             </div>
@@ -176,12 +182,17 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
 
         {/* Expense Breakdown */}
         <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm">
-          <h3 className="text-xl font-black mb-8 tracking-tight">Resource Allocation</h3>
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
+              <PieChartIcon size={20} />
+            </div>
+            <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">Expense Breakdown</h3>
+          </div>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={report.expenses as any[]}
+                  data={report.expenses}
                   cx="50%"
                   cy="50%"
                   innerRadius={80}
@@ -201,22 +212,53 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
                     borderRadius: '16px', 
                     border: 'none', 
                     boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)',
-                    padding: '12px'
+                    padding: '12px',
+                    backgroundColor: 'rgba(255, 255, 255, 0.96)'
                   }}
+                  itemStyle={{ fontWeight: 700 }}
                   formatter={(value: number) => formatCurrency(value)} 
                 />
-                <Legend iconType="circle" />
+                <Legend iconType="circle" wrapperStyle={{ paddingTop: '20px' }} />
               </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </div>
+
+        {/* Margin Analysis Visualization */}
+        <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl">
+              <Activity size={20} />
+            </div>
+            <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">Margin Analysis</h3>
+          </div>
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={marginData} layout="vertical" margin={{ left: 20, right: 40 }}>
+                <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} stroke="#f1f5f9" />
+                <XAxis type="number" domain={[0, 100]} hide />
+                <YAxis dataKey="name" type="category" axisLine={false} tickLine={false} tick={{ fontSize: 12, fontWeight: 700 }} width={120} />
+                <Tooltip 
+                  cursor={{ fill: '#f8fafc' }}
+                  contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)' }}
+                  formatter={(value: number) => [`${value.toFixed(1)}%`, 'Rate']}
+                />
+                <Bar dataKey="value" radius={[0, 12, 12, 0]} barSize={40}>
+                   {marginData.map((entry, index) => (
+                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                   ))}
+                </Bar>
+              </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Revenue Comparison */}
         <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm">
-          <h3 className="text-xl font-black mb-8 tracking-tight">YoY Revenue Variance</h3>
+          <h3 className="text-xl font-black mb-8 tracking-tight text-slate-900 dark:text-white">YoY Revenue Variance</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={revenueData as any[]}>
+              <BarChart data={revenueData}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 12, fontWeight: 700 }} />
                 <YAxis axisLine={false} tickLine={false} tickFormatter={formatCurrency} tick={{ fontSize: 10, fontWeight: 500 }} />
@@ -232,11 +274,11 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
         </div>
 
         {/* Quarterly Trends */}
-        <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm">
-          <h3 className="text-xl font-black mb-8 tracking-tight">Growth Trajectory</h3>
+        <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm lg:col-span-2">
+          <h3 className="text-xl font-black mb-8 tracking-tight text-slate-900 dark:text-white">Growth Trajectory</h3>
           <div className="h-80">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={report.trends as any[]}>
+              <AreaChart data={report.trends}>
                 <defs>
                   <linearGradient id="colorRev" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.2}/>

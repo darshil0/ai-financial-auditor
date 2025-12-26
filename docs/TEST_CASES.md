@@ -8,6 +8,7 @@
 | FT-03 | PNG Export | PNG download triggers and contains rendered card visuals. | Pass |
 | FT-04 | CSV Export | CSV generates with correct column alignment and numeric strings. | Pass |
 | FT-05 | Grounding Tool | Google Search context yields relevant, non-hallucinated news links. | Pass |
+| FT-06 | YoY Growth Row | Comparison table displays 'Revenue Growth (YoY)' for both periods. | Pass |
 
 ## 2. Boundary & Edge Case Testing
 | ID | Test Scenario | Expected Result | Result |

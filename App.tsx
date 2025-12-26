@@ -10,21 +10,26 @@ import ReportUploader from './components/ReportUploader';
 
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.DASHBOARD);
-  const [reports, setReports] = useState<FinancialReport[]>([]);
-  const [activeReportId, setActiveReportId] = useState<string | null>(null);
-  const [isDarkMode, setIsDarkMode] = useState(false);
+  
+  // Use lazy initializer to avoid unnecessary localStorage access on every render
+  const [reports, setReports] = useState<FinancialReport[]>(() => {
+    const saved = localStorage.getItem('fin_reports');
+    return saved ? JSON.parse(saved) : [];
+  });
 
-  useEffect(() => {
+  const [activeReportId, setActiveReportId] = useState<string | null>(() => {
     const saved = localStorage.getItem('fin_reports');
     if (saved) {
       const parsed = JSON.parse(saved);
-      setReports(parsed);
-      if (parsed.length > 0) setActiveReportId(parsed[0].id);
+      return parsed.length > 0 ? parsed[0].id : null;
     }
-    
+    return null;
+  });
+
+  const [isDarkMode, setIsDarkMode] = useState(() => {
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme === 'dark') setIsDarkMode(true);
-  }, []);
+    return savedTheme === 'dark';
+  });
 
   useEffect(() => {
     localStorage.setItem('fin_reports', JSON.stringify(reports));
@@ -40,6 +45,18 @@ const App: React.FC = () => {
     }
   }, [isDarkMode]);
 
+  const refreshReports = () => {
+    const saved = localStorage.getItem('fin_reports');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      setReports(parsed);
+      // Ensure active report ID is still valid
+      if (activeReportId && !parsed.find((r: FinancialReport) => r.id === activeReportId)) {
+        setActiveReportId(parsed.length > 0 ? parsed[0].id : null);
+      }
+    }
+  };
+
   const handleReportAdded = (report: FinancialReport) => {
     setReports(prev => [report, ...prev]);
     setActiveReportId(report.id);
@@ -53,7 +70,8 @@ const App: React.FC = () => {
   const deleteReport = (id: string) => {
     setReports(prev => prev.filter(r => r.id !== id));
     if (activeReportId === id) {
-      setActiveReportId(reports.find(r => r.id !== id)?.id || null);
+      const remaining = reports.filter(r => r.id !== id);
+      setActiveReportId(remaining.length > 0 ? remaining[0].id : null);
     }
   };
 
@@ -85,7 +103,7 @@ const App: React.FC = () => {
           )}
 
           {view === AppView.COMPARISON && (
-            <ComparisonView reports={reports} />
+            <ComparisonView reports={reports} onRefresh={refreshReports} />
           )}
 
           {view === AppView.HISTORY && (

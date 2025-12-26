@@ -8,9 +8,9 @@ This document serves as verification for the latest functional and visual update
 - **Fix**: Corrected Recharts `any[]` typing issues for strict mode compatibility.
 - **Evidence**: Charts now render with high-fidelity gradients and tooltips that match the currency formatting of the rest of the app.
 
-### 2. Comparison Alerts
-- **Update**: Implemented dismissible alert banners for data validation.
-- **Evidence**: Comparing AAPL to MSFT now triggers an "Entity Mismatch" warning in an amber-colored banner, which can be closed by the analyst.
+### 2. Comparison Metrics Table
+- **Update**: Added the **Revenue Growth (YoY)** row to the comparison hub.
+- **Evidence**: Baseline and Benchmark growth rates are calculated using the `calculateGrowth` utility. Color coding (green/red) correctly reflects percentage point improvements or declines.
 
 ### 3. Dark Mode Refinement
 - **Fix**: Adjusted sidebar borders to `slate-800` for more subtle contrast.
@@ -28,6 +28,5 @@ This document serves as verification for the latest functional and visual update
 ## 🎥 Video Simulation (Narrative)
 1. **User Login**: User opens app; Dark Mode is persistent from previous session.
 2. **Analysis**: User uploads "NVDA_Q3_Results.pdf". Spinner shows "AI is analyzing...".
-3. **Results**: Dashboard appears instantly. User hovers over Revenue chart; value "$35.08B" appears.
-4. **Comparison**: User enters Comparison mode, selects Q2 vs Q3. Delta Analysis shows 15% revenue growth in green.
-5. **Export**: User clicks PNG export; a high-res image of the KPI cards is saved to the desktop.
+3. **Comparison**: User selects Q2 and Q3 reports. The metrics table shows "Revenue Growth (YoY)" as 12.5% vs 15.2%, resulting in a +2.70% variance in emerald green.
+4. **Export**: User clicks PNG export; a high-res image of the KPI cards is saved to the desktop.

@@ -1,36 +1,43 @@
-
 import React, { useState, useMemo, useRef } from 'react';
 import { FinancialReport } from '../types';
 import { 
   ArrowLeftRight, 
-  TrendingUp, 
   Minus, 
-  Info, 
   Target, 
-  Calendar, 
   BarChart3, 
   ArrowUpRight, 
   ArrowDownRight, 
   Download, 
   AlertTriangle, 
-  AlertCircle, 
   FileText,
   X,
   ShieldAlert,
   Image as ImageIcon,
-  Loader2
+  Loader2,
+  RefreshCw
 } from 'lucide-react';
 import { toPng } from 'html-to-image';
+import { formatCurrency, calculateGrowth } from '../utils';
 
 interface ComparisonViewProps {
   reports: FinancialReport[];
+  onRefresh?: () => void;
 }
 
-const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
+interface MetricRowProps {
+  label: string;
+  v1: number;
+  v2: number;
+  format?: 'currency' | 'percent' | 'raw';
+  invert?: boolean;
+}
+
+const ComparisonView: React.FC<ComparisonViewProps> = ({ reports, onRefresh }) => {
   const [report1Id, setReport1Id] = useState<string>(reports[0]?.id || '');
   const [report2Id, setReport2Id] = useState<string>(reports[1]?.id || '');
   const [dismissedWarnings, setDismissedWarnings] = useState<Set<number>>(new Set());
   const [isExportingPng, setIsExportingPng] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   
   const summaryCardsRef = useRef<HTMLDivElement>(null);
 
@@ -71,13 +78,12 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
     });
   };
 
-  const formatCurrency = (val: number) => {
-    const absVal = Math.abs(val);
-    let formatted = '';
-    if (absVal >= 1000000000) formatted = `$${(absVal / 1000000000).toFixed(2)}B`;
-    else if (absVal >= 1000000) formatted = `$${(absVal / 1000000).toFixed(2)}M`;
-    else formatted = `$${absVal.toLocaleString()}`;
-    return val < 0 ? `-${formatted}` : formatted;
+  const handleRefresh = async () => {
+    if (!onRefresh) return;
+    setIsRefreshing(true);
+    await new Promise(resolve => setTimeout(resolve, 600));
+    onRefresh();
+    setIsRefreshing(false);
   };
 
   const handleExportPNG = async () => {
@@ -85,18 +91,12 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
     
     setIsExportingPng(true);
     try {
-      // Small delay to ensure any hover states or transitions are settled
       await new Promise(resolve => setTimeout(resolve, 100));
-      
       const dataUrl = await toPng(summaryCardsRef.current, {
         cacheBust: true,
         backgroundColor: document.documentElement.classList.contains('dark') ? '#0f172a' : '#f8fafc',
-        style: {
-          padding: '24px',
-          borderRadius: '0px'
-        }
+        style: { padding: '24px', borderRadius: '0px' }
       });
-      
       const link = document.createElement('a');
       link.download = `comparison_summary_${report1?.ticker}_vs_${report2?.ticker}.png`;
       link.href = dataUrl;
@@ -111,8 +111,8 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
   const handleExportCSV = () => {
     if (!report1 || !report2 || !validation?.isValid) return;
 
-    const revGrowth1 = report1.revenuePrior !== 0 ? ((report1.revenue - report1.revenuePrior) / Math.abs(report1.revenuePrior)) * 100 : 0;
-    const revGrowth2 = report2.revenuePrior !== 0 ? ((report2.revenue - report2.revenuePrior) / Math.abs(report2.revenuePrior)) * 100 : 0;
+    const revGrowth1 = calculateGrowth(report1.revenue, report1.revenuePrior);
+    const revGrowth2 = calculateGrowth(report2.revenue, report2.revenuePrior);
 
     const rows = [
       ['Analysis Type', 'Comparative Variance Report'],
@@ -137,7 +137,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
     document.body.removeChild(link);
   };
 
-  const MetricRow = ({ label, v1, v2, format = 'currency', invert = false }: any) => {
+  const MetricRow: React.FC<MetricRowProps> = ({ label, v1, v2, format = 'currency', invert = false }) => {
     const delta = v2 - v1;
     const pctChange = Math.abs(v1) > 0 ? (delta / Math.abs(v1)) * 100 : 0;
     
@@ -150,7 +150,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
 
     const displayDelta = format === 'currency' 
       ? formatCurrency(delta) 
-      : `${Math.abs(delta).toFixed(2)}${format === 'percent' ? '%' : ''}`;
+      : `${isPositive ? '+' : ''}${delta.toFixed(2)}${format === 'percent' ? '%' : ''}`;
 
     const colorClasses = isNeutral 
       ? 'text-slate-500 bg-slate-100 dark:bg-slate-800' 
@@ -185,10 +185,16 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
         <div className="bg-slate-100 dark:bg-slate-800 p-8 rounded-full mb-6">
           <ArrowLeftRight size={64} className="text-slate-400" />
         </div>
-        <h3 className="text-2xl font-bold mb-2">Comparison Hub Locked</h3>
-        <p className="text-slate-500 max-w-sm">
-          Please upload at least two reports to unlock side-by-side variance analysis and YoY benchmarking.
-        </p>
+        <div className="flex flex-col items-center gap-4">
+          <h3 className="text-2xl font-bold mb-2">Comparison Hub Locked</h3>
+          <p className="text-slate-500 max-w-sm">
+            Please upload at least two reports to unlock side-by-side variance analysis and YoY benchmarking.
+          </p>
+          <button onClick={handleRefresh} className="flex items-center gap-2 px-6 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-sm font-bold transition-all active:scale-95">
+            <RefreshCw size={16} className={isRefreshing ? 'animate-spin' : ''} />
+            Check for new reports
+          </button>
+        </div>
       </div>
     );
   }
@@ -200,88 +206,65 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
           <h2 className="text-4xl font-black text-slate-900 dark:text-white tracking-tight">Comparative Intelligence</h2>
           <p className="text-slate-500 font-medium">Quantifying variances and growth velocity across periods.</p>
         </div>
-        <div className="flex gap-3">
-          <button 
-            onClick={handleExportPNG}
-            disabled={!validation?.isValid || isExportingPng}
-            className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm disabled:opacity-50 active:scale-95"
-          >
+        <div className="flex flex-wrap gap-3">
+          <button onClick={handleRefresh} title="Refresh Data from Storage" className="p-3 bg-white dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700 rounded-2xl hover:text-blue-600 transition-all shadow-sm active:scale-95">
+            <RefreshCw size={18} className={isRefreshing ? 'animate-spin' : ''} />
+          </button>
+          <button onClick={handleExportPNG} disabled={!validation?.isValid || isExportingPng} className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm disabled:opacity-50 active:scale-95">
             {isExportingPng ? <Loader2 size={18} className="animate-spin" /> : <ImageIcon size={18} />}
             Export Summary PNG
           </button>
-          <button 
-            onClick={handleExportCSV} 
-            disabled={!validation?.isValid}
-            className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 active:scale-95"
-          >
+          <button onClick={handleExportCSV} disabled={!validation?.isValid} className="bg-blue-600 text-white px-8 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50 active:scale-95">
             <Download size={18} /> Export Delta CSV
           </button>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-sm transition-shadow hover:shadow-md">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-sm transition-shadow hover:shadow-md relative overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-2 bg-blue-500"></div>
+          <div className="flex items-center gap-2 mb-3 pl-2">
             <BarChart3 size={16} className="text-blue-500" />
             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Baseline Selection</label>
           </div>
-          <select 
-            value={report1Id} 
-            onChange={(e) => { setReport1Id(e.target.value); setDismissedWarnings(new Set()); }}
-            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 font-bold outline-none appearance-none cursor-pointer focus:ring-2 focus:ring-blue-500"
-          >
-            {reports.map(r => <option key={r.id} value={r.id}>{r.ticker} — {r.reportPeriod} {r.reportYear}</option>)}
+          <select value={report1Id} onChange={(e) => { setReport1Id(e.target.value); setDismissedWarnings(new Set()); }} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 font-bold outline-none appearance-none cursor-pointer focus:ring-2 focus:ring-blue-500">
+            {reports.map(r => <option key={r.id} value={r.id}>{r.companyName} ({r.ticker}) — {r.reportPeriod} {r.reportYear}</option>)}
           </select>
         </div>
-        <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-sm transition-shadow hover:shadow-md">
-          <div className="flex items-center gap-2 mb-3">
+        <div className="bg-white dark:bg-slate-800 p-6 rounded-[2rem] border border-slate-200 dark:border-slate-700 shadow-sm transition-shadow hover:shadow-md relative overflow-hidden">
+          <div className="absolute left-0 top-0 bottom-0 w-2 bg-emerald-500"></div>
+          <div className="flex items-center gap-2 mb-3 pl-2">
             <Target size={16} className="text-emerald-500" />
             <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">Benchmark Target</label>
           </div>
-          <select 
-            value={report2Id} 
-            onChange={(e) => { setReport2Id(e.target.value); setDismissedWarnings(new Set()); }}
-            className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 font-bold outline-none appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-500"
-          >
-            {reports.map(r => <option key={r.id} value={r.id}>{r.ticker} — {r.reportPeriod} {r.reportYear}</option>)}
+          <select value={report2Id} onChange={(e) => { setReport2Id(e.target.value); setDismissedWarnings(new Set()); }} className="w-full bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl p-4 font-bold outline-none appearance-none cursor-pointer focus:ring-2 focus:ring-emerald-500">
+            {reports.map(r => <option key={r.id} value={r.id}>{r.companyName} ({r.ticker}) — {r.reportPeriod} {r.reportYear}</option>)}
           </select>
         </div>
       </div>
 
-      {/* Prominent Validation Alerts */}
       {validation && (validation.errors.length > 0 || (validation.warnings.length > dismissedWarnings.size)) && (
         <div className="space-y-4 animate-in slide-in-from-top-4 duration-500">
           {validation.errors.map((error, i) => (
             <div key={`err-${i}`} className="flex items-start gap-4 p-5 bg-rose-50 dark:bg-rose-900/20 border border-rose-200 dark:border-rose-800/50 rounded-2xl text-rose-700 dark:text-rose-400 shadow-sm">
-              <div className="bg-rose-100 dark:bg-rose-900/40 p-2 rounded-xl text-rose-600 dark:text-rose-500">
-                <ShieldAlert size={20} />
-              </div>
+              <div className="bg-rose-100 dark:bg-rose-900/40 p-2 rounded-xl text-rose-600 dark:text-rose-500"><ShieldAlert size={20} /></div>
               <div className="flex-1">
                 <h5 className="font-bold text-sm uppercase tracking-wider mb-1">Critical Error</h5>
                 <p className="text-sm font-medium leading-relaxed">{error}</p>
               </div>
             </div>
           ))}
-
           {validation.warnings.map((warning, i) => {
             if (dismissedWarnings.has(i)) return null;
             return (
               <div key={`warn-${i}`} className="flex items-start gap-4 p-5 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/50 rounded-2xl text-amber-800 dark:text-amber-400 shadow-sm relative group overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-full bg-amber-400"></div>
-                <div className="bg-amber-100 dark:bg-amber-900/40 p-2 rounded-xl text-amber-600 dark:text-amber-500">
-                  <AlertTriangle size={20} />
-                </div>
+                <div className="bg-amber-100 dark:bg-amber-900/40 p-2 rounded-xl text-amber-600 dark:text-amber-500"><AlertTriangle size={20} /></div>
                 <div className="flex-1 pr-8">
                   <h5 className="font-bold text-sm uppercase tracking-wider mb-1">Comparability Warning</h5>
                   <p className="text-sm font-medium leading-relaxed">{warning}</p>
                 </div>
-                <button 
-                  onClick={() => handleDismissWarning(i)}
-                  className="p-2 text-amber-400 hover:text-amber-600 dark:hover:text-amber-200 transition-colors rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/30"
-                  aria-label="Dismiss warning"
-                >
-                  <X size={18} />
-                </button>
+                <button onClick={() => handleDismissWarning(i)} className="p-2 text-amber-400 hover:text-amber-600 dark:hover:text-amber-200 transition-colors rounded-lg hover:bg-amber-100 dark:hover:bg-amber-900/30"><X size={18} /></button>
               </div>
             );
           })}
@@ -290,7 +273,6 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
 
       {report1 && report2 && validation?.isValid && (
         <>
-          {/* Summary Cards Ref added here for PNG export */}
           <div ref={summaryCardsRef} className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in zoom-in-95 duration-500">
             <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 border-l-8 border-l-blue-500 shadow-sm">
               <div className="flex justify-between items-start mb-6">
@@ -298,49 +280,26 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
                   <h4 className="font-black text-2xl text-slate-900 dark:text-white leading-tight">{report1.companyName}</h4>
                   <p className="text-xs font-black text-blue-500 uppercase tracking-[0.2em] mt-2">BASELINE: {report1.reportPeriod} {report1.reportYear}</p>
                 </div>
-                <div className="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl">
-                  <FileText size={24} />
-                </div>
+                <div className="p-3 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-2xl"><FileText size={24} /></div>
               </div>
               <div className="grid grid-cols-3 mt-6 pt-6 border-t border-slate-100 dark:border-slate-700 gap-8">
-                <div>
-                  <p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">Revenue</p>
-                  <p className="font-black text-lg text-slate-800 dark:text-slate-100">{formatCurrency(report1.revenue)}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">Net Inc.</p>
-                  <p className="font-black text-lg text-slate-800 dark:text-slate-100">{formatCurrency(report1.netIncome)}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">EPS</p>
-                  <p className="font-black text-lg text-slate-800 dark:text-slate-100">${report1.eps.toFixed(2)}</p>
-                </div>
+                <div><p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">Revenue</p><p className="font-black text-lg text-slate-800 dark:text-slate-100">{formatCurrency(report1.revenue)}</p></div>
+                <div><p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">Net Inc.</p><p className="font-black text-lg text-slate-800 dark:text-slate-100">{formatCurrency(report1.netIncome)}</p></div>
+                <div><p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">EPS</p><p className="font-black text-lg text-slate-800 dark:text-slate-100">${report1.eps.toFixed(2)}</p></div>
               </div>
             </div>
-
             <div className="bg-white dark:bg-slate-800 p-8 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 border-l-8 border-l-emerald-500 shadow-sm">
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <h4 className="font-black text-2xl text-slate-900 dark:text-white leading-tight">{report2.companyName}</h4>
                   <p className="text-xs font-black text-emerald-500 uppercase tracking-[0.2em] mt-2">BENCHMARK: {report2.reportPeriod} {report2.reportYear}</p>
                 </div>
-                <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl">
-                  <Target size={24} />
-                </div>
+                <div className="p-3 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-2xl"><Target size={24} /></div>
               </div>
               <div className="grid grid-cols-3 mt-6 pt-6 border-t border-slate-100 dark:border-slate-700 gap-8">
-                <div>
-                  <p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">Revenue</p>
-                  <p className="font-black text-lg text-slate-800 dark:text-slate-100">{formatCurrency(report2.revenue)}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">Net Inc.</p>
-                  <p className="font-black text-lg text-slate-800 dark:text-slate-100">{formatCurrency(report2.netIncome)}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">EPS</p>
-                  <p className="font-black text-lg text-slate-800 dark:text-slate-100">${report2.eps.toFixed(2)}</p>
-                </div>
+                <div><p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">Revenue</p><p className="font-black text-lg text-slate-800 dark:text-slate-100">{formatCurrency(report2.revenue)}</p></div>
+                <div><p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">Net Inc.</p><p className="font-black text-lg text-slate-800 dark:text-slate-100">{formatCurrency(report2.netIncome)}</p></div>
+                <div><p className="text-[10px] uppercase text-slate-400 font-black tracking-widest mb-1">EPS</p><p className="font-black text-lg text-slate-800 dark:text-slate-100">${report2.eps.toFixed(2)}</p></div>
               </div>
             </div>
           </div>
@@ -354,9 +313,10 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
             </div>
             <div className="p-10 space-y-2">
               <MetricRow label="Total Revenue" v1={report1.revenue} v2={report2.revenue} />
-              <MetricRow label="Revenue Growth (YoY)" 
-                v1={report1.revenuePrior > 0 ? ((report1.revenue - report1.revenuePrior) / report1.revenuePrior) * 100 : 0} 
-                v2={report2.revenuePrior > 0 ? ((report2.revenue - report2.revenuePrior) / report2.revenuePrior) * 100 : 0} 
+              <MetricRow 
+                label="Revenue Growth (YoY)" 
+                v1={calculateGrowth(report1.revenue, report1.revenuePrior)} 
+                v2={calculateGrowth(report2.revenue, report2.revenuePrior)} 
                 format="percent" 
               />
               <MetricRow label="Net Income" v1={report1.netIncome} v2={report2.netIncome} />
@@ -371,13 +331,9 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({ reports }) => {
 
       {validation && !validation.isValid && (
         <div className="bg-white dark:bg-slate-800 p-24 rounded-[3rem] border-2 border-dashed border-slate-200 dark:border-slate-700 text-center flex flex-col items-center">
-          <div className="bg-rose-50 dark:bg-rose-900/30 p-8 rounded-full mb-8 text-rose-500">
-            <ShieldAlert size={64} strokeWidth={1.5} />
-          </div>
+          <div className="bg-rose-50 dark:bg-rose-900/30 p-8 rounded-full mb-8 text-rose-500"><ShieldAlert size={64} strokeWidth={1.5} /></div>
           <h3 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Incomplete Analysis Data</h3>
-          <p className="text-slate-500 max-w-md mx-auto leading-relaxed">
-            The selected financial models are missing key comparative metrics. Please ensure both reports contain standard GAAP figures (Revenue, Net Income, EPS) for accurate benchmarking.
-          </p>
+          <p className="text-slate-500 max-w-md mx-auto leading-relaxed">The selected financial models are missing key comparative metrics. Please ensure both reports contain standard GAAP figures (Revenue, Net Income, EPS) for accurate benchmarking.</p>
         </div>
       )}
     </div>
