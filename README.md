@@ -29,4 +29,4 @@
 4. **Validation**: Run **UI Diagnostics** from the sidebar to verify system health.
 
 ---
-*Institutional-grade financial analysis powered by Google GenAI.*
+*Institutional-grade financial analysis powered by Google GenAI.* Developed by Darshil with Precision.
