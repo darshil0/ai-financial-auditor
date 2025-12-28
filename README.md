@@ -1,4 +1,4 @@
-# 📈 FinAnalyzer Pro v1.0.0
+# 📈 FinAnalyzer Pro v1.1.0
 
 **FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 3 Pro** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with visual analytics, and real-time market grounding.
 
@@ -20,6 +20,7 @@
 - **Charts**: Recharts (Responsive SVG with custom tooltips).
 - **Persistence**: LocalStorage for persistent historical report vaulting.
 - **Quality**: Built-in Diagnostics Overlay for real-time UI/UX verification.
+- **Testing**: Vitest, React Testing Library, and Playwright for a comprehensive testing suite.
 
 ## 📦 Getting Started
 
@@ -28,7 +29,21 @@
 3. **Benchmarking**: Use the **Comparison** tab to select two reports for variance analysis.
 4. **Validation**: Run **UI Diagnostics** from the sidebar to verify system health.
 
-## ✨ Recent Changes (v1.0.0)
+## 🧪 Running Tests
+
+-   **All Tests**: `npm test`
+-   **Unit & Component Tests**: `npm run test:unit`
+-   **End-to-End (E2E) Tests**: `npm run test:e2e`
+
+## ✨ Recent Changes
+
+### v1.1.0
+
+-   **Comprehensive Testing Suite**: Introduced a full testing suite with Vitest, React Testing Library, and Playwright.
+-   **Component Refactoring**: Refactored the `ComparisonView` component for better testability.
+-   **Documentation**: Updated `README.md` with the latest changes and testing instructions.
+
+### v1.0.0
 
 -   **API Key Management**: Migrated from `process.env` to a client-safe `VITE_API_KEY` in a `.env` file.
 -   **Codebase Formatting**: Applied Prettier for consistent code style across the project.
