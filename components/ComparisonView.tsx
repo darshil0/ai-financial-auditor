@@ -25,6 +25,8 @@ import { formatCurrency, calculateGrowth } from "../utils";
 interface ComparisonViewProps {
   reports: FinancialReport[];
   onRefresh?: () => void;
+  report1Id?: string;
+  report2Id?: string;
 }
 
 interface MetricRowProps {
@@ -38,9 +40,15 @@ interface MetricRowProps {
 const ComparisonView: React.FC<ComparisonViewProps> = ({
   reports,
   onRefresh,
+  report1Id: report1IdProp,
+  report2Id: report2IdProp,
 }) => {
-  const [report1Id, setReport1Id] = useState<string>(reports[0]?.id || "");
-  const [report2Id, setReport2Id] = useState<string>(reports[1]?.id || "");
+  const [report1Id, setReport1Id] = useState<string>(
+    report1IdProp || reports[0]?.id || "",
+  );
+  const [report2Id, setReport2Id] = useState<string>(
+    report2IdProp || reports[1]?.id || "",
+  );
   const [typeFilter, setTypeFilter] = useState<string>("All Types");
   const [dismissedWarnings, setDismissedWarnings] = useState<Set<number>>(
     new Set(),
