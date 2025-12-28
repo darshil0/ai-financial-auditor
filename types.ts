@@ -1,4 +1,3 @@
-
 export interface ExpenseCategory {
   [key: string]: string | number;
   category: string;
@@ -53,8 +52,8 @@ export interface FinancialReport {
 }
 
 export enum AppView {
-  DASHBOARD = 'dashboard',
-  COMPARISON = 'comparison',
-  HISTORY = 'history',
-  UPLOAD = 'upload'
+  DASHBOARD = "dashboard",
+  COMPARISON = "comparison",
+  HISTORY = "history",
+  UPLOAD = "upload",
 }
