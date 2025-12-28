@@ -1,6 +1,6 @@
-# 📈 FinAnalyzer Pro
+# 📈 FinAnalyzer Pro v1.0.0
 
-**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 3 Pro** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with visual analytics and real-time market grounding.
+**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 3 Pro** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with visual analytics, and real-time market grounding.
 
 ## 🚀 Key Features
 
@@ -23,10 +23,17 @@
 
 ## 📦 Getting Started
 
-1. **API Configuration**: Ensure `process.env.API_KEY` is provided in the environment.
+1. **API Configuration**: Create a `.env` file in the root directory and add your Gemini API key as `VITE_API_KEY="YOUR_API_KEY"`.
 2. **Analysis**: Navigate to **Upload Report** and drop a corporate 10-Q or 10-K PDF.
 3. **Benchmarking**: Use the **Comparison** tab to select two reports for variance analysis.
 4. **Validation**: Run **UI Diagnostics** from the sidebar to verify system health.
 
+## ✨ Recent Changes (v1.0.0)
+
+-   **API Key Management**: Migrated from `process.env` to a client-safe `VITE_API_KEY` in a `.env` file.
+-   **Codebase Formatting**: Applied Prettier for consistent code style across the project.
+-   **Documentation**: Updated `README.md` with the latest changes and version.
+
 ---
-*Institutional-grade financial analysis powered by Google GenAI.* Developed by Darshil with Precision.
+
+_Institutional-grade financial analysis powered by Google GenAI._ Developed by Darshil with Precision.
