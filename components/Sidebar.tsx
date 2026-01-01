@@ -14,6 +14,7 @@ interface SidebarProps {
   setView: (view: AppView) => void;
   isOpen: boolean;
   onRunDiagnostics: () => void;
+  reportCount: number;
 }
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -21,6 +22,7 @@ const Sidebar: React.FC<SidebarProps> = ({
   setView,
   isOpen,
   onRunDiagnostics,
+  reportCount,
 }) => {
   const navItems = [
     { id: AppView.DASHBOARD, label: "Dashboard", icon: LayoutDashboard },
@@ -50,12 +52,22 @@ const Sidebar: React.FC<SidebarProps> = ({
         {navItems.map((item) => (
           <button
             key={item.id}
-            onClick={() => setView(item.id)}
+            onClick={() => {
+              if (item.id === AppView.COMPARISON && reportCount < 2) {
+                // This will be handled by the parent component, so we just call setView
+              }
+              setView(item.id);
+            }}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all ${
               view === item.id
                 ? "bg-blue-600 text-white font-bold shadow-lg shadow-blue-500/20"
                 : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200"
-            }`}
+            } ${item.id === AppView.COMPARISON && reportCount < 2 ? "opacity-50 cursor-not-allowed" : ""}`}
+            title={
+              item.id === AppView.COMPARISON && reportCount < 2
+                ? "Requires at least 2 reports"
+                : ""
+            }
           >
             <item.icon size={20} />
             <span>{item.label}</span>
