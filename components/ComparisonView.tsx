@@ -21,10 +21,10 @@ import {
 } from "lucide-react";
 import { toPng } from "html-to-image";
 import { formatCurrency, calculateGrowth } from "../utils";
+import { useAppStore } from "../store";
 
 interface ComparisonViewProps {
   reports: FinancialReport[];
-  onRefresh?: () => void;
   report1Id?: string;
   report2Id?: string;
 }
@@ -39,7 +39,6 @@ interface MetricRowProps {
 
 const ComparisonView: React.FC<ComparisonViewProps> = ({
   reports,
-  onRefresh,
   report1Id: report1IdProp,
   report2Id: report2IdProp,
 }) => {
@@ -131,10 +130,9 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
   };
 
   const handleRefresh = async () => {
-    if (!onRefresh) return;
     setIsRefreshing(true);
+    // This is just for visual feedback, the store is the source of truth
     await new Promise((resolve) => setTimeout(resolve, 600));
-    onRefresh();
     setIsRefreshing(false);
   };
 
