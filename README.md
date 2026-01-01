@@ -1,4 +1,4 @@
-# 📈 FinAnalyzer Pro v1.1.0
+# 📈 FinAnalyzer Pro v1.2.0
 
 **FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 3 Pro** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with visual analytics, and real-time market grounding.
 
@@ -31,23 +31,31 @@
 
 ## 🧪 Running Tests
 
--   **All Tests**: `npm test`
--   **Unit & Component Tests**: `npm run test:unit`
--   **End-to-End (E2E) Tests**: `npm run test:e2e`
+- **All Tests**: `npm test`
+- **Unit & Component Tests**: `npm run test:unit`
+- **End-to-End (E2E) Tests**: `npm run test:e2e`
 
 ## ✨ Recent Changes
 
+### v1.2.0
+
+- **Enhanced Currency Formatting**: Refactored the `formatCurrency` utility for improved readability, expanded test coverage, and added compact formatting for trillions (T), billions (B), millions (M), and thousands (K).
+- **Conditional Class Utility**: Implemented a `cn` utility for streamlined conditional class name management in React components.
+- **Improved Comparison View**: The "Comparison" view button is now disabled with a tooltip when fewer than two reports are available, preventing navigation to an empty state.
+- **Downloadable Diagnostics**: Users can now download the UI Diagnostics report as a high-resolution PNG image for easier sharing and record-keeping.
+- **Custom Modal UI**: Replaced native browser alerts with a polished custom modal component for a more consistent and user-friendly experience.
+
 ### v1.1.0
 
--   **Comprehensive Testing Suite**: Introduced a full testing suite with Vitest, React Testing Library, and Playwright.
--   **Component Refactoring**: Refactored the `ComparisonView` component for better testability.
--   **Documentation**: Updated `README.md` with the latest changes and testing instructions.
+- **Comprehensive Testing Suite**: Introduced a full testing suite with Vitest, React Testing Library, and Playwright.
+- **Component Refactoring**: Refactored the `ComparisonView` component for better testability.
+- **Documentation**: Updated `README.md` with the latest changes and testing instructions.
 
 ### v1.0.0
 
--   **API Key Management**: Migrated from `process.env` to a client-safe `VITE_API_KEY` in a `.env` file.
--   **Codebase Formatting**: Applied Prettier for consistent code style across the project.
--   **Documentation**: Updated `README.md` with the latest changes and version.
+- **API Key Management**: Migrated from `process.env` to a client-safe `VITE_API_KEY` in a `.env` file.
+- **Codebase Formatting**: Applied Prettier for consistent code style across the project.
+- **Documentation**: Updated `README.md` with the latest changes and version.
 
 ---
 
