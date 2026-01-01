@@ -2,17 +2,40 @@
  * FinAnalyzer Pro - Utility Functions
  */
 
-export const formatCurrency = (val: number): string => {
-  const absVal = Math.abs(val);
-  let formatted = "";
-  if (absVal >= 1000000000) {
-    formatted = `$${(absVal / 1000000000).toFixed(2)}B`;
-  } else if (absVal >= 1000000) {
-    formatted = `$${(absVal / 1000000).toFixed(2)}M`;
+export const formatCurrency = (
+  value: number,
+  compact = false,
+  decimals = 2,
+): string => {
+  if (value === 0) return "$0.00";
+  const sign = value < 0 ? "-" : "";
+  const absValue = Math.abs(value);
+  let formattedValue;
+
+  if (compact) {
+    if (absValue >= 1e12) {
+      formattedValue = `${(absValue / 1e12).toFixed(decimals)}T`;
+    } else if (absValue >= 1e9) {
+      formattedValue = `${(absValue / 1e9).toFixed(decimals)}B`;
+    } else if (absValue >= 1e6) {
+      formattedValue = `${(absValue / 1e6).toFixed(decimals)}M`;
+    } else if (absValue >= 1e3) {
+      formattedValue = `${(absValue / 1e3).toFixed(decimals)}K`;
+    } else {
+      formattedValue = absValue.toFixed(decimals);
+    }
   } else {
-    formatted = `$${absVal.toLocaleString()}`;
+    formattedValue = new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency: "USD",
+      minimumFractionDigits: decimals,
+      maximumFractionDigits: decimals,
+    })
+      .format(absValue)
+      .replace(/^\$/, "");
   }
-  return val < 0 ? `-${formatted}` : formatted;
+
+  return `${sign}$${formattedValue}`;
 };
 
 export const getSentimentColor = (
@@ -61,3 +84,7 @@ export const getVarianceColor = (
     ? "text-emerald-600 dark:text-emerald-400"
     : "text-rose-600 dark:text-rose-400";
 };
+
+export const cn = (
+  ...classes: (string | boolean | undefined | null)[]
+): string => classes.filter(Boolean).join(" ");

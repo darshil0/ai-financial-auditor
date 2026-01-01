@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
+import * as htmlToImage from "html-to-image";
 import {
   X,
   CheckCircle2,
@@ -12,6 +13,7 @@ import {
 
 interface DiagnosticsOverlayProps {
   onClose: () => void;
+  showErrorModal: (message: string) => void;
 }
 
 interface TestResult {
@@ -21,7 +23,11 @@ interface TestResult {
   message: string;
 }
 
-const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({ onClose }) => {
+const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
+  onClose,
+  showErrorModal,
+}) => {
+  const reportRef = useRef<HTMLDivElement>(null);
   const [tests, setTests] = useState<TestResult[]>([
     {
       id: "1",
@@ -71,6 +77,27 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({ onClose }) => {
     setIsRunning(false);
   };
 
+  const handleGenerateReport = async () => {
+    if (!reportRef.current) return;
+
+    try {
+      const dataUrl = await htmlToImage.toPng(reportRef.current, {
+        style: {
+          borderRadius: "0", // a quirky fix for a border-radius bug in the library
+        },
+      });
+      const link = document.createElement("a");
+      link.download = "FinAnalyzer_UI_Diagnostics.png";
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error("Failed to generate report image:", error);
+      showErrorModal(
+        "Could not generate the report. Please check the console for errors.",
+      );
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
       <div
@@ -78,7 +105,10 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({ onClose }) => {
         onClick={onClose}
       />
 
-      <div className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]">
+      <div
+        ref={reportRef}
+        className="bg-white dark:bg-slate-800 w-full max-w-2xl rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col max-h-[90vh]"
+      >
         <div className="p-8 border-b border-slate-100 dark:border-slate-700 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-emerald-600 text-white rounded-2xl shadow-lg shadow-emerald-500/20">
@@ -160,7 +190,10 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({ onClose }) => {
             )}
             Run Automated Sweep
           </button>
-          <button className="flex-1 bg-emerald-600 text-white py-4 rounded-2xl font-black shadow-xl shadow-emerald-500/20 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2">
+          <button
+            onClick={handleGenerateReport}
+            className="flex-1 bg-emerald-600 text-white py-4 rounded-2xl font-black shadow-xl shadow-emerald-500/20 hover:bg-emerald-700 transition-all flex items-center justify-center gap-2"
+          >
             <Bug size={20} /> Generate Report
           </button>
         </div>

@@ -7,11 +7,19 @@ import ComparisonView from "./components/ComparisonView";
 import HistoryView from "./components/HistoryView";
 import ReportUploader from "./components/ReportUploader";
 import DiagnosticsOverlay from "./components/DiagnosticsOverlay";
+import Modal from "./components/Modal";
 
 const App: React.FC = () => {
   const [view, setView] = useState<AppView>(AppView.DASHBOARD);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showDiagnostics, setShowDiagnostics] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState({ title: "", message: "" });
+
+  const showModal = (title: string, message: string) => {
+    setModalContent({ title, message });
+    setIsModalOpen(true);
+  };
 
   const [reports, setReports] = useState<FinancialReport[]>(() => {
     const saved = localStorage.getItem("fin_reports");
@@ -97,11 +105,19 @@ const App: React.FC = () => {
       <Sidebar
         view={view}
         setView={(v) => {
+          if (v === AppView.COMPARISON && reports.length < 2) {
+            showModal(
+              "Comparison View",
+              "You need at least two reports to use the Comparison view. Please upload more reports.",
+            );
+            return;
+          }
           setView(v);
           setIsMobileMenuOpen(false);
         }}
         isOpen={isMobileMenuOpen}
         onRunDiagnostics={() => setShowDiagnostics(true)}
+        reportCount={reports.length}
       />
 
       <div className="flex-1 flex flex-col min-w-0">
@@ -149,8 +165,18 @@ const App: React.FC = () => {
       </div>
 
       {showDiagnostics && (
-        <DiagnosticsOverlay onClose={() => setShowDiagnostics(false)} />
+        <DiagnosticsOverlay
+          onClose={() => setShowDiagnostics(false)}
+          showErrorModal={(message) => showModal("Error", message)}
+        />
       )}
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        title={modalContent.title}
+      >
+        <p className="text-sm text-slate-500">{modalContent.message}</p>
+      </Modal>
     </div>
   );
 };
