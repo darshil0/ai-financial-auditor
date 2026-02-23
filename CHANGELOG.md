@@ -26,7 +26,7 @@ All notable changes to this project will be documented in this file.
 - **Comparison Filter Reset**: Fixed stale ID selection when switching document types in the Comparison view.
 - **Image Generation Config**: Corrected invalid API parameters in `visualizeGuidance`.
 
-## [1.2.0] - 2025-05-15
+## [1.2.0] - 2025-11-15
 
 ### Added
 
@@ -43,14 +43,14 @@ All notable changes to this project will be documented in this file.
 
 - **Sidebar Navigation**: Prevented navigation to the Comparison view when fewer than two reports are present.
 
-## [1.1.0] - 2025-04-20
+## [1.1.0] - 2025-10-20
 
 ### Added
 
 - **Comprehensive Testing Suite**: Introduced a full testing suite with Vitest, React Testing Library, and Playwright.
 - **Component Refactoring**: Refactored the `ComparisonView` component for better testability.
 
-## [1.0.0] - 2025-03-10
+## [1.0.0] - 2025-10-20
 
 ### Added
 
