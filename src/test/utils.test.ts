@@ -50,6 +50,9 @@ describe("formatCurrency", () => {
   it("handles compact decimals", () => {
     expect(formatCurrency(1.2345e6, true, 4)).toBe("$1.2345M");
   });
+  it("handles NaN", () => {
+    expect(formatCurrency(NaN)).toContain("NaN");
+  });
 });
 
 describe("getSentimentColor", () => {
@@ -134,5 +137,11 @@ describe("cn", () => {
 
   it("handles an empty input", () => {
     expect(cn()).toBe("");
+  });
+
+  it("merges multiple static and conditional classes", () => {
+    const isError = true;
+    const isLarge = false;
+    expect(cn("base-class", isError && "error-class", isLarge ? "large" : "small", "another-static")).toBe("base-class error-class small another-static");
   });
 });

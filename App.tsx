@@ -7,10 +7,26 @@ import ComparisonView from "./components/ComparisonView";
 import HistoryView from "./components/HistoryView";
 import ReportUploader from "./components/ReportUploader";
 import DiagnosticsOverlay from "./components/DiagnosticsOverlay";
+import Modal from "./components/Modal";
 import { useAppStore } from "./store";
 import { Toaster, toast } from "sonner";
+import { useState } from "react";
 
 const App: React.FC = () => {
+  const [errorModal, setErrorModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+  }>({
+    isOpen: false,
+    title: "",
+    message: "",
+  });
+
+  const showErrorModal = (title: string, message: string) => {
+    setErrorModal({ isOpen: true, title, message });
+  };
+
   const {
     view,
     isMobileMenuOpen,
@@ -72,6 +88,7 @@ const App: React.FC = () => {
           setView={setView}
           isOpen={isMobileMenuOpen}
           onRunDiagnostics={() => setShowDiagnostics(true)}
+          reportCount={reports.length}
         />
 
         <div className="flex-1 flex flex-col min-w-0">
@@ -113,8 +130,25 @@ const App: React.FC = () => {
         </div>
 
         {showDiagnostics && (
-          <DiagnosticsOverlay onClose={() => setShowDiagnostics(false)} />
+          <DiagnosticsOverlay
+            onClose={() => setShowDiagnostics(false)}
+            showErrorModal={(msg) => showErrorModal("Diagnostic Error", msg)}
+          />
         )}
+
+        <Modal
+          isOpen={errorModal.isOpen}
+          onClose={() =>
+            setErrorModal((prev) => ({ ...prev, isOpen: false }))
+          }
+          title={errorModal.title}
+        >
+          <div className="space-y-4">
+            <p className="text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
+              {errorModal.message}
+            </p>
+          </div>
+        </Modal>
       </div>
     </>
   );
