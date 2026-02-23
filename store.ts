@@ -57,7 +57,12 @@ export const useAppStore = create<AppState>()(
               : state.activeReportId;
           return { reports: remaining, activeReportId: newActiveId };
         }),
-      setActiveReportId: (id) => set({ activeReportId: id, view: AppView.DASHBOARD }),
+      /**
+       * Sets the active report and navigates to the dashboard view.
+       * This is the intended behavior for both search results and history row clicks.
+       */
+      setActiveReportId: (id) =>
+        set({ activeReportId: id, view: AppView.DASHBOARD }),
       toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
       setMobileMenuOpen: (isOpen) => set({ isMobileMenuOpen: isOpen }),
       setShowDiagnostics: (show) => set({ showDiagnostics: show }),

@@ -89,4 +89,14 @@ describe("ComparisonView", () => {
     );
     expect(screen.getByText(/Reverse Chronology/)).toBeInTheDocument();
   });
+
+  it("renders locked state when there are fewer than 2 reports", () => {
+    render(<ComparisonView reports={[mockReports[0]]} />);
+    expect(screen.getByText("Comparison Hub Locked")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Please upload at least two reports/),
+    ).toBeInTheDocument();
+    // ArrowLeftRight icon container (parent of the icon)
+    expect(screen.getByTestId("locked-icon-container")).toBeInTheDocument();
+  });
 });

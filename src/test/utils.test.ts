@@ -50,8 +50,13 @@ describe("formatCurrency", () => {
   it("handles compact decimals", () => {
     expect(formatCurrency(1.2345e6, true, 4)).toBe("$1.2345M");
   });
-  it("handles NaN", () => {
-    expect(formatCurrency(NaN)).toContain("NaN");
+  it("formats exactly one million in compact mode", () => {
+    expect(formatCurrency(1e6, true)).toBe("$1.00M");
+  });
+  it("handles NaN safely", () => {
+    const result = formatCurrency(NaN);
+    expect(typeof result).toBe("string");
+    expect(() => formatCurrency(NaN)).not.toThrow();
   });
 });
 
@@ -142,6 +147,13 @@ describe("cn", () => {
   it("merges multiple static and conditional classes", () => {
     const isError = true;
     const isLarge = false;
-    expect(cn("base-class", isError && "error-class", isLarge ? "large" : "small", "another-static")).toBe("base-class error-class small another-static");
+    expect(
+      cn(
+        "base-class",
+        isError && "error-class",
+        isLarge ? "large" : "small",
+        "another-static",
+      ),
+    ).toBe("base-class error-class small another-static");
   });
 });

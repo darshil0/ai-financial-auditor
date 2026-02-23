@@ -69,10 +69,47 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
       setTests((prev) =>
         prev.map((t, idx) => (idx === i ? { ...t, status: "running" } : t)),
       );
-      await new Promise((r) => setTimeout(r, 800));
-      setTests((prev) =>
-        prev.map((t, idx) => (idx === i ? { ...t, status: "pass" } : t)),
-      );
+
+      if (i === 4) {
+        // Real LocalStorage test
+        try {
+          const testKey = "__fin_analyzer_diag__";
+          localStorage.setItem(testKey, "ok");
+          const val = localStorage.getItem(testKey);
+          localStorage.removeItem(testKey);
+          const passed = val === "ok";
+          setTests((prev) =>
+            prev.map((t, idx) =>
+              idx === 4
+                ? {
+                    ...t,
+                    status: passed ? "pass" : "fail",
+                    message: passed
+                      ? "Read/write cycle successful."
+                      : "LocalStorage is unavailable or blocked.",
+                  }
+                : t,
+            ),
+          );
+        } catch (e) {
+          setTests((prev) =>
+            prev.map((t, idx) =>
+              idx === 4
+                ? {
+                    ...t,
+                    status: "fail",
+                    message: "LocalStorage access threw an error.",
+                  }
+                : t,
+            ),
+          );
+        }
+      } else {
+        await new Promise((r) => setTimeout(r, 800));
+        setTests((prev) =>
+          prev.map((t, idx) => (idx === i ? { ...t, status: "pass" } : t)),
+        );
+      }
     }
     setIsRunning(false);
   };
@@ -126,6 +163,7 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
           <button
             onClick={onClose}
             className="p-3 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-2xl transition-all"
+            aria-label="Close Diagnostics"
           >
             <X size={24} />
           </button>
