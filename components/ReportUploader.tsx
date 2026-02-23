@@ -29,6 +29,13 @@ const ReportUploader: React.FC<ReportUploaderProps> = ({ onReportAdded }) => {
       return;
     }
 
+    if (file.size > 25 * 1024 * 1024) {
+      setError(
+        "File exceeds the 25MB limit. Please compress or use a shorter report.",
+      );
+      return;
+    }
+
     setLoading(true);
     setError(null);
     setStatus("Reading file and preparing for analysis...");

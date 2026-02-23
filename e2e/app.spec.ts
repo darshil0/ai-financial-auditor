@@ -22,3 +22,13 @@ test("uploads a report and displays the dashboard", async ({ page }) => {
   // do that in this environment, we'll just check that the
   // uploader is visible.
 });
+
+test("navigates to history tab and shows empty state", async ({ page }) => {
+  await page.goto("/");
+
+  // Click the history button in the sidebar.
+  await page.getByRole("button", { name: "Historical Reports" }).click();
+
+  // Expect the empty state message to be visible.
+  await expect(page.getByText("Archive empty.")).toBeVisible();
+});

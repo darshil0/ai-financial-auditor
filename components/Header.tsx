@@ -61,6 +61,17 @@ const Header: React.FC<HeaderProps> = ({
   }, []);
 
   useEffect(() => {
+    const handleGlobalKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === "k") {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    window.addEventListener("keydown", handleGlobalKeyDown);
+    return () => window.removeEventListener("keydown", handleGlobalKeyDown);
+  }, []);
+
+  useEffect(() => {
     setSelectedIndex(-1);
   }, [searchTerm, isDropdownOpen]);
 
@@ -148,19 +159,25 @@ const Header: React.FC<HeaderProps> = ({
             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
             size={18}
           />
-          <input
-            ref={inputRef}
-            type="text"
-            placeholder="Search Ticker or Company..."
-            value={searchTerm}
-            onChange={(e) => {
-              setSearchTerm(e.target.value);
-              setIsDropdownOpen(true);
-            }}
-            onFocus={() => setIsDropdownOpen(true)}
-            onKeyDown={handleKeyDown}
-            className="bg-slate-100 dark:bg-slate-800/50 border-2 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 rounded-2xl pl-12 pr-6 py-2.5 w-[300px] xl:w-[400px] focus:ring-4 focus:ring-blue-500/10 outline-none text-sm font-bold transition-all shadow-sm placeholder:text-slate-400"
-          />
+          <div className="relative flex items-center">
+            <input
+              ref={inputRef}
+              type="text"
+              placeholder="Search Ticker or Company..."
+              value={searchTerm}
+              onChange={(e) => {
+                setSearchTerm(e.target.value);
+                setIsDropdownOpen(true);
+              }}
+              onFocus={() => setIsDropdownOpen(true)}
+              onKeyDown={handleKeyDown}
+              className="bg-slate-100 dark:bg-slate-800/50 border-2 border-transparent focus:border-blue-500 focus:bg-white dark:focus:bg-slate-900 rounded-2xl pl-12 pr-16 py-2.5 w-[300px] xl:w-[400px] focus:ring-4 focus:ring-blue-500/10 outline-none text-sm font-bold transition-all shadow-sm placeholder:text-slate-400"
+            />
+            <div className="absolute right-4 hidden xl:flex items-center gap-1 px-1.5 py-1 bg-white dark:bg-slate-700 border border-slate-200 dark:border-slate-600 rounded-lg shadow-sm pointer-events-none">
+              <span className="text-[10px] font-black text-slate-400">⌘</span>
+              <span className="text-[10px] font-black text-slate-400">K</span>
+            </div>
+          </div>
 
           {isDropdownOpen && (
             <div className="absolute top-full left-0 w-full mt-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 z-[100]">
@@ -245,6 +262,7 @@ const Header: React.FC<HeaderProps> = ({
             onClick={() => setIsDarkMode(false)}
             className={`p-2 md:p-2.5 rounded-xl transition-all ${!isDarkMode ? "bg-white text-blue-600 shadow-md" : "text-slate-500 hover:text-slate-200"}`}
             title="Light Mode"
+            aria-label="Switch to Light Mode"
           >
             <Sun size={18} />
           </button>
@@ -252,6 +270,7 @@ const Header: React.FC<HeaderProps> = ({
             onClick={() => setIsDarkMode(true)}
             className={`p-2 md:p-2.5 rounded-xl transition-all ${isDarkMode ? "bg-slate-700 text-blue-400 shadow-md" : "text-slate-500 hover:text-slate-700"}`}
             title="Dark Mode"
+            aria-label="Switch to Dark Mode"
           >
             <Moon size={18} />
           </button>
@@ -260,6 +279,7 @@ const Header: React.FC<HeaderProps> = ({
         <button
           className="p-2 md:p-3 rounded-2xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500 transition-all relative group"
           title="Intelligence Alerts"
+          aria-label="View Intelligence Alerts"
         >
           <Bell
             size={20}

@@ -8,6 +8,11 @@ import {
   Cell,
   Tooltip,
   Legend,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
 } from "recharts";
 import {
   Globe,
@@ -19,6 +24,9 @@ import {
   StopCircle,
   Image as ImageIcon,
   MessageSquareText,
+  Quote,
+  Copy,
+  TrendingUp as TrendingUpIcon,
 } from "lucide-react";
 import {
   getMarketContext,
@@ -46,6 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [isGeneratingBriefing, setIsGeneratingBriefing] = useState(false);
   const [isGeneratingVisual, setIsGeneratingVisual] = useState(false);
   const [showLiveAnalyst, setShowLiveAnalyst] = useState(false);
+  const [isConnectingAnalyst, setIsConnectingAnalyst] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -123,6 +132,12 @@ const Dashboard: React.FC<DashboardProps> = ({
     });
   };
 
+  const handleCopyCommentary = () => {
+    if (!report?.managementCommentary) return;
+    navigator.clipboard.writeText(report.managementCommentary);
+    toast.success("Commentary copied to clipboard");
+  };
+
   const handleVisualizeGuidance = async () => {
     setIsGeneratingVisual(true);
     const promise = visualizeGuidance(report)
@@ -161,10 +176,19 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
         <div className="flex flex-wrap gap-3 w-full md:w-auto">
           <button
-            onClick={() => setShowLiveAnalyst(true)}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+            onClick={() => {
+              setIsConnectingAnalyst(true);
+              setShowLiveAnalyst(true);
+            }}
+            disabled={isConnectingAnalyst}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50"
           >
-            <MessageSquareText size={18} /> Talk to Analyst
+            {isConnectingAnalyst ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : (
+              <MessageSquareText size={18} />
+            )}
+            Talk to Analyst
           </button>
           <button
             onClick={handleVisualizeGuidance}
@@ -254,6 +278,155 @@ const Dashboard: React.FC<DashboardProps> = ({
                     />
                   </a>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {report.managementCommentary && (
+            <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 shadow-2xl shadow-blue-500/5 relative overflow-hidden group">
+              <div className="absolute top-0 right-0 p-8">
+                <button
+                  onClick={handleCopyCommentary}
+                  className="p-3 bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-blue-500 rounded-xl transition-all active:scale-90"
+                  title="Copy to Clipboard"
+                  aria-label="Copy Management Commentary to Clipboard"
+                >
+                  <Copy size={20} />
+                </button>
+              </div>
+              <div className="flex items-center gap-4 mb-8">
+                <div className="p-3 bg-indigo-50 dark:bg-indigo-900/40 text-indigo-600 dark:text-indigo-400 rounded-[1.25rem]">
+                  <Quote size={24} />
+                </div>
+                <div>
+                  <h3 className="font-black text-2xl tracking-tight text-slate-900 dark:text-white">
+                    Management Commentary
+                  </h3>
+                  <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                    Direct AI Synthesis
+                  </p>
+                </div>
+              </div>
+              <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-lg font-medium italic border-l-4 border-slate-100 dark:border-slate-800 pl-8">
+                "{report.managementCommentary}"
+              </p>
+            </div>
+          )}
+
+          {report.trends && report.trends.length > 1 && (
+            <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-800 shadow-sm">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 rounded-xl">
+                    <TrendingUpIcon size={20} />
+                  </div>
+                  <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                    Historical Trajectory
+                  </h3>
+                </div>
+                <div className="flex gap-4">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+                    <span className="text-[10px] font-black uppercase text-slate-400">
+                      Revenue
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-emerald-500"></div>
+                    <span className="text-[10px] font-black uppercase text-slate-400">
+                      Net Income
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="h-80 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={report.trends}>
+                    <defs>
+                      <linearGradient
+                        id="colorRev"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                      <linearGradient id="colorNI" x1="0" y1="0" x2="0" y2="1">
+                        <stop
+                          offset="5%"
+                          stopColor="#10b981"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#10b981"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#f1f5f9"
+                    />
+                    <XAxis
+                      dataKey="period"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{
+                        fill: "#94a3b8",
+                        fontSize: 10,
+                        fontWeight: 700,
+                      }}
+                      dy={10}
+                    />
+                    <YAxis hide />
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: "16px",
+                        border: "none",
+                        boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                        padding: "12px",
+                        backgroundColor: "rgba(255, 255, 255, 0.96)",
+                      }}
+                      formatter={(value: number) => [
+                        formatCurrency(value, true),
+                        "",
+                      ]}
+                      labelStyle={{
+                        fontWeight: 900,
+                        marginBottom: "4px",
+                        color: "#0f172a",
+                      }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="revenue"
+                      stroke="#3b82f6"
+                      strokeWidth={4}
+                      fillOpacity={1}
+                      fill="url(#colorRev)"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="netIncome"
+                      stroke="#10b981"
+                      strokeWidth={4}
+                      fillOpacity={1}
+                      fill="url(#colorNI)"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </div>
           )}
@@ -376,7 +549,11 @@ const Dashboard: React.FC<DashboardProps> = ({
       {showLiveAnalyst && (
         <LiveAnalyst
           report={report}
-          onClose={() => setShowLiveAnalyst(false)}
+          onClose={() => {
+            setShowLiveAnalyst(false);
+            setIsConnectingAnalyst(false);
+          }}
+          onConnected={() => setIsConnectingAnalyst(false)}
         />
       )}
     </div>

@@ -89,4 +89,12 @@ describe("ComparisonView", () => {
     );
     expect(screen.getByText(/Reverse Chronology/)).toBeInTheDocument();
   });
+
+  it("renders locked state when fewer than 2 reports", () => {
+    render(<ComparisonView reports={[]} />);
+    expect(screen.getByText("Comparison Hub Locked")).toBeInTheDocument();
+    expect(
+      screen.getByText(/Please upload at least two reports/i),
+    ).toBeInTheDocument();
+  });
 });

@@ -16,12 +16,18 @@ import { decodeBase64, decodeAudioData, createPcmBlob } from "../audioUtils";
 interface LiveAnalystProps {
   report: FinancialReport;
   onClose: () => void;
+  onConnected?: () => void;
 }
 
-const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose }) => {
+const LiveAnalyst: React.FC<LiveAnalystProps> = ({
+  report,
+  onClose,
+  onConnected,
+}) => {
   const [isActive, setIsActive] = useState(false);
   const [isConnecting, setIsConnecting] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
+  const isMutedRef = useRef(false);
   const [status, setStatus] = useState("Initializing analyst connection...");
 
   const sessionRef = useRef<any>(null);
@@ -30,6 +36,7 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose }) => {
   const nextStartTimeRef = useRef(0);
   const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
   const inputContextRef = useRef<AudioContext | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   useEffect(() => {
     const startSession = async () => {
@@ -46,12 +53,14 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose }) => {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
+        streamRef.current = stream;
 
         const sessionPromise = connectLiveAnalyst(report, {
           onopen: () => {
             setIsConnecting(false);
             setIsActive(true);
             setStatus("Analyst connected. You can speak now.");
+            if (onConnected) onConnected();
 
             // Stream microphone
             const source =
@@ -59,7 +68,7 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose }) => {
             const scriptProcessor =
               inputContextRef.current!.createScriptProcessor(4096, 1, 1);
             scriptProcessor.onaudioprocess = (e) => {
-              if (isMuted) return;
+              if (isMutedRef.current) return;
               const inputData = e.inputBuffer.getChannelData(0);
               const pcmBlob = createPcmBlob(inputData);
               sessionPromise.then((session) => {
@@ -125,8 +134,11 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose }) => {
       if (sessionRef.current) sessionRef.current.close();
       if (audioContextRef.current) audioContextRef.current.close();
       if (inputContextRef.current) inputContextRef.current.close();
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((t) => t.stop());
+      }
     };
-  }, [report]);
+  }, [report, onConnected]);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
@@ -179,7 +191,12 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose }) => {
 
           <div className="flex items-center gap-6">
             <button
-              onClick={() => setIsMuted(!isMuted)}
+              onClick={() =>
+                setIsMuted((prev) => {
+                  isMutedRef.current = !prev;
+                  return !prev;
+                })
+              }
               className={`p-5 rounded-[2rem] transition-all shadow-lg active:scale-95 ${
                 isMuted
                   ? "bg-rose-500 text-white shadow-rose-500/20"
@@ -190,7 +207,10 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose }) => {
             </button>
             <button
               className="p-5 bg-blue-600 text-white rounded-[2rem] shadow-xl shadow-blue-500/20 active:scale-95"
-              onClick={() => setIsMuted(false)}
+              onClick={() => {
+                setIsMuted(false);
+                isMutedRef.current = false;
+              }}
             >
               <Volume2 size={24} />
             </button>

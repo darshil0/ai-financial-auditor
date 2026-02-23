@@ -15,6 +15,10 @@ interface AppState {
   addReport: (report: FinancialReport) => void;
   updateReport: (updatedReport: FinancialReport) => void;
   deleteReport: (id: string) => void;
+  /**
+   * Sets the active report and automatically navigates to the Dashboard view.
+   * This is intended for use in search results and history row selection.
+   */
   setActiveReportId: (id: string | null) => void;
   toggleDarkMode: () => void;
   setMobileMenuOpen: (isOpen: boolean) => void;

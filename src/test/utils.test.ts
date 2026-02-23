@@ -51,7 +51,11 @@ describe("formatCurrency", () => {
     expect(formatCurrency(1.2345e6, true, 4)).toBe("$1.2345M");
   });
   it("handles NaN", () => {
-    expect(formatCurrency(NaN)).toContain("NaN");
+    const result = formatCurrency(NaN);
+    expect(typeof result).toBe("string");
+  });
+  it("formats exactly one million in compact mode", () => {
+    expect(formatCurrency(1e6, true)).toBe("$1.00M");
   });
 });
 

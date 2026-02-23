@@ -2,14 +2,13 @@ import React, { useState } from "react";
 import { FinancialReport } from "../types";
 import {
   Search,
-  Filter,
   Trash2,
-  Calendar,
-  FileText,
   ChevronRight,
   BookOpen,
+  AlertCircle,
 } from "lucide-react";
 import { formatCurrency } from "../utils";
+import Modal from "./Modal";
 
 interface HistoryViewProps {
   reports: FinancialReport[];
@@ -23,6 +22,9 @@ const HistoryView: React.FC<HistoryViewProps> = ({
   deleteReport,
 }) => {
   const [search, setSearch] = useState("");
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  const reportToDelete = reports.find((r) => r.id === pendingDeleteId);
 
   const filtered = reports.filter(
     (r) =>
@@ -119,10 +121,11 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            deleteReport(r.id);
+                            setPendingDeleteId(r.id);
                           }}
                           className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-all active:scale-90"
                           title="Delete Report"
+                          aria-label={`Delete ${r.companyName} analysis`}
                         >
                           <Trash2 size={20} />
                         </button>
@@ -156,6 +159,46 @@ const HistoryView: React.FC<HistoryViewProps> = ({
           </table>
         </div>
       </div>
+
+      <Modal
+        isOpen={pendingDeleteId !== null}
+        onClose={() => setPendingDeleteId(null)}
+        title="Confirm Deletion"
+      >
+        <div className="space-y-6">
+          <div className="flex items-start gap-4 p-4 bg-rose-50 dark:bg-rose-900/20 border border-rose-100 dark:border-rose-900/30 rounded-2xl">
+            <AlertCircle className="text-rose-500 shrink-0" size={24} />
+            <p className="text-sm font-medium text-rose-700 dark:text-rose-400 leading-relaxed">
+              Are you sure you want to permanently delete the analysis for{" "}
+              <span className="font-black">
+                {reportToDelete?.companyName} ({reportToDelete?.ticker})
+              </span>
+              ? This action cannot be undone and all extracted intelligence for
+              this period will be lost.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={() => setPendingDeleteId(null)}
+              className="flex-1 px-6 py-3 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 rounded-xl font-bold hover:bg-slate-200 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                if (pendingDeleteId) {
+                  deleteReport(pendingDeleteId);
+                  setPendingDeleteId(null);
+                }
+              }}
+              className="flex-1 px-6 py-3 bg-rose-600 text-white rounded-xl font-bold hover:bg-rose-700 transition-all shadow-lg shadow-rose-500/20"
+            >
+              Confirm Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };
