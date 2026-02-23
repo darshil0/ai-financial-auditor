@@ -38,38 +38,6 @@
 - **Unit & Component Tests**: `npm run test:unit`
 - **End-to-End (E2E) Tests**: `npm run test:e2e`
 
-## ✨ Recent Changes
-
-### v1.3.0
-
-- **Global Error Resilience**: Integrated a React Error Boundary with a professional fallback UI to prevent application crashes during rendering errors.
-- **Interactive Performance Trends**: Added a Trends chart section using Recharts to visualize historical GAAP metrics over multiple quarters.
-- **Executive Narrative Extraction**: New Management Commentary card on the dashboard with a one-click "Copy to Clipboard" feature for easier data migration.
-- **Enhanced Live Session UX**: Added loading states and connection callbacks to the Live AI Analyst interface for a smoother advisory experience.
-- **Keyboard-First Search**: Implemented `Cmd/Ctrl+K` global shortcut and a visual `⌘K` hint to focus the ticker search hub instantly.
-- **Robust Data Schema**: Updated the AI extraction engine to require prior-period data, ensuring accurate YoY growth modeling and preventing division-by-zero errors.
-- **Institutional Guardrails**: Added 25MB file size validation, synchronous dark mode application, and safe deletion confirmation flows in the Analysis Vault.
-
-### v1.2.0
-
-- **Enhanced Currency Formatting**: Refactored the `formatCurrency` utility for improved readability, expanded test coverage, and added compact formatting for trillions (T), billions (B), millions (M), and thousands (K).
-- **Conditional Class Utility**: Implemented a `cn` utility for streamlined conditional class name management in React components.
-- **Improved Comparison View**: The "Comparison" view button is now disabled with a tooltip when fewer than two reports are available, preventing navigation to an empty state.
-- **Downloadable Diagnostics**: Users can now download the UI Diagnostics report as a high-resolution PNG image for easier sharing and record-keeping.
-- **Custom Modal UI**: Replaced native browser alerts with a polished custom modal component for a more consistent and user-friendly experience.
-
-### v1.1.0
-
-- **Comprehensive Testing Suite**: Introduced a full testing suite with Vitest, React Testing Library, and Playwright.
-- **Component Refactoring**: Refactored the `ComparisonView` component for better testability.
-- **Documentation**: Updated `README.md` with the latest changes and testing instructions.
-
-### v1.0.0
-
-- **API Key Management**: Migrated from `process.env` to a client-safe `VITE_API_KEY` in a `.env` file.
-- **Codebase Formatting**: Applied Prettier for consistent code style across the project.
-- **Documentation**: Updated `README.md` with the latest changes and version.
-
 ---
 
 _Institutional-grade financial analysis powered by Google GenAI._ Developed by Darshil with Precision.
