@@ -1,10 +1,12 @@
-# 📈 FinAnalyzer Pro v1.2.0
+# 📈 FinAnalyzer Pro v1.3.0
 
-**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 3 Pro** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with visual analytics, and real-time market grounding.
+**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 2.5 Pro** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with visual analytics, and real-time market grounding.
 
 ## 🚀 Key Features
 
-- **Gemini 3 Pro Extraction**: Uses advanced multimodal reasoning to extract Revenue, Net Income, EPS, and Margins with forensic precision from PDF documents.
+- **Gemini 2.5 Pro Reasoning**: Uses advanced multimodal reasoning to extract Revenue, Net Income, EPS, and Margins with forensic precision from PDF documents.
+- **Financial Performance Trends**: Interactive area charts visualizing revenue and net income velocity across historical reporting periods.
+- **Management Commentary Insight**: AI-extracted executive narratives with instant clipboard integration for research portability.
 - **Universal Ticker Intelligence**: A centralized search hub with keyboard-first navigation for instant retrieval of historical analysis.
 - **Narrative Sentiment Analysis**: Quantifies management's verbal confidence and forward-looking statements into a 0-100 Bullishness score with an interactive gauge.
 - **Market Grounding**: Integrated Google Search tools to contrast historical report data with real-time market developments.
@@ -15,8 +17,8 @@
 
 ## 🛠️ Technical Architecture
 
-- **Reasoning Engine**: Gemini 3 Pro (Multimodal Reasoning & Google Search Grounding).
-- **Thinking Budget**: Configured for deep-dive financial reconciliation (8k - 32k tokens).
+- **Reasoning Engine**: Gemini 2.5 Pro (Multimodal Reasoning & Google Search Grounding).
+- **Thinking Budget**: Configured for deep-dive financial reconciliation (16k tokens).
 - **Frontend**: React 19 (Strict Mode) + Tailwind CSS (JIT).
 - **Charts**: Recharts (Responsive SVG with custom tooltips).
 - **Persistence**: LocalStorage for persistent historical report vaulting.
@@ -37,6 +39,16 @@
 - **End-to-End (E2E) Tests**: `npm run test:e2e`
 
 ## ✨ Recent Changes
+
+### v1.3.0
+
+- **Global Error Resilience**: Integrated a React Error Boundary with a professional fallback UI to prevent application crashes during rendering errors.
+- **Interactive Performance Trends**: Added a Trends chart section using Recharts to visualize historical GAAP metrics over multiple quarters.
+- **Executive Narrative Extraction**: New Management Commentary card on the dashboard with a one-click "Copy to Clipboard" feature for easier data migration.
+- **Enhanced Live Session UX**: Added loading states and connection callbacks to the Live AI Analyst interface for a smoother advisory experience.
+- **Keyboard-First Search**: Implemented `Cmd/Ctrl+K` global shortcut and a visual `⌘K` hint to focus the ticker search hub instantly.
+- **Robust Data Schema**: Updated the AI extraction engine to require prior-period data, ensuring accurate YoY growth modeling and preventing division-by-zero errors.
+- **Institutional Guardrails**: Added 25MB file size validation, synchronous dark mode application, and safe deletion confirmation flows in the Analysis Vault.
 
 ### v1.2.0
 
