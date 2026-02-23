@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import { FinancialReport } from "../types";
-import SummaryCards from "./SummaryCards";
+import { FinancialReport } from "@/types";
+import SummaryCards from "@/components/SummaryCards";
 import {
   ResponsiveContainer,
   PieChart,
@@ -32,11 +32,13 @@ import {
   getMarketContext,
   generateAudioBriefing,
   visualizeGuidance,
-} from "../geminiService";
-import { formatCurrency, getSentimentColor, getSentimentLabel } from "../utils";
-import LiveAnalyst from "./LiveAnalyst";
-import { decodeBase64, createWaveBlob } from "../audioUtils";
-import DashboardSkeleton, { NoReportState } from "./DashboardSkeleton";
+} from "@/services/geminiService";
+import { formatCurrency, getSentimentColor, getSentimentLabel } from "@/utils";
+import LiveAnalyst from "@/components/LiveAnalyst";
+import { decodeBase64, createWaveBlob } from "@/utils/audioUtils";
+import DashboardSkeleton, {
+  NoReportState,
+} from "@/components/DashboardSkeleton";
 import { toast } from "sonner";
 
 interface DashboardProps {

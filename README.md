@@ -1,4 +1,4 @@
-# 📈 FinAnalyzer Pro v1.3.0
+# 📈 FinAnalyzer Pro v1.4.0
 
 **FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 2.5 Pro** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with visual analytics, and real-time market grounding.
 

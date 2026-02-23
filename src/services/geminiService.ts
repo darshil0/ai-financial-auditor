@@ -1,5 +1,5 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
-import { FinancialReport, MarketInsight } from "./types";
+import { FinancialReport, MarketInsight } from "@/types";
 
 const getAIClient = () =>
   new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
