@@ -10,6 +10,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { formatCurrency } from "../utils";
+import Modal from "./Modal";
 
 interface HistoryViewProps {
   reports: FinancialReport[];
@@ -23,6 +24,9 @@ const HistoryView: React.FC<HistoryViewProps> = ({
   deleteReport,
 }) => {
   const [search, setSearch] = useState("");
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
+
+  const pendingDeleteReport = reports.find((r) => r.id === pendingDeleteId);
 
   const filtered = reports.filter(
     (r) =>
@@ -119,10 +123,11 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            deleteReport(r.id);
+                            setPendingDeleteId(r.id);
                           }}
                           className="p-3 text-slate-400 hover:text-rose-500 hover:bg-rose-50 dark:hover:bg-rose-900/20 rounded-xl transition-all active:scale-90"
                           title="Delete Report"
+                          aria-label={`Delete report for ${r.companyName}`}
                         >
                           <Trash2 size={20} />
                         </button>
@@ -156,6 +161,41 @@ const HistoryView: React.FC<HistoryViewProps> = ({
           </table>
         </div>
       </div>
+
+      <Modal
+        isOpen={pendingDeleteId !== null}
+        onClose={() => setPendingDeleteId(null)}
+        title="Delete Analysis"
+      >
+        <div className="space-y-6">
+          <p className="text-slate-600 dark:text-slate-400 font-medium leading-relaxed">
+            Are you sure you want to permanently delete the analysis for{" "}
+            <span className="font-black text-slate-900 dark:text-white">
+              {pendingDeleteReport?.companyName} ({pendingDeleteReport?.ticker})
+            </span>
+            ? This action cannot be undone.
+          </p>
+          <div className="flex flex-col md:flex-row gap-3 pt-2">
+            <button
+              onClick={() => setPendingDeleteId(null)}
+              className="flex-1 px-8 py-4 bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-200 rounded-2xl font-bold hover:bg-slate-200 transition-all"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={() => {
+                if (pendingDeleteId) {
+                  deleteReport(pendingDeleteId);
+                  setPendingDeleteId(null);
+                }
+              }}
+              className="flex-1 px-8 py-4 bg-rose-600 text-white rounded-2xl font-bold hover:bg-rose-700 transition-all shadow-lg shadow-rose-500/20"
+            >
+              Confirm Delete
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

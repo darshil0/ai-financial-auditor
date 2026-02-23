@@ -60,7 +60,9 @@ const reportSchema = {
     "revenue",
     "revenuePrior",
     "netIncome",
+    "netIncomePrior",
     "eps",
+    "epsPrior",
     "grossMargin",
     "expenses",
     "trends",
@@ -83,7 +85,7 @@ export async function analyzeEarningsReport(
   });
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-pro-preview",
+    model: "gemini-2.5-pro",
     contents: {
       parts: [
         {
@@ -120,25 +122,36 @@ export async function generateAudioBriefing(report: FinancialReport) {
   Focus on the most critical takeaways: Revenue of ${report.revenue}, EPS of ${report.eps}, and the overall sentiment which is ${report.sentimentScore}/100. 
   Sound professional yet engaging, like a high-end financial analyst.`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-preview-tts",
-    contents: [{ parts: [{ text: prompt }] }],
-    config: {
-      responseModalities: [Modality.AUDIO],
-      speechConfig: {
-        voiceConfig: {
-          prebuiltVoiceConfig: { voiceName: "Kore" },
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash-preview-tts",
+      contents: [{ parts: [{ text: prompt }] }],
+      config: {
+        responseModalities: [Modality.AUDIO],
+        speechConfig: {
+          voiceConfig: {
+            prebuiltVoiceConfig: { voiceName: "Kore" },
+          },
         },
       },
-    },
-  });
+    });
 
-  const base64Audio =
-    response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
-  return {
-    base64Audio: base64Audio || "",
-    summary: "Professional analyst audio briefing ready.",
-  };
+    const base64Audio =
+      response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    return {
+      base64Audio: base64Audio || "",
+      summary: "Professional analyst audio briefing ready.",
+    };
+  } catch (err) {
+    console.warn(
+      "TTS unavailable on this model, falling back to text-only.",
+      err,
+    );
+    return {
+      base64Audio: "",
+      summary: "Audio briefing unavailable. AI text summary generated.",
+    };
+  }
 }
 
 export async function visualizeGuidance(
@@ -150,14 +163,13 @@ export async function visualizeGuidance(
   Sentiment: ${report.sentimentScore}/100. Ticker: ${report.ticker}. 4k resolution, professional photography style.`;
 
   const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash-image",
+    model: "gemini-2.5-flash",
     contents: {
       parts: [{ text: prompt }],
     },
     config: {
-      imageConfig: {
-        aspectRatio: "16:9",
-      },
+      responseModalities: [Modality.IMAGE, Modality.TEXT],
+      temperature: 1.0,
     },
   });
 
@@ -174,7 +186,7 @@ export async function getMarketContext(ticker: string, company: string) {
   const prompt = `Perform a comprehensive market scan for ${company} (${ticker}) focusing on developments since their last earnings report. Include current stock price trends, major news, and analyst upgrades/downgrades.`;
 
   const response = await ai.models.generateContent({
-    model: "gemini-3-pro-preview",
+    model: "gemini-2.5-pro",
     contents: prompt,
     config: {
       tools: [{ googleSearch: {} }],
@@ -213,7 +225,7 @@ export async function connectLiveAnalyst(
   Provide deep insights, answer complex questions about these results, and maintain a professional, helpful, and objective tone.`;
 
   return ai.live.connect({
-    model: "gemini-2.5-flash-native-audio-preview-09-2025",
+    model: "gemini-2.5-flash",
     callbacks,
     config: {
       responseModalities: [Modality.AUDIO],

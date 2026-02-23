@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 import { toPng } from "html-to-image";
 import { formatCurrency, calculateGrowth } from "../utils";
-import { useAppStore } from "../store";
 
 interface ComparisonViewProps {
   reports: FinancialReport[];
@@ -71,6 +70,12 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
     if (typeFilter === "All Types") return reports;
     return reports.filter((r) => r.reportType === typeFilter);
   }, [reports, typeFilter]);
+
+  React.useEffect(() => {
+    const ids = filteredReports.map((r) => r.id);
+    if (!ids.includes(report1Id) && ids.length > 0) setReport1Id(ids[0]);
+    if (!ids.includes(report2Id) && ids.length > 1) setReport2Id(ids[1]);
+  }, [typeFilter, filteredReports]);
 
   const report1 = reports.find((r) => r.id === report1Id);
   const report2 = reports.find((r) => r.id === report2Id);
@@ -303,7 +308,10 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
   if (reports.length < 2) {
     return (
       <div className="h-full flex flex-col items-center justify-center py-32 text-center px-4">
-        <div className="bg-slate-100 dark:bg-slate-800 p-8 rounded-full mb-6">
+        <div
+          data-testid="locked-icon-container"
+          className="bg-slate-100 dark:bg-slate-800 p-8 rounded-full mb-6"
+        >
           <ArrowLeftRight size={64} className="text-slate-400" />
         </div>
         <div className="flex flex-col items-center gap-4">
@@ -342,6 +350,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
           <button
             onClick={handleRefresh}
             title="Refresh Data from Storage"
+            aria-label="Refresh Data from Storage"
             className="p-3 bg-white dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700 rounded-2xl hover:text-blue-600 transition-all shadow-sm active:scale-95"
           >
             <RefreshCw
@@ -352,6 +361,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
           <button
             onClick={handleExportPNG}
             disabled={!validation?.isValid || isExportingPng}
+            aria-label="Export Summary as PNG"
             className="bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 px-6 py-3 rounded-2xl font-bold flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm disabled:opacity-50 active:scale-95"
           >
             {isExportingPng ? (
@@ -402,6 +412,19 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
           ))}
         </div>
       </div>
+
+      {filteredReports.length === 0 && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800/50 rounded-2xl text-amber-700 dark:text-amber-400 text-sm font-bold flex items-center gap-3 animate-in slide-in-from-top-2 duration-300">
+          <AlertTriangle size={16} />
+          No reports match the selected filter. Showing all report types.
+          <button
+            onClick={() => setTypeFilter("All Types")}
+            className="underline ml-auto hover:text-amber-900 dark:hover:text-amber-200 transition-colors"
+          >
+            Reset
+          </button>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
         {/* Baseline Card */}
@@ -627,7 +650,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
                     Revenue
                   </p>
                   <p className="font-black text-lg text-slate-800 dark:text-slate-100">
-                    {formatCurrency(report1.revenue)}
+                    {formatCurrency(report1.revenue, true)}
                   </p>
                 </div>
                 <div>
@@ -635,7 +658,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
                     Net Inc.
                   </p>
                   <p className="font-black text-lg text-slate-800 dark:text-slate-100">
-                    {formatCurrency(report1.netIncome)}
+                    {formatCurrency(report1.netIncome, true)}
                   </p>
                 </div>
                 <div>
@@ -673,7 +696,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
                     Revenue
                   </p>
                   <p className="font-black text-lg text-slate-800 dark:text-slate-100">
-                    {formatCurrency(report2.revenue)}
+                    {formatCurrency(report2.revenue, true)}
                   </p>
                 </div>
                 <div>
@@ -681,7 +704,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
                     Net Inc.
                   </p>
                   <p className="font-black text-lg text-slate-800 dark:text-slate-100">
-                    {formatCurrency(report2.netIncome)}
+                    {formatCurrency(report2.netIncome, true)}
                   </p>
                 </div>
                 <div>

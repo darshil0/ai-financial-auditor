@@ -22,14 +22,14 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ report }) => {
   const cards = [
     {
       label: "Gross Revenue",
-      value: formatCurrency(report.revenue),
+      value: formatCurrency(report.revenue, true),
       change: revGrowth,
       icon: DollarSign,
       color: "blue",
     },
     {
       label: "Net Earnings",
-      value: formatCurrency(report.netIncome),
+      value: formatCurrency(report.netIncome, true),
       change: niGrowth,
       icon: TrendingUp,
       color: "emerald",

@@ -8,6 +8,7 @@ import HistoryView from "./components/HistoryView";
 import ReportUploader from "./components/ReportUploader";
 import DiagnosticsOverlay from "./components/DiagnosticsOverlay";
 import Modal from "./components/Modal";
+import ErrorBoundary from "./components/ErrorBoundary";
 import { useAppStore } from "./store";
 import { Toaster, toast } from "sonner";
 import { useState } from "react";
@@ -103,29 +104,31 @@ const App: React.FC = () => {
           />
 
           <main className="flex-1 overflow-y-auto p-4 md:p-8">
-            {view === AppView.UPLOAD && (
-              <ReportUploader onReportAdded={addReport} />
-            )}
+            <ErrorBoundary>
+              {view === AppView.UPLOAD && (
+                <ReportUploader onReportAdded={addReport} />
+              )}
 
-            {view === AppView.DASHBOARD && (
-              <Dashboard
-                report={activeReport}
-                onSwitchToUpload={() => setView(AppView.UPLOAD)}
-                onUpdateReport={updateReport}
-              />
-            )}
+              {view === AppView.DASHBOARD && (
+                <Dashboard
+                  report={activeReport}
+                  onSwitchToUpload={() => setView(AppView.UPLOAD)}
+                  onUpdateReport={updateReport}
+                />
+              )}
 
-            {view === AppView.COMPARISON && (
-              <ComparisonView reports={reports} />
-            )}
+              {view === AppView.COMPARISON && (
+                <ComparisonView reports={reports} />
+              )}
 
-            {view === AppView.HISTORY && (
-              <HistoryView
-                reports={reports}
-                setActiveReportId={setActiveReportId}
-                deleteReport={handleDeleteReport}
-              />
-            )}
+              {view === AppView.HISTORY && (
+                <HistoryView
+                  reports={reports}
+                  setActiveReportId={setActiveReportId}
+                  deleteReport={handleDeleteReport}
+                />
+              )}
+            </ErrorBoundary>
           </main>
         </div>
 
@@ -138,9 +141,7 @@ const App: React.FC = () => {
 
         <Modal
           isOpen={errorModal.isOpen}
-          onClose={() =>
-            setErrorModal((prev) => ({ ...prev, isOpen: false }))
-          }
+          onClose={() => setErrorModal((prev) => ({ ...prev, isOpen: false }))}
           title={errorModal.title}
         >
           <div className="space-y-4">

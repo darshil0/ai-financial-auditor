@@ -4,7 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>FinAnalyzer Pro - AI Earnings Intelligence</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <!--
+      Tailwind is loaded via CDN for this project as it uses a browser-native ESM module system
+      without a PostCSS build step.
+    -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,typography"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -95,6 +99,15 @@
           "html-to-image": "https://esm.sh/html-to-image@^1.11.11"
         }
       }
+    </script>
+    <script>
+      try {
+        const store = JSON.parse(
+          localStorage.getItem("fin-analyzer-storage") || "{}",
+        );
+        if (store.state?.isDarkMode)
+          document.documentElement.classList.add("dark");
+      } catch (e) {}
     </script>
   </head>
   <body>

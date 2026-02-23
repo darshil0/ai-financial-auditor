@@ -8,6 +8,11 @@ import {
   Cell,
   Tooltip,
   Legend,
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
 } from "recharts";
 import {
   Globe,
@@ -15,10 +20,13 @@ import {
   Newspaper,
   ArrowRight,
   PieChart as PieChartIcon,
+  TrendingUp,
   Play,
   StopCircle,
   Image as ImageIcon,
   MessageSquareText,
+  Copy,
+  Check,
 } from "lucide-react";
 import {
   getMarketContext,
@@ -45,6 +53,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   const [isFetchingContext, setIsFetchingContext] = useState(false);
   const [isGeneratingBriefing, setIsGeneratingBriefing] = useState(false);
   const [isGeneratingVisual, setIsGeneratingVisual] = useState(false);
+  const [isConnectingAnalyst, setIsConnectingAnalyst] = useState(false);
   const [showLiveAnalyst, setShowLiveAnalyst] = useState(false);
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
@@ -161,10 +170,19 @@ const Dashboard: React.FC<DashboardProps> = ({
         </div>
         <div className="flex flex-wrap gap-3 w-full md:w-auto">
           <button
-            onClick={() => setShowLiveAnalyst(true)}
-            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95"
+            onClick={() => {
+              setIsConnectingAnalyst(true);
+              setShowLiveAnalyst(true);
+            }}
+            disabled={isConnectingAnalyst}
+            className="flex items-center justify-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-2xl text-sm font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20 active:scale-95 disabled:opacity-50"
           >
-            <MessageSquareText size={18} /> Talk to Analyst
+            {isConnectingAnalyst ? (
+              <Loader2 size={18} className="animate-spin" />
+            ) : (
+              <MessageSquareText size={18} />
+            )}
+            Talk to Analyst
           </button>
           <button
             onClick={handleVisualizeGuidance}
@@ -195,6 +213,39 @@ const Dashboard: React.FC<DashboardProps> = ({
 
       <SummaryCards report={report} />
 
+      {report.managementCommentary && (
+        <div className="bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-800 rounded-[2.5rem] p-10 shadow-2xl shadow-blue-500/5 relative group">
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-indigo-600 text-white rounded-[1.25rem] shadow-lg shadow-indigo-500/20">
+                <MessageSquareText size={24} />
+              </div>
+              <div>
+                <h3 className="font-black text-2xl tracking-tight text-slate-900 dark:text-white">
+                  Management Commentary
+                </h3>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">
+                  AI-Extracted Executive Narrative
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(report.managementCommentary!);
+                toast.success("Commentary copied to clipboard.");
+              }}
+              className="p-3 bg-slate-50 dark:bg-slate-900 text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl transition-all active:scale-95"
+              title="Copy to Clipboard"
+            >
+              <Copy size={20} />
+            </button>
+          </div>
+          <p className="text-slate-700 dark:text-slate-300 leading-relaxed text-lg font-medium italic">
+            "{report.managementCommentary}"
+          </p>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 lg:grid-cols-5 gap-8">
         <div className="lg:col-span-3 space-y-8">
           {report.visualizedGuidance && (
@@ -214,6 +265,104 @@ const Dashboard: React.FC<DashboardProps> = ({
                     future outlook and market positioning.
                   </p>
                 </div>
+              </div>
+            </div>
+          )}
+
+          {report.trends && report.trends.length > 1 && (
+            <div className="bg-white dark:bg-slate-800 p-10 rounded-[2.5rem] border border-slate-100 dark:border-slate-700 shadow-sm overflow-hidden">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl">
+                  <TrendingUp size={20} />
+                </div>
+                <h3 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+                  Financial Performance Trends
+                </h3>
+              </div>
+              <div className="h-80 w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={report.trends}>
+                    <defs>
+                      <linearGradient
+                        id="colorRevenue"
+                        x1="0"
+                        y1="0"
+                        x2="0"
+                        y2="1"
+                      >
+                        <stop
+                          offset="5%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#3b82f6"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                      <linearGradient id="colorNI" x1="0" y1="0" x2="0" y2="1">
+                        <stop
+                          offset="5%"
+                          stopColor="#10b981"
+                          stopOpacity={0.3}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#10b981"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#e2e8f0"
+                      opacity={0.5}
+                    />
+                    <XAxis
+                      dataKey="period"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{
+                        fill: "#94a3b8",
+                        fontSize: 10,
+                        fontWeight: 700,
+                      }}
+                      dy={10}
+                    />
+                    <YAxis hide domain={["auto", "auto"]} />
+                    <Tooltip
+                      contentStyle={{
+                        borderRadius: "16px",
+                        border: "none",
+                        boxShadow: "0 10px 15px -3px rgb(0 0 0 / 0.1)",
+                        padding: "12px",
+                        backgroundColor: "rgba(255, 255, 255, 0.96)",
+                      }}
+                      itemStyle={{ fontWeight: 700, fontSize: "12px" }}
+                      formatter={(value: number) => formatCurrency(value, true)}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="revenue"
+                      stroke="#3b82f6"
+                      strokeWidth={4}
+                      fillOpacity={1}
+                      fill="url(#colorRevenue)"
+                      name="Revenue"
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="netIncome"
+                      stroke="#10b981"
+                      strokeWidth={4}
+                      fillOpacity={1}
+                      fill="url(#colorNI)"
+                      name="Net Income"
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
               </div>
             </div>
           )}
@@ -313,8 +462,8 @@ const Dashboard: React.FC<DashboardProps> = ({
                 {isGeneratingBriefing
                   ? "Generating..."
                   : isPlayingAudio
-                  ? "Stop Briefing"
-                  : "Play Audio Briefing"}
+                    ? "Stop Briefing"
+                    : "Play Audio Briefing"}
               </span>
             </button>
           </div>
@@ -376,7 +525,11 @@ const Dashboard: React.FC<DashboardProps> = ({
       {showLiveAnalyst && (
         <LiveAnalyst
           report={report}
-          onClose={() => setShowLiveAnalyst(false)}
+          onConnected={() => setIsConnectingAnalyst(false)}
+          onClose={() => {
+            setShowLiveAnalyst(false);
+            setIsConnectingAnalyst(false);
+          }}
         />
       )}
     </div>

@@ -28,7 +28,12 @@ const Sidebar: React.FC<SidebarProps> = ({
     { id: AppView.DASHBOARD, label: "Dashboard", icon: LayoutDashboard },
     { id: AppView.UPLOAD, label: "Upload Report", icon: FileUp },
     { id: AppView.COMPARISON, label: "Comparison", icon: BarChart2 },
-    { id: AppView.HISTORY, label: "Historical Reports", icon: History },
+    {
+      id: AppView.HISTORY,
+      label: "Historical Reports",
+      icon: History,
+      badge: reportCount,
+    },
   ];
 
   const baseClasses =
@@ -69,6 +74,11 @@ const Sidebar: React.FC<SidebarProps> = ({
           >
             <item.icon size={20} />
             <span>{item.label}</span>
+            {item.badge !== undefined && item.badge > 0 && (
+              <span className="ml-auto px-2 py-0.5 bg-blue-100 dark:bg-blue-900/40 text-blue-600 dark:text-blue-400 rounded-full text-[10px] font-black">
+                {item.badge}
+              </span>
+            )}
           </button>
         ))}
       </nav>
