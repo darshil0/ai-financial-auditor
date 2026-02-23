@@ -1,17 +1,16 @@
-import React, { useEffect } from "react";
-import { AppView } from "./types";
-import Sidebar from "./components/Sidebar";
-import Header from "./components/Header";
-import Dashboard from "./components/Dashboard";
-import ComparisonView from "./components/ComparisonView";
-import HistoryView from "./components/HistoryView";
-import ReportUploader from "./components/ReportUploader";
-import DiagnosticsOverlay from "./components/DiagnosticsOverlay";
-import Modal from "./components/Modal";
-import ErrorBoundary from "./components/ErrorBoundary";
-import { useAppStore } from "./store";
+import React, { useEffect, useState } from "react";
+import { AppView } from "@/types";
+import Sidebar from "@/components/Sidebar";
+import Header from "@/components/Header";
+import Dashboard from "@/components/Dashboard";
+import ComparisonView from "@/components/ComparisonView";
+import HistoryView from "@/components/HistoryView";
+import ReportUploader from "@/components/ReportUploader";
+import DiagnosticsOverlay from "@/components/DiagnosticsOverlay";
+import Modal from "@/components/Modal";
+import ErrorBoundary from "@/components/ErrorBoundary";
+import { useAppStore } from "@/store";
 import { Toaster, toast } from "sonner";
-import { useState } from "react";
 
 const App: React.FC = () => {
   const [errorModal, setErrorModal] = useState<{

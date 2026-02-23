@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { AppView, FinancialReport } from "./types";
+import { AppView, FinancialReport } from "@/types";
 import { persist, createJSONStorage } from "zustand/middleware";
 
 interface AppState {

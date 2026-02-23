@@ -9,9 +9,13 @@ import {
   Loader2,
   PlayCircle,
 } from "lucide-react";
-import { connectLiveAnalyst } from "../geminiService";
-import { FinancialReport } from "../types";
-import { decodeBase64, decodeAudioData, createPcmBlob } from "../audioUtils";
+import { connectLiveAnalyst } from "@/services/geminiService";
+import { FinancialReport } from "@/types";
+import {
+  decodeBase64,
+  decodeAudioData,
+  createPcmBlob,
+} from "@/utils/audioUtils";
 
 interface LiveAnalystProps {
   report: FinancialReport;
