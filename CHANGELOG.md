@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.1] - 2026-02-24
+
+### Changed
+
+- **Dependency Updates**: Updated core dependencies to latest stable versions for improved compatibility and security
+  - `lucide-react`: ^0.562.0 → ^0.565.0 (improved icon library)
+  - `vite`: ^6.2.0 → ^6.4.1 (enhanced build performance)
+  - `@vitejs/plugin-react`: ^5.0.0 → ^5.1.2 (improved React integration)
+  - `html-to-image`: ^1.11.11 → ^1.11.13 (better image rendering)
+- **Code Quality**: Enhanced TypeScript strict mode compliance across all modules
+- **Build System**: Added comprehensive lint script combining typecheck and format validation
+
+### Fixed
+
+- **Memory Management**: Fixed audio context and media stream cleanup in LiveAnalyst component to prevent memory leaks
+- **Null Safety**: Added protective null checks in Dashboard and ComparisonView components
+- **Error Handling**: Enhanced error boundaries with improved error logging and user feedback
+- **Calculations**: Protected division-by-zero errors in calculateGrowth utility function
+- **Data Formatting**: Implemented safe NaN handling in formatCurrency utility
+- **Accessibility**: Added aria-labels to all icon-only buttons (Header, Sidebar, DiagnosticsOverlay)
+
+### Added
+
+- **Quality Assurance**: New lint script (`npm run lint`) for comprehensive code quality checking
+- **Documentation**: Enhanced README with complete v1.4.1 feature list and setup instructions
+
 ## [1.4.0] - 2026-02-24
 
 ### Changed
