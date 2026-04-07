@@ -9,7 +9,8 @@ import {
   Hash,
   Menu,
 } from "lucide-react";
-import { FinancialReport } from "@/types";
+import { FinancialReport } from "@/shared/types";
+
 
 interface HeaderProps {
   isDarkMode: boolean;

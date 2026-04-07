@@ -27,3 +27,14 @@ test-results/
 
 # Environment variables
 .env
+.env.*
+!.env.example
+
+# Test coverage
+coverage/
+.nyc_output/
+
+# OS files
+.DS_Store
+Thumbs.db
+*.icloud

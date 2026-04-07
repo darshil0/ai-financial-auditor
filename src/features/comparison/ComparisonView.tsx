@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef } from "react";
-import { FinancialReport } from "@/types";
+import { FinancialReport } from "@/shared/types";
 import {
   ArrowLeftRight,
   Minus,
@@ -20,7 +20,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { toPng } from "html-to-image";
-import { formatCurrency, calculateGrowth } from "@/utils";
+import { formatCurrency, calculateGrowth } from "@/shared/utils";
+
 
 interface ComparisonViewProps {
   reports: FinancialReport[];

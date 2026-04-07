@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.0] - 2026-04-07
+
+### Added
+- **Feature-Based Architecture**: Migrated to a domain-driven structure (`src/features/`, `src/shared/`) for improved modularity and developer experience.
+- **GitHub Actions CI**: Implemented automated testing and linting pipeline for Node.js 20.x and 22.x.
+- **Legal Compliance**: Integrated official MIT `LICENSE` file for open-source clarity.
+- **Enhanced Test Coverage**: Added `store.test.ts` for state management and updated utility tests for the new structure.
+
+### Changed
+- **Extraction Engine Upgrade**: Transitioned `analyzeEarningsReport` to `gemini-2.0-flash` for near-instant analysis and superior KPI extraction.
+- **Prompt Engineering 2.0**: Refined AI instructions for surgical precision in YoY metrics and sentiment analysis.
+- **Unified Path Aliases**: Replaced brittle paths with clean `@/features`, `@/shared`, and `@/test` aliases.
+
+### Fixed
+- **Stale Import Paths**: Resolved all broken references resulting from the major directory migration.
+- **Git Ignore Security**: Comprehensive `.gitignore` update to protect sensitive environment and OS files.
+
 ## [1.4.2] - 2026-04-07
 
 ### Added

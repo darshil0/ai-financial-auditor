@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
-import { FinancialReport, MarketInsight } from "@/types";
+import { FinancialReport, MarketInsight } from "@/shared/types";
+
 
 const getAIClient = () => {
   const apiKey = import.meta.env.VITE_API_KEY;
@@ -96,7 +97,7 @@ export async function analyzeEarningsReport(
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-1.5-pro",
+      model: "gemini-2.0-flash", // Using 2.0 Flash for superior extraction speed and accuracy
       contents: {
         parts: [
           {
@@ -106,17 +107,17 @@ export async function analyzeEarningsReport(
             },
           },
           {
-            text: "Conduct a rigorous financial analysis of this earnings report. Extract all numerical KPIs with 100% accuracy. Identify the document type. Use your thinking capacity to ensure year-over-year calculations are correct. Determine a 'sentimentScore' (0-100) based on management's verbal confidence.",
+            text: "Conduct a rigorous financial analysis of this earnings report. Extract all numerical KPIs with surgical precision. Identify the document type (e.g., 10-Q, 10-K, Press Release). Determine a 'sentimentScore' (0-100) based on management's verbal confidence, tone, and forward-looking guidance. Ensure all YoY (Year-over-Year) growth metrics are cross-verified.",
           },
         ],
       },
       config: {
         responseMimeType: "application/json",
         responseSchema: reportSchema,
-        thinkingConfig: { thinkingBudget: 16384 },
         temperature: 0.1,
       },
     });
+
 
     const text = response.text;
     if (!text) throw new Error("Empty response from Gemini");

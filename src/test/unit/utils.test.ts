@@ -5,7 +5,9 @@ import {
   getSentimentLabel,
   calculateGrowth,
   getVarianceColor,
-} from "@/utils";
+  cn,
+} from "@/shared/utils";
+
 
 describe("formatCurrency", () => {
   // Standard Formatting
@@ -129,7 +131,7 @@ describe("getVarianceColor", () => {
   });
 });
 
-import { cn } from "@/utils";
+
 
 describe("cn", () => {
   it("joins class names", () => {

@@ -8,8 +8,9 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { analyzeEarningsReport } from "@/services/geminiService";
-import { FinancialReport } from "@/types";
+import { analyzeEarningsReport } from "@/shared/services/geminiService";
+import { FinancialReport } from "@/shared/types";
+
 
 interface ReportUploaderProps {
   onReportAdded: (report: FinancialReport) => void;

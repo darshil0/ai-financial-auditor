@@ -1,87 +1,62 @@
-# 📈 FinAnalyzer Pro v1.4.2
+# 📈 FinAnalyzer Pro v1.5.0
 
-**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 2.5 Pro** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with visual analytics, and real-time market grounding.
+**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 2.0 Flash** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with surgical precision, visual analytics, and real-time market grounding.
+
+[![CI Status](https://github.com/darshil0/ai-financial-auditor/actions/workflows/ci.yml/badge.svg)](https://github.com/darshil0/ai-financial-auditor/actions)
+![License](https://img.shields.io/badge/license-MIT-blue.svg)
 
 ## 🚀 Key Features
 
-- **Gemini 1.5 Pro Reasoning**: Uses advanced multimodal reasoning to extract Revenue, Net Income, EPS, and Margins with forensic precision from PDF documents.
+- **Gemini 2.0 Flash Intelligence**: Uses specialized multimodal extraction to identify Revenue, Net Income, EPS, and Margins with sub-second latency and forensic accuracy.
+- **Feature-Based Architecture**: A modular, domain-driven structure (`src/features/*`) ensuring high scalability and maintainability.
 - **Financial Performance Trends**: Interactive area charts visualizing revenue and net income velocity across historical reporting periods.
 - **Management Commentary Insight**: AI-extracted executive narratives with instant clipboard integration for research portability.
 - **Universal Ticker Intelligence**: A centralized search hub with keyboard-first navigation for instant retrieval of historical analysis.
-- **Narrative Sentiment Analysis**: Quantifies management's verbal confidence and forward-looking statements into a 0-100 Bullishness score with an interactive gauge.
+- **Narrative Sentiment Analysis**: Quantifies management's verbal confidence into a 0-100 Bullishness score with an interactive gauge.
 - **Market Grounding**: Integrated Google Search tools to contrast historical report data with real-time market developments.
-- **Comparative Hub**: Side-by-side benchmarking with visual "Baseline" and "Benchmark" indicators and automatic delta variance modeling.
-- **UI Diagnostics Suite**: Built-in automated testing suite to verify responsive layouts, contrast ratios, and persistence integrity.
+- **Comparative Hub**: Side-by-side benchmarking with automatic delta variance modeling and chronological verification.
 - **Streaming AI Analyst**: Real-time voice-first advisor powered by Gemini 2.0 Flash for low-latency financial dialogue.
+- **GitHub Actions CI**: Automated testing and linting across multiple Node.js environments (20.x, 22.x).
 
 ## 🛠️ Technical Architecture
 
-- **Reasoning Engine**: Gemini 1.5 Pro (Forensic Analysis & Grounding).
-- **Voice/Speed Engine**: Gemini 2.0 Flash (TTS & Real-time Reasoning).
-- **Thinking Budget**: Configured for deep-dive financial reconciliation (16k tokens).
-
-- **Frontend**: React 19 (Strict Mode) + Tailwind CSS (JIT).
+- **Reasoning Engine**: Gemini 2.0 Flash (Primary Analysis, TTS & Real-time Reasoning).
+- **Thinking Budget**: Configured for deep-dive financial reconciliation and YoY cross-verification.
+- **Frontend**: React 19 (Strict Mode) + Vanilla CSS (Premium Aesthetics).
+- **Domain structure**: Feature-based reorganization (`@/features`, `@/shared`).
 - **Charts**: Recharts (Responsive SVG with custom tooltips).
-- **Persistence**: LocalStorage for persistent historical report vaulting.
-- **Quality**: Built-in Diagnostics Overlay for real-time UI/UX verification.
-- **Testing**: Vitest, React Testing Library, and Playwright for a comprehensive testing suite.
-- **Build System**: Vite 6.4+ with absolute path aliasing (@/).
-- **Code Quality**: TypeScript strict mode, Prettier formatting, ESLint compliance.
+- **Persistence**: LocalStorage with Zustand middleware for persistent session history.
+- **Testing**: Vitest (Unit), Playwright (E2E), and React Testing Library.
+- **CI/CD**: GitHub Actions for automated quality gates and regression testing.
 
 ## 📦 Getting Started
 
-1. **API Configuration**: Create a `.env` file in the root directory and add your Gemini API key as `VITE_API_KEY="YOUR_API_KEY"`.
-2. **Install Dependencies**: Run `npm install` to install all project dependencies.
-3. **Development**: Run `npm run dev` to start the development server on `http://localhost:3000`.
+1. **API Configuration**: Create a `.env` file in the root directory and add `VITE_API_KEY="YOUR_API_KEY"`.
+2. **Install Dependencies**: Run `npm install`.
+3. **Development**: Run `npm run dev` to start the server on `http://localhost:5173`.
 4. **Analysis**: Navigate to **Upload Report** and drop a corporate 10-Q or 10-K PDF.
 5. **Benchmarking**: Use the **Comparison** tab to select two reports for variance analysis.
-6. **Validation**: Run **UI Diagnostics** from the sidebar to verify system health.
 
-## 🧪 Running Tests
+## 🧪 Testing & Quality
 
-- **All Tests**: `npm test`
+- **Execute All Tests**: `npm test`
 - **Unit & Component Tests**: `npm run test:unit`
 - **End-to-End (E2E) Tests**: `npm run test:e2e`
+- **Comprehensive Linting**: `npm run lint` (Typecheck + Format Check).
 
-## 🎨 Code Quality
+## 📋 v1.5.0 Release Notes (2026-04-07)
 
-- **Format Check**: `npm run format:check` – Verify Prettier compliance.
-- **Format Files**: `npm run format` – Auto-format all files.
-- **Type Check**: `npm run typecheck` – Run TypeScript strict mode check.
-- **Lint**: `npm run lint` – Run comprehensive quality checks (typecheck + format check).
+### ✨ Major Overhaul
 
-## 📋 v1.4.2 Release Notes (2026-04-07)
+- **Project Restructuring**: Full migration to a domain-driven feature-based architecture.
+- **Engine Upgrade**: Switched to `gemini-2.0-flash` for superior speed and numerical precision.
+- **GitHub Integration**: Added automated CI workflows and MIT licensing.
+- **Defensive Engineering**: Hardened `.gitignore` and updated all unit tests for the new structure.
 
-### ✨ Improvements
+### 🐛 Bug Fixes & Security
 
-- **AI Service Optimization**: Standardized Gemini model names to valid production strings (`1.5 Pro` and `2.0 Flash`).
-- **Enhanced Security**: Added API key validation guards and sanitized environment variable access.
-- **Memory Efficiency**: Hardened cleanup logic for `AudioContext` and `HTMLAudioElement` resources.
-- **Robustness**: Improved null safety and error boundaries across dashboard and comparison views.
-
-### 🐛 Bug Fixes
-
-- **Formatting**: Implemented true `NaN` and `Infinity` safety in the `formatCurrency` utility.
-- **State Stale-ness**: Fixed a bug where dismissed warnings persisted across different report comparisons.
-- **Deletion Logic**: Resolved potential runtime exceptions during rapid report deletion workflows.
-
-## 📋 v1.4.1 Release Notes (2026-02-24)
-
-
-### 🐛 Bug Fixes
-
-- Fixed memory leaks in LiveAnalyst audio context cleanup
-- Resolved null safety issues in comparison and dashboard views
-- Corrected division-by-zero errors in growth calculations
-- Fixed NaN handling in currency formatting
-- Improved error boundaries with better error logging
-
-### 📦 Dependencies Updated
-
-- `lucide-react`: ^0.562.0 → ^0.565.0
-- `vite`: ^6.2.0 → ^6.4.1
-- `@vitejs/plugin-react`: ^5.0.0 → ^5.1.2
-- `html-to-image`: ^1.11.11 → ^1.11.13
+- **Path Resolution**: Fixed all import aliasing issues after the directory migration.
+- **State Persistence**: Optimized Zustand storage with improved partialize logic.
 
 ---
 

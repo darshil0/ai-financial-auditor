@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { AppView } from "@/types";
-import Sidebar from "@/components/Sidebar";
-import Header from "@/components/Header";
-import Dashboard from "@/components/Dashboard";
-import ComparisonView from "@/components/ComparisonView";
-import HistoryView from "@/components/HistoryView";
-import ReportUploader from "@/components/ReportUploader";
-import DiagnosticsOverlay from "@/components/DiagnosticsOverlay";
-import Modal from "@/components/Modal";
-import ErrorBoundary from "@/components/ErrorBoundary";
-import { useAppStore } from "@/store";
+import { AppView } from "@/shared/types";
+import Sidebar from "@/shared/components/Sidebar";
+import Header from "@/shared/components/Header";
+import Dashboard from "@/features/dashboard/Dashboard";
+import ComparisonView from "@/features/comparison/ComparisonView";
+import HistoryView from "@/features/history/HistoryView";
+import ReportUploader from "@/features/upload/ReportUploader";
+import DiagnosticsOverlay from "@/shared/components/DiagnosticsOverlay";
+import Modal from "@/shared/components/Modal";
+import ErrorBoundary from "@/shared/components/ErrorBoundary";
+import { useAppStore } from "@/shared/services/store";
+
 import { Toaster, toast } from "sonner";
 
 const App: React.FC = () => {

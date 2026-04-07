@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FinancialReport } from "@/types";
+import { FinancialReport } from "@/shared/types";
 import {
   Search,
   Filter,
@@ -9,8 +9,9 @@ import {
   ChevronRight,
   BookOpen,
 } from "lucide-react";
-import { formatCurrency } from "@/utils";
-import Modal from "@/components/Modal";
+import { formatCurrency } from "@/shared/utils";
+import Modal from "@/shared/components/Modal";
+
 
 interface HistoryViewProps {
   reports: FinancialReport[];

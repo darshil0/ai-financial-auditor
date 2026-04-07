@@ -1,7 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
-import ComparisonView from "@/components/ComparisonView";
-import { FinancialReport } from "@/types";
+import ComparisonView from "@/features/comparison/ComparisonView";
+import { FinancialReport } from "@/shared/types";
+
 
 const mockReports: FinancialReport[] = [
   {

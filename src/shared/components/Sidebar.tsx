@@ -7,7 +7,8 @@ import {
   TrendingUp,
   ShieldCheck,
 } from "lucide-react";
-import { AppView } from "@/types";
+import { AppView } from "@/shared/types";
+
 
 interface SidebarProps {
   view: AppView;

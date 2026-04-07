@@ -1,5 +1,5 @@
 import React from "react";
-import { FinancialReport } from "@/types";
+import { FinancialReport } from "@/shared/types";
 import {
   ArrowUpRight,
   ArrowDownRight,
@@ -8,7 +8,8 @@ import {
   TrendingUp,
   UserCheck,
 } from "lucide-react";
-import { formatCurrency, calculateGrowth } from "@/utils";
+import { formatCurrency, calculateGrowth } from "@/shared/utils";
+
 
 interface SummaryCardsProps {
   report: FinancialReport;
