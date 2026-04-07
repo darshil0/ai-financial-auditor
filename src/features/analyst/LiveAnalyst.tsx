@@ -1,22 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  X,
-  Mic,
-  MicOff,
-  Volume2,
-  VolumeX,
-  Activity,
-  Loader2,
-  PlayCircle,
-} from "lucide-react";
+import { X, Mic, MicOff, Volume2, VolumeX, Activity, Loader2, PlayCircle } from "lucide-react";
 import { connectLiveAnalyst } from "@/shared/services/geminiService";
 import { FinancialReport } from "@/shared/types";
-import {
-  decodeBase64,
-  decodeAudioData,
-  createPcmBlob,
-} from "@/shared/utils/audioUtils";
-
+import { decodeBase64, decodeAudioData, createPcmBlob } from "@/shared/utils/audioUtils";
 
 interface LiveAnalystProps {
   report: FinancialReport;
@@ -24,11 +10,7 @@ interface LiveAnalystProps {
   onConnected?: () => void;
 }
 
-const LiveAnalyst: React.FC<LiveAnalystProps> = ({
-  report,
-  onClose,
-  onConnected,
-}) => {
+const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected }) => {
   const [isActive, setIsActive] = useState(false);
   const [isConnecting, setIsConnecting] = useState(true);
   const [isMuted, setIsMuted] = useState(false);
@@ -46,15 +28,15 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({
   useEffect(() => {
     const startSession = async () => {
       try {
-        audioContextRef.current = new (
-          window.AudioContext || (window as any).webkitAudioContext
-        )({ sampleRate: 24000 });
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
+          sampleRate: 24000,
+        });
         outputNodeRef.current = audioContextRef.current.createGain();
         outputNodeRef.current.connect(audioContextRef.current.destination);
 
-        inputContextRef.current = new (
-          window.AudioContext || (window as any).webkitAudioContext
-        )({ sampleRate: 16000 });
+        inputContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
+          sampleRate: 16000,
+        });
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
         });
@@ -68,10 +50,8 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({
             if (onConnected) onConnected();
 
             // Stream microphone
-            const source =
-              inputContextRef.current!.createMediaStreamSource(stream);
-            const scriptProcessor =
-              inputContextRef.current!.createScriptProcessor(4096, 1, 1);
+            const source = inputContextRef.current!.createMediaStreamSource(stream);
+            const scriptProcessor = inputContextRef.current!.createScriptProcessor(4096, 1, 1);
             scriptProcessor.onaudioprocess = (e) => {
               if (isMutedRef.current) return;
               const inputData = e.inputBuffer.getChannelData(0);
@@ -84,26 +64,15 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({
             scriptProcessor.connect(inputContextRef.current!.destination);
           },
           onmessage: async (message: any) => {
-            const base64Audio =
-              message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
+            const base64Audio = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
             if (base64Audio && audioContextRef.current) {
               const ctx = audioContextRef.current;
-              nextStartTimeRef.current = Math.max(
-                nextStartTimeRef.current,
-                ctx.currentTime,
-              );
-              const audioBuffer = await decodeAudioData(
-                decodeBase64(base64Audio),
-                ctx,
-                24000,
-                1,
-              );
+              nextStartTimeRef.current = Math.max(nextStartTimeRef.current, ctx.currentTime);
+              const audioBuffer = await decodeAudioData(decodeBase64(base64Audio), ctx, 24000, 1);
               const source = ctx.createBufferSource();
               source.buffer = audioBuffer;
               source.connect(outputNodeRef.current!);
-              source.addEventListener("ended", () =>
-                sourcesRef.current.delete(source),
-              );
+              source.addEventListener("ended", () => sourcesRef.current.delete(source));
               source.start(nextStartTimeRef.current);
               nextStartTimeRef.current += audioBuffer.duration;
               sourcesRef.current.add(source);
@@ -156,15 +125,11 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({
       });
       sourcesRef.current.clear();
     };
-
   }, [report]);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div
-        className="absolute inset-0 bg-slate-900/80 backdrop-blur-lg"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-slate-900/80 backdrop-blur-lg" onClick={onClose} />
 
       <div className="bg-white dark:bg-slate-800 w-full max-w-lg rounded-[3rem] shadow-2xl relative overflow-hidden flex flex-col p-8 animate-in zoom-in-95 duration-300">
         <button
@@ -187,9 +152,7 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({
           </div>
 
           <div className="space-y-2">
-            <h3 className="text-3xl font-black text-slate-900 dark:text-white">
-              Live AI Analyst
-            </h3>
+            <h3 className="text-3xl font-black text-slate-900 dark:text-white">Live AI Analyst</h3>
             <p className="text-blue-500 font-bold uppercase tracking-widest text-[10px]">
               Real-time Financial Advisory
             </p>

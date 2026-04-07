@@ -16,9 +16,7 @@ const SkeletonBlock = ({
   className?: string;
   children?: React.ReactNode;
 }) => (
-  <div
-    className={`bg-slate-100 dark:bg-slate-800/50 rounded-[2.5rem] animate-pulse ${className}`}
-  >
+  <div className={`bg-slate-100 dark:bg-slate-800/50 rounded-[2.5rem] animate-pulse ${className}`}>
     {children}
   </div>
 );
@@ -62,9 +60,7 @@ const DashboardSkeleton: React.FC = () => {
   );
 };
 
-export const NoReportState: React.FC<{ onSwitchToUpload: () => void }> = ({
-  onSwitchToUpload,
-}) => (
+export const NoReportState: React.FC<{ onSwitchToUpload: () => void }> = ({ onSwitchToUpload }) => (
   <div className="h-full flex flex-col items-center justify-center text-center py-24 px-4">
     <div className="bg-blue-100 dark:bg-blue-900/20 p-8 rounded-full mb-8">
       <FileQuestion size={56} className="text-blue-600 dark:text-blue-400" />
@@ -73,8 +69,7 @@ export const NoReportState: React.FC<{ onSwitchToUpload: () => void }> = ({
       Intelligence Engine Standby
     </h3>
     <p className="text-slate-500 max-w-md mb-10 text-lg">
-      No active analysis detected. Upload an earnings report to initialize the
-      dashboard.
+      No active analysis detected. Upload an earnings report to initialize the dashboard.
     </p>
     <button
       onClick={onSwitchToUpload}

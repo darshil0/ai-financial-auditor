@@ -3,7 +3,6 @@ import { render, screen } from "@testing-library/react";
 import ComparisonView from "@/features/comparison/ComparisonView";
 import { FinancialReport } from "@/shared/types";
 
-
 const mockReports: FinancialReport[] = [
   {
     id: "1",
@@ -78,25 +77,19 @@ const mockReports: FinancialReport[] = [
 
 describe("ComparisonView", () => {
   it("renders a warning for mismatched tickers", () => {
-    render(
-      <ComparisonView reports={mockReports} report1Id="1" report2Id="3" />,
-    );
+    render(<ComparisonView reports={mockReports} report1Id="1" report2Id="3" />);
     expect(screen.getByText(/Entity Mismatch/)).toBeInTheDocument();
   });
 
   it("renders a warning for reverse chronological order", () => {
-    render(
-      <ComparisonView reports={mockReports} report1Id="1" report2Id="2" />,
-    );
+    render(<ComparisonView reports={mockReports} report1Id="1" report2Id="2" />);
     expect(screen.getByText(/Reverse Chronology/)).toBeInTheDocument();
   });
 
   it("renders locked state when there are fewer than 2 reports", () => {
     render(<ComparisonView reports={[mockReports[0]]} />);
     expect(screen.getByText("Comparison Hub Locked")).toBeInTheDocument();
-    expect(
-      screen.getByText(/Please upload at least two reports/),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/Please upload at least two reports/)).toBeInTheDocument();
     // ArrowLeftRight icon container (parent of the icon)
     expect(screen.getByTestId("locked-icon-container")).toBeInTheDocument();
   });

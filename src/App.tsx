@@ -65,19 +65,12 @@ const App: React.FC = () => {
     toast.success(`${reportToDelete.companyName} analysis deleted.`);
   };
 
-
   return (
     <>
-      <Toaster
-        position="top-right"
-        theme={isDarkMode ? "dark" : "light"}
-        richColors
-      />
+      <Toaster position="top-right" theme={isDarkMode ? "dark" : "light"} richColors />
       <div
         className={`min-h-screen flex transition-colors duration-200 ${
-          isDarkMode
-            ? "bg-slate-900 text-slate-100"
-            : "bg-slate-50 text-slate-900"
+          isDarkMode ? "bg-slate-900 text-slate-100" : "bg-slate-50 text-slate-900"
         }`}
       >
         {isMobileMenuOpen && (
@@ -108,9 +101,7 @@ const App: React.FC = () => {
 
           <main className="flex-1 overflow-y-auto p-4 md:p-8">
             <ErrorBoundary>
-              {view === AppView.UPLOAD && (
-                <ReportUploader onReportAdded={addReport} />
-              )}
+              {view === AppView.UPLOAD && <ReportUploader onReportAdded={addReport} />}
 
               {view === AppView.DASHBOARD && (
                 <Dashboard
@@ -120,9 +111,7 @@ const App: React.FC = () => {
                 />
               )}
 
-              {view === AppView.COMPARISON && (
-                <ComparisonView reports={reports} />
-              )}
+              {view === AppView.COMPARISON && <ComparisonView reports={reports} />}
 
               {view === AppView.HISTORY && (
                 <HistoryView

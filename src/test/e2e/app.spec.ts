@@ -14,9 +14,7 @@ test("uploads a report and displays the dashboard", async ({ page }) => {
   await page.getByRole("button", { name: "Upload Report" }).click();
 
   // Expect the report uploader to be visible.
-  await expect(
-    page.getByRole("heading", { name: /Analyze Corporate Earnings/ }),
-  ).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Analyze Corporate Earnings/ })).toBeVisible();
 
   // This is where we would upload a file, but since we can't
   // do that in this environment, we'll just check that the

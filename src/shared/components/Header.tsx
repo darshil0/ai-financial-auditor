@@ -1,16 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
-import {
-  Sun,
-  Moon,
-  Search,
-  Bell,
-  ChevronRight,
-  Clock,
-  Hash,
-  Menu,
-} from "lucide-react";
+import { Sun, Moon, Search, Bell, ChevronRight, Clock, Hash, Menu } from "lucide-react";
 import { FinancialReport } from "@/shared/types";
-
 
 interface HeaderProps {
   isDarkMode: boolean;
@@ -50,10 +40,7 @@ const Header: React.FC<HeaderProps> = ({
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node)
-      ) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsDropdownOpen(false);
       }
     };
@@ -92,9 +79,7 @@ const Header: React.FC<HeaderProps> = ({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex((prev) =>
-          prev < filteredReports.length - 1 ? prev + 1 : prev,
-        );
+        setSelectedIndex((prev) => (prev < filteredReports.length - 1 ? prev + 1 : prev));
         break;
       case "ArrowUp":
         e.preventDefault();
@@ -156,10 +141,7 @@ const Header: React.FC<HeaderProps> = ({
 
       <div className="flex items-center gap-2 md:gap-6">
         <div className="relative hidden lg:block" ref={dropdownRef}>
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-            size={18}
-          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
           <input
             ref={inputRef}
             type="text"
@@ -184,18 +166,10 @@ const Header: React.FC<HeaderProps> = ({
                 <div className="py-2">
                   <div className="px-5 py-3 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 border-b border-slate-50 dark:border-slate-700/50 mb-1 flex items-center justify-between">
                     <span className="flex items-center gap-2">
-                      {searchTerm.trim() === "" ? (
-                        <Clock size={12} />
-                      ) : (
-                        <Search size={12} />
-                      )}
-                      {searchTerm.trim() === ""
-                        ? "Recent Analysis"
-                        : "Search Results"}
+                      {searchTerm.trim() === "" ? <Clock size={12} /> : <Search size={12} />}
+                      {searchTerm.trim() === "" ? "Recent Analysis" : "Search Results"}
                     </span>
-                    <span className="text-[9px] font-bold opacity-50">
-                      ↑↓ to navigate
-                    </span>
+                    <span className="text-[9px] font-bold opacity-50">↑↓ to navigate</span>
                   </div>
                   {filteredReports.map((r, idx) => (
                     <button
@@ -246,8 +220,8 @@ const Header: React.FC<HeaderProps> = ({
                       No data found
                     </p>
                     <p className="text-xs text-slate-400 font-bold leading-relaxed px-4">
-                      We couldn't find any reports for "{searchTerm}". Try
-                      another ticker or upload a new PDF.
+                      We couldn't find any reports for "{searchTerm}". Try another ticker or upload
+                      a new PDF.
                     </p>
                   </div>
                 </div>
@@ -280,10 +254,7 @@ const Header: React.FC<HeaderProps> = ({
           title="Intelligence Alerts"
           aria-label="View Intelligence Alerts"
         >
-          <Bell
-            size={20}
-            className="group-hover:rotate-12 transition-transform"
-          />
+          <Bell size={20} className="group-hover:rotate-12 transition-transform" />
           <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-500 rounded-full ring-2 ring-white dark:ring-slate-900"></span>
         </button>
       </div>

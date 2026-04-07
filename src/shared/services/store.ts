@@ -43,9 +43,7 @@ export const useAppStore = create<AppState>()(
         })),
       updateReport: (updatedReport) =>
         set((state) => ({
-          reports: state.reports.map((r) =>
-            r.id === updatedReport.id ? updatedReport : r,
-          ),
+          reports: state.reports.map((r) => (r.id === updatedReport.id ? updatedReport : r)),
         })),
       deleteReport: (id) =>
         set((state) => {
@@ -62,8 +60,7 @@ export const useAppStore = create<AppState>()(
        * Sets the active report and navigates to the dashboard view.
        * This is the intended behavior for both search results and history row clicks.
        */
-      setActiveReportId: (id) =>
-        set({ activeReportId: id, view: AppView.DASHBOARD }),
+      setActiveReportId: (id) => set({ activeReportId: id, view: AppView.DASHBOARD }),
       toggleDarkMode: () => set((state) => ({ isDarkMode: !state.isDarkMode })),
       setMobileMenuOpen: (isOpen) => set({ isMobileMenuOpen: isOpen }),
       setShowDiagnostics: (show) => set({ showDiagnostics: show }),

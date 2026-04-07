@@ -22,7 +22,6 @@ import {
 import { toPng } from "html-to-image";
 import { formatCurrency, calculateGrowth } from "@/shared/utils";
 
-
 interface ComparisonViewProps {
   reports: FinancialReport[];
   report1Id?: string;
@@ -42,16 +41,10 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
   report1Id: report1IdProp,
   report2Id: report2IdProp,
 }) => {
-  const [report1Id, setReport1Id] = useState<string>(
-    report1IdProp || reports[0]?.id || "",
-  );
-  const [report2Id, setReport2Id] = useState<string>(
-    report2IdProp || reports[1]?.id || "",
-  );
+  const [report1Id, setReport1Id] = useState<string>(report1IdProp || reports[0]?.id || "");
+  const [report2Id, setReport2Id] = useState<string>(report2IdProp || reports[1]?.id || "");
   const [typeFilter, setTypeFilter] = useState<string>("All Types");
-  const [dismissedWarnings, setDismissedWarnings] = useState<Set<number>>(
-    new Set(),
-  );
+  const [dismissedWarnings, setDismissedWarnings] = useState<Set<number>>(new Set());
   const [isExportingPng, setIsExportingPng] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
@@ -76,7 +69,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
     const ids = filteredReports.map((r) => r.id);
     if (!ids.includes(report1Id) && ids.length > 0) setReport1Id(ids[0]);
     if (!ids.includes(report2Id) && ids.length > 1) setReport2Id(ids[1]);
-    
+
     // Reset dismissed warnings when the underlying report set or filter changes
     setDismissedWarnings(new Set());
   }, [typeFilter, filteredReports, reports.length]);
@@ -108,19 +101,9 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
       );
     }
 
-    const required = [
-      "revenue",
-      "netIncome",
-      "eps",
-      "revenuePrior",
-      "netIncomePrior",
-      "epsPrior",
-    ];
+    const required = ["revenue", "netIncome", "eps", "revenuePrior", "netIncomePrior", "epsPrior"];
     required.forEach((m) => {
-      if (
-        typeof (report1 as any)[m] !== "number" ||
-        typeof (report2 as any)[m] !== "number"
-      ) {
+      if (typeof (report1 as any)[m] !== "number" || typeof (report2 as any)[m] !== "number") {
         errors.push(
           `Critical data point missing: ${m.replace(/([A-Z])/g, " $1").toLowerCase()} is required for accurate variance modeling.`,
         );
@@ -137,7 +120,6 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
       return next;
     });
   };
-
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
@@ -194,10 +176,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
         report1.revenue,
         report2.revenue,
         report2.revenue - report1.revenue,
-        (
-          ((report2.revenue - report1.revenue) / Math.abs(report1.revenue)) *
-          100
-        ).toFixed(2) + "%",
+        (((report2.revenue - report1.revenue) / Math.abs(report1.revenue)) * 100).toFixed(2) + "%",
       ],
       [
         "Revenue Growth (YoY) (%)",
@@ -211,25 +190,19 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
         report1.netIncome,
         report2.netIncome,
         report2.netIncome - report1.netIncome,
-        (
-          ((report2.netIncome - report1.netIncome) /
-            Math.abs(report1.netIncome)) *
-          100
-        ).toFixed(2) + "%",
+        (((report2.netIncome - report1.netIncome) / Math.abs(report1.netIncome)) * 100).toFixed(2) +
+          "%",
       ],
       [
         "EPS (Diluted)",
         report1.eps,
         report2.eps,
         (report2.eps - report1.eps).toFixed(2),
-        (((report2.eps - report1.eps) / Math.abs(report1.eps)) * 100).toFixed(
-          2,
-        ) + "%",
+        (((report2.eps - report1.eps) / Math.abs(report1.eps)) * 100).toFixed(2) + "%",
       ],
     ];
 
-    const csvContent =
-      "data:text/csv;charset=utf-8," + rows.map((e) => e.join(",")).join("\n");
+    const csvContent = "data:text/csv;charset=utf-8," + rows.map((e) => e.join(",")).join("\n");
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement("a");
     link.setAttribute("href", encodedUri);
@@ -288,12 +261,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
           <div
             className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-bold text-[10px] md:text-xs shadow-sm ${colorClasses}`}
           >
-            {!isNeutral &&
-              (isPositive ? (
-                <ArrowUpRight size={14} />
-              ) : (
-                <ArrowDownRight size={14} />
-              ))}
+            {!isNeutral && (isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />)}
             {isNeutral && <Minus size={14} />}
             <span>{isNeutral ? "Flat" : displayDelta}</span>
           </div>
@@ -322,17 +290,14 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
         <div className="flex flex-col items-center gap-4">
           <h3 className="text-2xl font-bold mb-2">Comparison Hub Locked</h3>
           <p className="text-slate-500 max-w-sm">
-            Please upload at least two reports to unlock side-by-side variance
-            analysis and YoY benchmarking.
+            Please upload at least two reports to unlock side-by-side variance analysis and YoY
+            benchmarking.
           </p>
           <button
             onClick={handleRefresh}
             className="flex items-center gap-2 px-6 py-2 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 rounded-xl text-sm font-bold transition-all active:scale-95"
           >
-            <RefreshCw
-              size={16}
-              className={isRefreshing ? "animate-spin" : ""}
-            />
+            <RefreshCw size={16} className={isRefreshing ? "animate-spin" : ""} />
             Check for new reports
           </button>
         </div>
@@ -358,10 +323,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
             aria-label="Refresh Data from Storage"
             className="p-3 bg-white dark:bg-slate-800 text-slate-500 border border-slate-200 dark:border-slate-700 rounded-2xl hover:text-blue-600 transition-all shadow-sm active:scale-95"
           >
-            <RefreshCw
-              size={18}
-              className={isRefreshing ? "animate-spin" : ""}
-            />
+            <RefreshCw size={18} className={isRefreshing ? "animate-spin" : ""} />
           </button>
           <button
             onClick={handleExportPNG}
@@ -475,8 +437,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
                 {filteredReports.length > 0 ? (
                   filteredReports.map((r) => (
                     <option key={r.id} value={r.id}>
-                      {r.ticker} — {r.companyName} ({r.reportPeriod}{" "}
-                      {r.reportYear})
+                      {r.ticker} — {r.companyName} ({r.reportPeriod} {r.reportYear})
                     </option>
                   ))
                 ) : (
@@ -494,8 +455,8 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
               <div className="flex items-center gap-2 px-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-blue-500"></div>
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
-                  Analyzing {report1.reportType || "Standard"} filing for fiscal
-                  year {report1.reportYear}
+                  Analyzing {report1.reportType || "Standard"} filing for fiscal year{" "}
+                  {report1.reportYear}
                 </span>
               </div>
             )}
@@ -545,8 +506,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
                 {filteredReports.length > 0 ? (
                   filteredReports.map((r) => (
                     <option key={r.id} value={r.id}>
-                      {r.ticker} — {r.companyName} ({r.reportPeriod}{" "}
-                      {r.reportYear})
+                      {r.ticker} — {r.companyName} ({r.reportPeriod} {r.reportYear})
                     </option>
                   ))
                 ) : (
@@ -564,8 +524,8 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
               <div className="flex items-center gap-2 px-2">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500"></div>
                 <span className="text-[10px] font-bold text-slate-500 uppercase tracking-tighter">
-                  Targeting {report2.reportType || "Standard"} filing for fiscal
-                  year {report2.reportYear}
+                  Targeting {report2.reportType || "Standard"} filing for fiscal year{" "}
+                  {report2.reportYear}
                 </span>
               </div>
             )}
@@ -574,8 +534,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
       </div>
 
       {validation &&
-        (validation.errors.length > 0 ||
-          validation.warnings.length > dismissedWarnings.size) && (
+        (validation.errors.length > 0 || validation.warnings.length > dismissedWarnings.size) && (
           <div className="space-y-4 animate-in slide-in-from-top-4 duration-500">
             {validation.errors.map((error, i) => (
               <div
@@ -608,9 +567,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
                     <h5 className="font-bold text-sm uppercase tracking-wider mb-1">
                       Comparability Warning
                     </h5>
-                    <p className="text-sm font-medium leading-relaxed">
-                      {warning}
-                    </p>
+                    <p className="text-sm font-medium leading-relaxed">{warning}</p>
                   </div>
                   <button
                     onClick={() => handleDismissWarning(i)}
@@ -740,28 +697,15 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
               </div>
             </div>
             <div className="p-10 space-y-2">
-              <MetricRow
-                label="Total Revenue"
-                v1={report1.revenue}
-                v2={report2.revenue}
-              />
+              <MetricRow label="Total Revenue" v1={report1.revenue} v2={report2.revenue} />
               <MetricRow
                 label="Revenue Growth (YoY)"
                 v1={calculateGrowth(report1.revenue, report1.revenuePrior)}
                 v2={calculateGrowth(report2.revenue, report2.revenuePrior)}
                 format="percent"
               />
-              <MetricRow
-                label="Net Income"
-                v1={report1.netIncome}
-                v2={report2.netIncome}
-              />
-              <MetricRow
-                label="EPS (Diluted)"
-                v1={report1.eps}
-                v2={report2.eps}
-                format="raw"
-              />
+              <MetricRow label="Net Income" v1={report1.netIncome} v2={report2.netIncome} />
+              <MetricRow label="EPS (Diluted)" v1={report1.eps} v2={report2.eps} format="raw" />
               <MetricRow
                 label="Gross Margin"
                 v1={report1.grossMargin}
@@ -794,9 +738,9 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
             Incomplete Analysis Data
           </h3>
           <p className="text-slate-500 max-w-md mx-auto leading-relaxed">
-            The selected financial models are missing key comparative metrics.
-            Please ensure both reports contain standard GAAP figures (Revenue,
-            Net Income, EPS) for accurate benchmarking.
+            The selected financial models are missing key comparative metrics. Please ensure both
+            reports contain standard GAAP figures (Revenue, Net Income, EPS) for accurate
+            benchmarking.
           </p>
         </div>
       )}

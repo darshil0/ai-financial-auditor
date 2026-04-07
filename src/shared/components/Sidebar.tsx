@@ -1,14 +1,6 @@
 import React from "react";
-import {
-  LayoutDashboard,
-  FileUp,
-  History,
-  BarChart2,
-  TrendingUp,
-  ShieldCheck,
-} from "lucide-react";
+import { LayoutDashboard, FileUp, History, BarChart2, TrendingUp, ShieldCheck } from "lucide-react";
 import { AppView } from "@/shared/types";
-
 
 interface SidebarProps {
   view: AppView;
@@ -68,9 +60,7 @@ const Sidebar: React.FC<SidebarProps> = ({
                 : "text-slate-500 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-slate-200"
             } ${item.id === AppView.COMPARISON && reportCount < 2 ? "opacity-50 cursor-not-allowed" : ""}`}
             title={
-              item.id === AppView.COMPARISON && reportCount < 2
-                ? "Requires at least 2 reports"
-                : ""
+              item.id === AppView.COMPARISON && reportCount < 2 ? "Requires at least 2 reports" : ""
             }
           >
             <item.icon size={20} />
@@ -93,9 +83,7 @@ const Sidebar: React.FC<SidebarProps> = ({
           Run UI Diagnostics
         </button>
         <div className="bg-slate-50 dark:bg-slate-800/50 p-4 rounded-2xl text-xs">
-          <p className="text-slate-900 dark:text-slate-200 font-black mb-1">
-            System Health
-          </p>
+          <p className="text-slate-900 dark:text-slate-200 font-black mb-1">System Health</p>
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
             <span className="text-slate-500 font-bold">API Operational</span>

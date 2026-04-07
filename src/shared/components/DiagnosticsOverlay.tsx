@@ -23,10 +23,7 @@ interface TestResult {
   message: string;
 }
 
-const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
-  onClose,
-  showErrorModal,
-}) => {
+const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({ onClose, showErrorModal }) => {
   const reportRef = useRef<HTMLDivElement>(null);
   const [tests, setTests] = useState<TestResult[]>([
     {
@@ -66,9 +63,7 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
   const runTests = async () => {
     setIsRunning(true);
     for (let i = 0; i < tests.length; i++) {
-      setTests((prev) =>
-        prev.map((t, idx) => (idx === i ? { ...t, status: "running" } : t)),
-      );
+      setTests((prev) => prev.map((t, idx) => (idx === i ? { ...t, status: "running" } : t)));
 
       if (i === 4) {
         // Real LocalStorage test
@@ -106,9 +101,7 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
         }
       } else {
         await new Promise((r) => setTimeout(r, 800));
-        setTests((prev) =>
-          prev.map((t, idx) => (idx === i ? { ...t, status: "pass" } : t)),
-        );
+        setTests((prev) => prev.map((t, idx) => (idx === i ? { ...t, status: "pass" } : t)));
       }
     }
     setIsRunning(false);
@@ -129,18 +122,13 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
       link.click();
     } catch (error) {
       console.error("Failed to generate report image:", error);
-      showErrorModal(
-        "Could not generate the report. Please check the console for errors.",
-      );
+      showErrorModal("Could not generate the report. Please check the console for errors.");
     }
   };
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
-      <div
-        className="absolute inset-0 bg-slate-900/60 backdrop-blur-md"
-        onClick={onClose}
-      />
+      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-md" onClick={onClose} />
 
       <div
         ref={reportRef}
@@ -152,9 +140,7 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
               <ShieldCheck size={24} />
             </div>
             <div>
-              <h2 className="text-2xl font-black text-slate-900 dark:text-white">
-                UI Diagnostics
-              </h2>
+              <h2 className="text-2xl font-black text-slate-900 dark:text-white">UI Diagnostics</h2>
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">
                 Automation Suite v2.0
               </p>
@@ -191,9 +177,7 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
                 }`}
               >
                 {test.status === "pass" && <CheckCircle2 size={20} />}
-                {test.status === "running" && (
-                  <Loader2 size={20} className="animate-spin" />
-                )}
+                {test.status === "running" && <Loader2 size={20} className="animate-spin" />}
                 {test.status === "pending" && <Activity size={20} />}
               </div>
               <div className="flex-1">
@@ -202,9 +186,7 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
                 >
                   {test.name}
                 </h4>
-                <p className="text-xs text-slate-500 font-medium">
-                  {test.message}
-                </p>
+                <p className="text-xs text-slate-500 font-medium">{test.message}</p>
               </div>
               {test.status === "pass" && (
                 <span className="text-[10px] font-black uppercase text-emerald-600 bg-emerald-100 dark:bg-emerald-900/40 px-3 py-1 rounded-full">
@@ -221,11 +203,7 @@ const DiagnosticsOverlay: React.FC<DiagnosticsOverlayProps> = ({
             disabled={isRunning}
             className="flex-1 bg-slate-900 dark:bg-white text-white dark:text-slate-900 py-4 rounded-2xl font-black shadow-xl hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
           >
-            {isRunning ? (
-              <Loader2 size={20} className="animate-spin" />
-            ) : (
-              <Play size={20} />
-            )}
+            {isRunning ? <Loader2 size={20} className="animate-spin" /> : <Play size={20} />}
             Run Automated Sweep
           </button>
           <button
