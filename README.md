@@ -1,6 +1,6 @@
-# 📈 FinAnalyzer Pro v1.5.0
+# 📈 FinAnalyzer Pro v1.5.1
 
-**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade earnings analysis. Leveraging **Gemini 2.0 Flash**, it transforms complex, multi-page corporate 10-Q/10-K PDFs into structured, actionable intelligence with visual analytics and real-time market grounding.
+**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade earnings analysis. Leveraging **Gemini 2.5 Flash**, it transforms complex, multi-page corporate 10-Q/10-K PDFs into structured, actionable intelligence with visual analytics and real-time market grounding.
 
 [![CI Status](https://github.com/darshil0/ai-financial-auditor/actions/workflows/main.yml/badge.svg)](https://github.com/darshil0/ai-financial-auditor/actions)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -27,8 +27,10 @@ graph TD
 
 ### 🧠 Core Intelligence
 
-- **Primary Engine**: Gemini 2.0 Flash (Multimodal & TTS).
-- **Thinking Budget**: 16,000 tokens for surgical YoY reconciliation.
+- **Primary Engine**: Gemini 2.5 Flash (Live Analyst & Multimodal).
+- **Core Analysis**: Gemini 2.0 Flash (High-speed KPI extraction).
+- **Market Grounding**: Gemini 1.5 Pro (Google Search integrated).
+- **Thinking Budget**: 2,048 tokens for deep market reasoning.
 - **Data Flow**: Reactive state management via Zustand with persistent local storage.
 - **Unified Pipeline**: Consolidated `vite.config.ts` for synchronized build and test resolution.
 
@@ -44,12 +46,15 @@ graph TD
 
 ## 🚀 Key Features
 
-- **⚡ Sub-Second Extraction**: Specialized prompts for Revenue, Net Income, EPS, and Margins with forensic accuracy.
+- **⚡ Sub-Second Extraction**: Specialized prompts for Revenue, Net Income, EPS, and Margins with forensic accuracy using Gemini 2.0 Flash.
 - **📊 Interactive Trends**: Responsive Recharts visualizing revenue and net income velocity across historical quarters.
-- **🎙️ Streaming AI Analyst**: Real-time voice-first advisor for low-latency financial dialogue.
+- **🎙️ Streaming AI Analyst**: Real-time voice-first advisor using Gemini 2.5 Flash and `AudioWorklet` API for low-latency financial dialogue.
 - **⚖️ Comparative Hub**: Side-by-side benchmarking with automatic delta variance and growth modeling.
-- **🔍 Market Grounding**: Integrated Google Search tools to contrast report data with real-time market developments.
+- **🔍 Market Grounding**: Integrated Google Search tools via Gemini 1.5 Pro to contrast report data with real-time market developments.
 - **Sentiment Gauge**: Quantifies management's verbal confidence into a 0-100 Bullishness score.
+- **⌨️ Keyboard Shortcuts**: `Cmd/Ctrl+K` global focus for the ticker search hub.
+- **🖼️ Diagnostic Export**: Export UI diagnostics as high-resolution PNGs using `html-to-image`.
+- **🛡️ Resilience**: Application-wide Global Error Boundary for graceful failure handling.
 
 ---
 
@@ -120,7 +125,7 @@ The project follows a **Feature-Based Module** pattern:
   - `services/`: API (Gemini) and Store (Zustand) logic.
   - `utils/`: Financial formatters and math utilities.
   - `types/`: Domain-wide TypeScript interfaces.
-- `@/test/`: Specialized test suites (Unit, E2E, Mocks).
+- `src/test/`: Specialized test suites (Unit, E2E, Mocks).
 
 ---
 
@@ -131,7 +136,7 @@ The project follows a **Feature-Based Module** pattern:
 | **API Error (401/403)**    | Ensure `VITE_API_KEY` is present in `.env` and has "Gemini API" enabled in Google AI Studio. |
 | **Playwright Fails in CI** | The project uses `npm run preview` in CI. Ensure your build has completed successfully.      |
 | **"Cannot find module"**   | Run `npm install`. The project uses `NodeNext` resolution; ensures your IDE supports TS 5.x. |
-| **PDF Parsing Issues**     | Ensure the PDF is not password-protected and contains text/tables (not just images).         |
+| **PDF Parsing Issues**     | Ensure the PDF is not password-protected, is under 25MB, and contains text/tables.           |
 
 ---
 
