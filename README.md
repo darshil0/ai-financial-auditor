@@ -2,8 +2,9 @@
 
 **FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 2.0 Flash** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with surgical precision, visual analytics, and real-time market grounding.
 
-[![CI Status](https://github.com/darshil0/ai-financial-auditor/actions/workflows/ci.yml/badge.svg)](https://github.com/darshil0/ai-financial-auditor/actions)
+[![CI Status](https://github.com/darshil0/ai-financial-auditor/actions/workflows/main.yml/badge.svg)](https://github.com/darshil0/ai-financial-auditor/actions)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
+
 
 ## 🚀 Key Features
 
@@ -21,10 +22,13 @@
 ## 🛠️ Technical Architecture
 
 - **Reasoning Engine**: Gemini 2.0 Flash (Primary Analysis, TTS & Real-time Reasoning).
-- **Thinking Budget**: Configured for deep-dive financial reconciliation and YoY cross-verification.
+- **Thinking Budget**: Configured for deep-dive financial reconciliation and YoY cross-verification (16k tokens).
 - **Frontend**: React 19 (Strict Mode) + Vanilla CSS (Premium Aesthetics).
-- **Domain structure**: Feature-based reorganization (`@/features`, `@/shared`).
+- **Domain Structure**: Feature-based reorganization with specialized layers:
+  - `@/features/*`: Business logic and UI for Dashboard, Comparison, Analyst, History, and Upload.
+  - `@/shared/*`: Reusable components (Modal, Header, etc.), services (Store, Gemini), and utilities.
 - **Charts**: Recharts (Responsive SVG with custom tooltips).
+
 - **Persistence**: LocalStorage with Zustand middleware for persistent session history.
 - **Testing**: Vitest (Unit), Playwright (E2E), and React Testing Library.
 - **CI/CD**: GitHub Actions for automated quality gates and regression testing.
