@@ -1,10 +1,10 @@
-# 📈 FinAnalyzer Pro v1.4.1
+# 📈 FinAnalyzer Pro v1.4.2
 
 **FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 2.5 Pro** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with visual analytics, and real-time market grounding.
 
 ## 🚀 Key Features
 
-- **Gemini 2.5 Pro Reasoning**: Uses advanced multimodal reasoning to extract Revenue, Net Income, EPS, and Margins with forensic precision from PDF documents.
+- **Gemini 1.5 Pro Reasoning**: Uses advanced multimodal reasoning to extract Revenue, Net Income, EPS, and Margins with forensic precision from PDF documents.
 - **Financial Performance Trends**: Interactive area charts visualizing revenue and net income velocity across historical reporting periods.
 - **Management Commentary Insight**: AI-extracted executive narratives with instant clipboard integration for research portability.
 - **Universal Ticker Intelligence**: A centralized search hub with keyboard-first navigation for instant retrieval of historical analysis.
@@ -12,13 +12,14 @@
 - **Market Grounding**: Integrated Google Search tools to contrast historical report data with real-time market developments.
 - **Comparative Hub**: Side-by-side benchmarking with visual "Baseline" and "Benchmark" indicators and automatic delta variance modeling.
 - **UI Diagnostics Suite**: Built-in automated testing suite to verify responsive layouts, contrast ratios, and persistence integrity.
-- **Responsive Workspace**: Optimized for desktop, tablet, and mobile with a specialized sliding navigation system.
-- **Advanced Error Handling**: Integrated custom modal system for communicating system alerts and diagnostic failures without breaking the immersive experience.
+- **Streaming AI Analyst**: Real-time voice-first advisor powered by Gemini 2.0 Flash for low-latency financial dialogue.
 
 ## 🛠️ Technical Architecture
 
-- **Reasoning Engine**: Gemini 2.5 Pro (Multimodal Reasoning & Google Search Grounding).
+- **Reasoning Engine**: Gemini 1.5 Pro (Forensic Analysis & Grounding).
+- **Voice/Speed Engine**: Gemini 2.0 Flash (TTS & Real-time Reasoning).
 - **Thinking Budget**: Configured for deep-dive financial reconciliation (16k tokens).
+
 - **Frontend**: React 19 (Strict Mode) + Tailwind CSS (JIT).
 - **Charts**: Recharts (Responsive SVG with custom tooltips).
 - **Persistence**: LocalStorage for persistent historical report vaulting.
@@ -49,16 +50,23 @@
 - **Type Check**: `npm run typecheck` – Run TypeScript strict mode check.
 - **Lint**: `npm run lint` – Run comprehensive quality checks (typecheck + format check).
 
-## 📋 v1.4.1 Release Notes (2026-02-24)
+## 📋 v1.4.2 Release Notes (2026-04-07)
 
 ### ✨ Improvements
 
-- Updated dependencies to latest stable versions
-- Enhanced code quality and TypeScript strict mode compliance
-- Improved accessibility with comprehensive aria labels
-- Refined error handling and null safety checks
-- Optimized performance with better state management
-- Added comprehensive lint script for quality assurance
+- **AI Service Optimization**: Standardized Gemini model names to valid production strings (`1.5 Pro` and `2.0 Flash`).
+- **Enhanced Security**: Added API key validation guards and sanitized environment variable access.
+- **Memory Efficiency**: Hardened cleanup logic for `AudioContext` and `HTMLAudioElement` resources.
+- **Robustness**: Improved null safety and error boundaries across dashboard and comparison views.
+
+### 🐛 Bug Fixes
+
+- **Formatting**: Implemented true `NaN` and `Infinity` safety in the `formatCurrency` utility.
+- **State Stale-ness**: Fixed a bug where dismissed warnings persisted across different report comparisons.
+- **Deletion Logic**: Resolved potential runtime exceptions during rapid report deletion workflows.
+
+## 📋 v1.4.1 Release Notes (2026-02-24)
+
 
 ### 🐛 Bug Fixes
 

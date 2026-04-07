@@ -1,8 +1,15 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { FinancialReport, MarketInsight } from "@/types";
 
-const getAIClient = () =>
-  new GoogleGenAI({ apiKey: import.meta.env.VITE_API_KEY });
+const getAIClient = () => {
+  const apiKey = import.meta.env.VITE_API_KEY;
+  if (!apiKey || apiKey === "your_api_key_here") {
+    throw new Error(
+      "VITE_API_KEY is missing or invalid. Please check your .env file.",
+    );
+  }
+  return new GoogleGenAI({ apiKey });
+};
 
 const reportSchema = {
   type: Type.OBJECT,
@@ -71,49 +78,61 @@ const reportSchema = {
   ],
 };
 
+
 export async function analyzeEarningsReport(
   file: File,
 ): Promise<FinancialReport> {
   const ai = getAIClient();
-  const base64Data = await new Promise<string>((resolve) => {
+  const base64Data = await new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => {
       const result = reader.result as string;
+      if (!result) return reject(new Error("Failed to read file"));
       resolve(result.split(",")[1]);
     };
+    reader.onerror = () => reject(new Error("File reader error"));
     reader.readAsDataURL(file);
   });
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-pro",
-    contents: {
-      parts: [
-        {
-          inlineData: {
-            mimeType: "application/pdf",
-            data: base64Data,
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-1.5-pro",
+      contents: {
+        parts: [
+          {
+            inlineData: {
+              mimeType: "application/pdf",
+              data: base64Data,
+            },
           },
-        },
-        {
-          text: "Conduct a rigorous financial analysis of this earnings report. Extract all numerical KPIs with 100% accuracy. Identify the document type. Use your thinking capacity to ensure year-over-year calculations are correct. Determine a 'sentimentScore' (0-100) based on management's verbal confidence.",
-        },
-      ],
-    },
-    config: {
-      responseMimeType: "application/json",
-      responseSchema: reportSchema,
-      thinkingConfig: { thinkingBudget: 16384 },
-      temperature: 0.1,
-    },
-  });
+          {
+            text: "Conduct a rigorous financial analysis of this earnings report. Extract all numerical KPIs with 100% accuracy. Identify the document type. Use your thinking capacity to ensure year-over-year calculations are correct. Determine a 'sentimentScore' (0-100) based on management's verbal confidence.",
+          },
+        ],
+      },
+      config: {
+        responseMimeType: "application/json",
+        responseSchema: reportSchema,
+        thinkingConfig: { thinkingBudget: 16384 },
+        temperature: 0.1,
+      },
+    });
 
-  const rawData = JSON.parse(response.text || "{}");
+    const text = response.text;
+    if (!text) throw new Error("Empty response from Gemini");
+    const rawData = JSON.parse(text);
 
-  return {
-    ...rawData,
-    id: crypto.randomUUID(),
-    timestamp: Date.now(),
-  };
+    return {
+      ...rawData,
+      id: crypto.randomUUID(),
+      timestamp: Date.now(),
+    };
+  } catch (err) {
+    console.error("Gemini Analysis Error:", err);
+    throw new Error(
+      "Failed to analyze report. Please ensure your API key is valid and the file is a readable PDF.",
+    );
+  }
 }
 
 export async function generateAudioBriefing(report: FinancialReport) {
@@ -124,7 +143,7 @@ export async function generateAudioBriefing(report: FinancialReport) {
 
   try {
     const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash-preview-tts",
+      model: "gemini-2.0-flash", // Updated to 2.0 Flash for better speed/TTS
       contents: [{ parts: [{ text: prompt }] }],
       config: {
         responseModalities: [Modality.AUDIO],
@@ -162,21 +181,25 @@ export async function visualizeGuidance(
   The theme should be 'Growth and Innovation'. Incorporate professional financial aesthetics, clean lines, and a high-end architectural feel. 
   Sentiment: ${report.sentimentScore}/100. Ticker: ${report.ticker}. 4k resolution, professional photography style.`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: {
-      parts: [{ text: prompt }],
-    },
-    config: {
-      responseModalities: [Modality.IMAGE, Modality.TEXT],
-      temperature: 1.0,
-    },
-  });
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.0-flash",
+      contents: {
+        parts: [{ text: prompt }],
+      },
+      config: {
+        responseModalities: [Modality.IMAGE, Modality.TEXT],
+        temperature: 1.0,
+      },
+    });
 
-  for (const part of response.candidates[0].content.parts) {
-    if (part.inlineData) {
-      return `data:image/png;base64,${part.inlineData.data}`;
+    for (const part of response.candidates[0].content.parts) {
+      if (part.inlineData) {
+        return `data:image/png;base64,${part.inlineData.data}`;
+      }
     }
+  } catch (err) {
+    console.error("Visualization error:", err);
   }
   return "";
 }
@@ -185,33 +208,43 @@ export async function getMarketContext(ticker: string, company: string) {
   const ai = getAIClient();
   const prompt = `Perform a comprehensive market scan for ${company} (${ticker}) focusing on developments since their last earnings report. Include current stock price trends, major news, and analyst upgrades/downgrades.`;
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-pro",
-    contents: prompt,
-    config: {
-      tools: [{ googleSearch: {} }],
-      thinkingConfig: { thinkingBudget: 2048 },
-    },
-  });
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-1.5-pro",
+      contents: prompt,
+      config: {
+        tools: [{ googleSearch: {} }],
+        thinkingConfig: { thinkingBudget: 2048 },
+      },
+    });
 
-  const summary = response.text || "No market context available at this time.";
-  const chunks =
-    response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+    const summary = response.text || "No market context available at this time.";
+    const chunks =
+      response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
 
-  const insights: MarketInsight[] = chunks
-    .map((chunk: any) => ({
-      title: chunk.web?.title || "External Source",
-      uri: chunk.web?.uri || "#",
-      snippet: "",
-    }))
-    .filter((i: any) => i.uri !== "#");
+    const insights: MarketInsight[] = chunks
+      .map((chunk: any) => ({
+        title: chunk.web?.title || "External Source",
+        uri: chunk.web?.uri || "#",
+        snippet: "",
+      }))
+      .filter((i: any) => i.uri !== "#");
 
-  return {
-    summary,
-    insights,
-    timestamp: Date.now(),
-  };
+    return {
+      summary,
+      insights,
+      timestamp: Date.now(),
+    };
+  } catch (err) {
+    console.error("Market context error:", err);
+    return {
+      summary: "Market grounding currently unavailable.",
+      insights: [],
+      timestamp: Date.now(),
+    };
+  }
 }
+
 
 export async function connectLiveAnalyst(
   report: FinancialReport,

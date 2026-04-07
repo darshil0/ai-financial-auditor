@@ -2,7 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.4.2] - 2026-04-07
+
+### Added
+- **API Key Guard**: Implemented proactive checks for `VITE_API_KEY` in `geminiService.ts` to prevent obscure runtime errors.
+- **Resource Disposal**: Comprehensive cleanup of `AudioContext` and `HTMLAudioElement` instances to ensure peak performance during extended sessions.
+
+### Changed
+- **AI Model Alignment**: Updated deprecated/incorrect Gemini version strings to official `1.5 Pro` and `2.0 Flash` models.
+- **State Robustness**: Refactored `ComparisonView` to reset internal "dismissed" states when users pivot between different reporting periods or filters.
+
+### Fixed
+- **Forensic Formatting**: Resolved a critical issue where `formatCurrency` would return `"$NaN"` or `"$Infinity"`; it now correctly defaults to `"$0.00"`.
+- **Growth Calculations**: Added defensive type checks and `NaN` guards to `calculateGrowth` to handle anomalous AI-extracted data points.
+- **Safe Deletion**: Patched a potential crash in `App.tsx` when purging a report from the historical vault.
+
 ## [1.4.1] - 2026-02-24
+
 
 ### Changed
 

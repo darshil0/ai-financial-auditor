@@ -109,11 +109,16 @@ const Dashboard: React.FC<DashboardProps> = ({
         audioData = briefing.base64Audio;
       }
 
+      if (!audioData) throw new Error("No audio data available");
+
       const audioBytes = decodeBase64(audioData);
       const blob = createWaveBlob(audioBytes);
       const url = URL.createObjectURL(blob);
 
-      if (audioRef.current) audioRef.current.pause();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+      }
 
       const audio = new Audio(url);
       audioRef.current = audio;
@@ -130,9 +135,21 @@ const Dashboard: React.FC<DashboardProps> = ({
     toast.promise(promise, {
       loading: "Generating audio briefing...",
       success: "Audio briefing is playing.",
-      error: "Failed to generate audio briefing.",
+      error: (err: any) =>
+        err?.message || "Failed to generate audio briefing.",
     });
   };
+
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+    };
+  }, [report?.id]);
+
 
   const handleVisualizeGuidance = async () => {
     setIsGeneratingVisual(true);

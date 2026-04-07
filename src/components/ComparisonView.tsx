@@ -75,10 +75,13 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
     const ids = filteredReports.map((r) => r.id);
     if (!ids.includes(report1Id) && ids.length > 0) setReport1Id(ids[0]);
     if (!ids.includes(report2Id) && ids.length > 1) setReport2Id(ids[1]);
-  }, [typeFilter, filteredReports]);
+    
+    // Reset dismissed warnings when the underlying report set or filter changes
+    setDismissedWarnings(new Set());
+  }, [typeFilter, filteredReports, reports.length]);
 
-  const report1 = reports.find((r) => r.id === report1Id);
-  const report2 = reports.find((r) => r.id === report2Id);
+  const report1 = useMemo(() => reports.find((r) => r.id === report1Id), [reports, report1Id]);
+  const report2 = useMemo(() => reports.find((r) => r.id === report2Id), [reports, report2Id]);
 
   const validation = useMemo(() => {
     if (!report1 || !report2) return null;
@@ -92,11 +95,11 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
     }
 
     const date1 =
-      report1.reportYear * 10 +
-      (parseInt(report1.reportPeriod.replace(/\D/g, "")) || 0);
+      (report1.reportYear || 0) * 10 +
+      (parseInt(report1.reportPeriod?.replace(/\D/g, "") || "0") || 0);
     const date2 =
-      report2.reportYear * 10 +
-      (parseInt(report2.reportPeriod.replace(/\D/g, "")) || 0);
+      (report2.reportYear || 0) * 10 +
+      (parseInt(report2.reportPeriod?.replace(/\D/g, "") || "0") || 0);
 
     if (date2 < date1) {
       warnings.push(
@@ -133,6 +136,7 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
       return next;
     });
   };
+
 
   const handleRefresh = async () => {
     setIsRefreshing(true);

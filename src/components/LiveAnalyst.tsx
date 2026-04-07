@@ -136,12 +136,26 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({
 
     return () => {
       if (sessionRef.current) sessionRef.current.close();
-      if (audioContextRef.current) audioContextRef.current.close();
-      if (inputContextRef.current) inputContextRef.current.close();
+      if (audioContextRef.current && audioContextRef.current.state !== "closed") {
+        audioContextRef.current.close();
+      }
+      if (inputContextRef.current && inputContextRef.current.state !== "closed") {
+        inputContextRef.current.close();
+      }
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((t) => t.stop());
       }
+      // Stop all active audio buffer sources to prevent memory leaks
+      sourcesRef.current.forEach((source) => {
+        try {
+          source.stop();
+        } catch (e) {
+          // Source might have already stopped
+        }
+      });
+      sourcesRef.current.clear();
     };
+
   }, [report]);
 
   return (

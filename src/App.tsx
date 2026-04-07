@@ -56,11 +56,14 @@ const App: React.FC = () => {
 
   const handleDeleteReport = (id: string) => {
     const reportToDelete = reports.find((r) => r.id === id);
+    if (!reportToDelete) {
+      toast.error("Report not found or already deleted.");
+      return;
+    }
     deleteReportFromStore(id);
-    toast.success(
-      `${reportToDelete?.companyName || "Report"} analysis deleted.`,
-    );
+    toast.success(`${reportToDelete.companyName} analysis deleted.`);
   };
+
 
   return (
     <>

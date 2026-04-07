@@ -7,6 +7,7 @@ export const formatCurrency = (
   compact = false,
   decimals = 2,
 ): string => {
+  if (isNaN(value) || !isFinite(value)) return "$0.00";
   if (value === 0) return "$0.00";
   const sign = value < 0 ? "-" : "";
   const absValue = Math.abs(value);
@@ -69,9 +70,11 @@ export const getSentimentLabel = (score: number): string => {
 };
 
 export const calculateGrowth = (current: number, prior: number): number => {
-  if (!prior || prior === 0) return 0;
+  if (typeof current !== "number" || typeof prior !== "number") return 0;
+  if (!prior || prior === 0 || isNaN(current) || isNaN(prior)) return 0;
   return ((current - prior) / Math.abs(prior)) * 100;
 };
+
 
 export const getVarianceColor = (
   value: number,
