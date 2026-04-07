@@ -11,7 +11,6 @@ import {
 import { analyzeEarningsReport } from "@/shared/services/geminiService";
 import { FinancialReport } from "@/shared/types";
 
-
 interface ReportUploaderProps {
   onReportAdded: (report: FinancialReport) => void;
 }
@@ -31,9 +30,7 @@ const ReportUploader: React.FC<ReportUploaderProps> = ({ onReportAdded }) => {
     }
 
     if (file.size > 25 * 1024 * 1024) {
-      setError(
-        "File exceeds the 25MB limit. Please compress or use a shorter report.",
-      );
+      setError("File exceeds the 25MB limit. Please compress or use a shorter report.");
       return;
     }
 
@@ -67,9 +64,8 @@ const ReportUploader: React.FC<ReportUploaderProps> = ({ onReportAdded }) => {
           Analyze Corporate Earnings
         </h2>
         <p className="text-slate-500 text-lg max-w-2xl mx-auto font-medium leading-relaxed">
-          Upload official earnings releases, 10-Qs, or 10-Ks. Our intelligence
-          platform extracts GAAP/non-GAAP metrics and management sentiment in
-          seconds.
+          Upload official earnings releases, 10-Qs, or 10-Ks. Our intelligence platform extracts
+          GAAP/non-GAAP metrics and management sentiment in seconds.
         </p>
       </div>
 
@@ -101,9 +97,7 @@ const ReportUploader: React.FC<ReportUploaderProps> = ({ onReportAdded }) => {
               <h4 className="text-2xl font-black text-slate-900 dark:text-white">
                 Parsing Intelligence
               </h4>
-              <p className="text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">
-                {status}
-              </p>
+              <p className="text-slate-500 font-bold max-w-sm mx-auto leading-relaxed">{status}</p>
             </div>
           </div>
         ) : (
@@ -174,12 +168,8 @@ const ReportUploader: React.FC<ReportUploaderProps> = ({ onReportAdded }) => {
             <div className="w-12 h-12 bg-white dark:bg-slate-800 border border-slate-100 dark:border-slate-700 rounded-2xl flex items-center justify-center text-emerald-500 shadow-sm">
               <feat.icon size={22} />
             </div>
-            <h5 className="font-black text-slate-900 dark:text-white">
-              {feat.title}
-            </h5>
-            <p className="text-sm text-slate-500 font-medium leading-relaxed">
-              {feat.desc}
-            </p>
+            <h5 className="font-black text-slate-900 dark:text-white">{feat.title}</h5>
+            <p className="text-sm text-slate-500 font-medium leading-relaxed">{feat.desc}</p>
           </div>
         ))}
       </div>

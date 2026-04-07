@@ -1,13 +1,10 @@
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { FinancialReport, MarketInsight } from "@/shared/types";
 
-
 const getAIClient = () => {
   const apiKey = import.meta.env.VITE_API_KEY;
   if (!apiKey || apiKey === "your_api_key_here") {
-    throw new Error(
-      "VITE_API_KEY is missing or invalid. Please check your .env file.",
-    );
+    throw new Error("VITE_API_KEY is missing or invalid. Please check your .env file.");
   }
   return new GoogleGenAI({ apiKey });
 };
@@ -79,10 +76,7 @@ const reportSchema = {
   ],
 };
 
-
-export async function analyzeEarningsReport(
-  file: File,
-): Promise<FinancialReport> {
+export async function analyzeEarningsReport(file: File): Promise<FinancialReport> {
   const ai = getAIClient();
   const base64Data = await new Promise<string>((resolve, reject) => {
     const reader = new FileReader();
@@ -117,7 +111,6 @@ export async function analyzeEarningsReport(
         temperature: 0.1,
       },
     });
-
 
     const text = response.text;
     if (!text) throw new Error("Empty response from Gemini");
@@ -156,17 +149,13 @@ export async function generateAudioBriefing(report: FinancialReport) {
       },
     });
 
-    const base64Audio =
-      response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+    const base64Audio = response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
     return {
       base64Audio: base64Audio || "",
       summary: "Professional analyst audio briefing ready.",
     };
   } catch (err) {
-    console.warn(
-      "TTS unavailable on this model, falling back to text-only.",
-      err,
-    );
+    console.warn("TTS unavailable on this model, falling back to text-only.", err);
     return {
       base64Audio: "",
       summary: "Audio briefing unavailable. AI text summary generated.",
@@ -174,9 +163,7 @@ export async function generateAudioBriefing(report: FinancialReport) {
   }
 }
 
-export async function visualizeGuidance(
-  report: FinancialReport,
-): Promise<string> {
+export async function visualizeGuidance(report: FinancialReport): Promise<string> {
   const ai = getAIClient();
   const prompt = `A conceptual, futuristic corporate visualization for ${report.companyName} based on their latest guidance. 
   The theme should be 'Growth and Innovation'. Incorporate professional financial aesthetics, clean lines, and a high-end architectural feel. 
@@ -220,8 +207,7 @@ export async function getMarketContext(ticker: string, company: string) {
     });
 
     const summary = response.text || "No market context available at this time.";
-    const chunks =
-      response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
+    const chunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks || [];
 
     const insights: MarketInsight[] = chunks
       .map((chunk: any) => ({
@@ -246,11 +232,7 @@ export async function getMarketContext(ticker: string, company: string) {
   }
 }
 
-
-export async function connectLiveAnalyst(
-  report: FinancialReport,
-  callbacks: any,
-) {
+export async function connectLiveAnalyst(report: FinancialReport, callbacks: any) {
   const ai = getAIClient();
   const systemInstruction = `You are a high-end senior financial analyst assistant. 
   The user is reviewing the earnings report for ${report.companyName} (${report.ticker}) for ${report.reportPeriod} ${report.reportYear}.

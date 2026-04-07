@@ -36,11 +36,8 @@ import {
 import { formatCurrency, getSentimentColor, getSentimentLabel } from "@/shared/utils";
 import LiveAnalyst from "@/features/analyst/LiveAnalyst";
 import { decodeBase64, createWaveBlob } from "@/shared/utils/audioUtils";
-import DashboardSkeleton, {
-  NoReportState,
-} from "./DashboardSkeleton";
+import DashboardSkeleton, { NoReportState } from "./DashboardSkeleton";
 import { toast } from "sonner";
-
 
 interface DashboardProps {
   report: FinancialReport | null;
@@ -48,11 +45,7 @@ interface DashboardProps {
   onUpdateReport?: (report: FinancialReport) => void;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({
-  report,
-  onSwitchToUpload,
-  onUpdateReport,
-}) => {
+const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdateReport }) => {
   const [isFetchingContext, setIsFetchingContext] = useState(false);
   const [isGeneratingBriefing, setIsGeneratingBriefing] = useState(false);
   const [isGeneratingVisual, setIsGeneratingVisual] = useState(false);
@@ -79,8 +72,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     setIsFetchingContext(true);
     const promise = getMarketContext(report.ticker, report.companyName)
       .then((context) => {
-        if (onUpdateReport)
-          onUpdateReport({ ...report, marketContext: context });
+        if (onUpdateReport) onUpdateReport({ ...report, marketContext: context });
       })
       .finally(() => setIsFetchingContext(false));
 
@@ -105,8 +97,7 @@ const Dashboard: React.FC<DashboardProps> = ({
       let audioData = report.audioBriefing?.base64Audio;
       if (!audioData) {
         const briefing = await generateAudioBriefing(report);
-        if (onUpdateReport)
-          onUpdateReport({ ...report, audioBriefing: briefing });
+        if (onUpdateReport) onUpdateReport({ ...report, audioBriefing: briefing });
         audioData = briefing.base64Audio;
       }
 
@@ -136,8 +127,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     toast.promise(promise, {
       loading: "Generating audio briefing...",
       success: "Audio briefing is playing.",
-      error: (err: any) =>
-        err?.message || "Failed to generate audio briefing.",
+      error: (err: any) => err?.message || "Failed to generate audio briefing.",
     });
   };
 
@@ -151,13 +141,11 @@ const Dashboard: React.FC<DashboardProps> = ({
     };
   }, [report?.id]);
 
-
   const handleVisualizeGuidance = async () => {
     setIsGeneratingVisual(true);
     const promise = visualizeGuidance(report)
       .then((imageUrl) => {
-        if (onUpdateReport)
-          onUpdateReport({ ...report, visualizedGuidance: imageUrl });
+        if (onUpdateReport) onUpdateReport({ ...report, visualizedGuidance: imageUrl });
       })
       .finally(() => setIsGeneratingVisual(false));
 
@@ -281,8 +269,8 @@ const Dashboard: React.FC<DashboardProps> = ({
                     Guidance Visual Intelligence
                   </h4>
                   <p className="text-slate-300 text-sm font-medium max-w-xl">
-                    AI-generated architectural interpretation of management's
-                    future outlook and market positioning.
+                    AI-generated architectural interpretation of management's future outlook and
+                    market positioning.
                   </p>
                 </div>
               </div>
@@ -303,35 +291,13 @@ const Dashboard: React.FC<DashboardProps> = ({
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={report.trends}>
                     <defs>
-                      <linearGradient
-                        id="colorRevenue"
-                        x1="0"
-                        y1="0"
-                        x2="0"
-                        y2="1"
-                      >
-                        <stop
-                          offset="5%"
-                          stopColor="#3b82f6"
-                          stopOpacity={0.3}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#3b82f6"
-                          stopOpacity={0}
-                        />
+                      <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
                       </linearGradient>
                       <linearGradient id="colorNI" x1="0" y1="0" x2="0" y2="1">
-                        <stop
-                          offset="5%"
-                          stopColor="#10b981"
-                          stopOpacity={0.3}
-                        />
-                        <stop
-                          offset="95%"
-                          stopColor="#10b981"
-                          stopOpacity={0}
-                        />
+                        <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                        <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid
@@ -463,8 +429,7 @@ const Dashboard: React.FC<DashboardProps> = ({
               {getSentimentLabel(report.sentimentScore)}
             </div>
             <p className="text-sm text-slate-500 font-medium leading-relaxed max-w-sm mb-6">
-              Quantitative analysis of management tone and forward-looking
-              statements.
+              Quantitative analysis of management tone and forward-looking statements.
             </p>
             <button
               onClick={handleGenerateBriefing}
@@ -531,10 +496,7 @@ const Dashboard: React.FC<DashboardProps> = ({
                     itemStyle={{ fontWeight: 700 }}
                     formatter={(value: number) => formatCurrency(value)}
                   />
-                  <Legend
-                    iconType="circle"
-                    wrapperStyle={{ paddingTop: "20px" }}
-                  />
+                  <Legend iconType="circle" wrapperStyle={{ paddingTop: "20px" }} />
                 </PieChart>
               </ResponsiveContainer>
             </div>

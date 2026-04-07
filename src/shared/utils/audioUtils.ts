@@ -58,10 +58,7 @@ function writeString(view: DataView, offset: number, string: string) {
   }
 }
 
-export function createWaveBlob(
-  pcmData: Uint8Array,
-  sampleRate: number = 24000,
-): Blob {
+export function createWaveBlob(pcmData: Uint8Array, sampleRate: number = 24000): Blob {
   const numChannels = 1;
   const bitsPerSample = 16;
   const bytesPerSample = bitsPerSample / 8;

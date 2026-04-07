@@ -2,15 +2,25 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.1] - 2026-04-08
+
+### Fixed
+
+- **CI/CD Pipeline**: Resolved TypeScript compilation errors in the CI/CD pipeline by updating `tsconfig.json` to use `module: "ESNext"` and `moduleResolution: "Bundler"`.
+- **Path Resolution**: Fixed issues with absolute path alias resolution in the build and lint processes.
+- **Code Formatting**: Standardized codebase formatting across all source and configuration files.
+
 ## [1.5.0] - 2026-04-07
 
 ### Added
+
 - **Feature-Based Architecture**: Migrated to a domain-driven structure (`src/features/`, `src/shared/`) for improved modularity and developer experience.
 - **GitHub Actions CI**: Implemented automated testing and linting pipeline for Node.js 20.x and 22.x.
 - **Legal Compliance**: Integrated official MIT `LICENSE` file for open-source clarity.
 - **Enhanced Test Coverage**: Added `store.test.ts` for state management and updated utility tests for the new structure.
 
 ### Changed
+
 - **Extraction Engine Upgrade**: Transitioned `analyzeEarningsReport` to `gemini-2.0-flash` for near-instant analysis and superior KPI extraction.
 - **Prompt Engineering 2.0**: Refined AI instructions for surgical precision in YoY metrics and sentiment analysis.
 - **Build Optimization**: Consolidated `vitest.config.ts` into a unified `vite.config.ts` to reduce project clutter and ensure unified path resolution.
@@ -19,32 +29,32 @@ All notable changes to this project will be documented in this file.
 - **E2E Test Strategy**: Shifted Playwright to test against the production `npm run preview` server in CI (port 4173) for increased fidelity.
 
 ### Fixed
+
 - **Stale Import Paths**: Resolved all broken references resulting from the major directory migration.
 - **Git Ignore Security**: Comprehensive `.gitignore` update to protect sensitive environment and OS files.
 - **CI/CD Stabilization**: Resolved ESM-incompatible `node -p` scripts and modernized `tsconfig.json` to `NodeNext` for better dependency resolution.
 - **Dependency Alignment**: Fixed invalid `vitest` version in `package.json` and synchronized `package-lock.json`.
 - **Legacy Cleanup**: Purged redundant root-level markdown files, stagnant metadata, and the `docs` directory.
 
-
-
-
 ## [1.4.2] - 2026-04-07
 
 ### Added
+
 - **API Key Guard**: Implemented proactive checks for `VITE_API_KEY` in `geminiService.ts` to prevent obscure runtime errors.
 - **Resource Disposal**: Comprehensive cleanup of `AudioContext` and `HTMLAudioElement` instances to ensure peak performance during extended sessions.
 
 ### Changed
+
 - **AI Model Alignment**: Updated deprecated/incorrect Gemini version strings to official `1.5 Pro` and `2.0 Flash` models.
 - **State Robustness**: Refactored `ComparisonView` to reset internal "dismissed" states when users pivot between different reporting periods or filters.
 
 ### Fixed
+
 - **Forensic Formatting**: Resolved a critical issue where `formatCurrency` would return `"$NaN"` or `"$Infinity"`; it now correctly defaults to `"$0.00"`.
 - **Growth Calculations**: Added defensive type checks and `NaN` guards to `calculateGrowth` to handle anomalous AI-extracted data points.
 - **Safe Deletion**: Patched a potential crash in `App.tsx` when purging a report from the historical vault.
 
 ## [1.4.1] - 2026-02-24
-
 
 ### Changed
 

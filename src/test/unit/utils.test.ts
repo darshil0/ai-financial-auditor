@@ -8,7 +8,6 @@ import {
   cn,
 } from "@/shared/utils";
 
-
 describe("formatCurrency", () => {
   // Standard Formatting
   it("handles zero", () => {
@@ -131,8 +130,6 @@ describe("getVarianceColor", () => {
   });
 });
 
-
-
 describe("cn", () => {
   it("joins class names", () => {
     expect(cn("a", "b", "c")).toBe("a b c");
@@ -150,12 +147,7 @@ describe("cn", () => {
     const isError = true;
     const isLarge = false;
     expect(
-      cn(
-        "base-class",
-        isError && "error-class",
-        isLarge ? "large" : "small",
-        "another-static",
-      ),
+      cn("base-class", isError && "error-class", isLarge ? "large" : "small", "another-static"),
     ).toBe("base-class error-class small another-static");
   });
 });

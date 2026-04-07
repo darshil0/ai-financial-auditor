@@ -2,11 +2,7 @@
  * FinAnalyzer Pro - Utility Functions
  */
 
-export const formatCurrency = (
-  value: number,
-  compact = false,
-  decimals = 2,
-): string => {
+export const formatCurrency = (value: number, compact = false, decimals = 2): string => {
   if (isNaN(value) || !isFinite(value)) return "$0.00";
   if (value === 0) return "$0.00";
   const sign = value < 0 ? "-" : "";
@@ -39,9 +35,7 @@ export const formatCurrency = (
   return `${sign}$${formattedValue}`;
 };
 
-export const getSentimentColor = (
-  score: number,
-): { text: string; bg: string; border: string } => {
+export const getSentimentColor = (score: number): { text: string; bg: string; border: string } => {
   if (score >= 70)
     return {
       text: "text-emerald-500",
@@ -75,19 +69,12 @@ export const calculateGrowth = (current: number, prior: number): number => {
   return ((current - prior) / Math.abs(prior)) * 100;
 };
 
-
-export const getVarianceColor = (
-  value: number,
-  invert: boolean = false,
-): string => {
+export const getVarianceColor = (value: number, invert: boolean = false): string => {
   if (Math.abs(value) < 0.001) return "text-slate-500";
   const isPositive = value > 0;
   const isGood = invert ? !isPositive : isPositive;
-  return isGood
-    ? "text-emerald-600 dark:text-emerald-400"
-    : "text-rose-600 dark:text-rose-400";
+  return isGood ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400";
 };
 
-export const cn = (
-  ...classes: (string | boolean | undefined | null)[]
-): string => classes.filter(Boolean).join(" ");
+export const cn = (...classes: (string | boolean | undefined | null)[]): string =>
+  classes.filter(Boolean).join(" ");

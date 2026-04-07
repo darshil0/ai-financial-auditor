@@ -10,7 +10,6 @@ import {
 } from "lucide-react";
 import { formatCurrency, calculateGrowth } from "@/shared/utils";
 
-
 interface SummaryCardsProps {
   report: FinancialReport;
 }
@@ -74,9 +73,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ report }) => {
           <div className="absolute -right-4 -top-4 w-24 h-24 bg-slate-50 dark:bg-slate-900/50 rounded-full scale-0 group-hover:scale-100 transition-transform duration-500 -z-0"></div>
 
           <div className="flex justify-between items-start mb-6 relative z-10">
-            <div
-              className={`p-3.5 rounded-2xl shadow-lg ${getColorClasses(card.color)}`}
-            >
+            <div className={`p-3.5 rounded-2xl shadow-lg ${getColorClasses(card.color)}`}>
               <card.icon size={22} />
             </div>
             {card.change !== null && (
@@ -87,11 +84,7 @@ const SummaryCards: React.FC<SummaryCardsProps> = ({ report }) => {
                     : "bg-rose-50 text-rose-600 dark:bg-rose-900/20 dark:text-rose-400"
                 }`}
               >
-                {card.change >= 0 ? (
-                  <ArrowUpRight size={14} />
-                ) : (
-                  <ArrowDownRight size={14} />
-                )}
+                {card.change >= 0 ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />}
                 {Math.abs(card.change).toFixed(1)}%
               </div>
             )}

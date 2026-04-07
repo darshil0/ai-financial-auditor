@@ -1,17 +1,8 @@
 import React, { useState } from "react";
 import { FinancialReport } from "@/shared/types";
-import {
-  Search,
-  Filter,
-  Trash2,
-  Calendar,
-  FileText,
-  ChevronRight,
-  BookOpen,
-} from "lucide-react";
+import { Search, Filter, Trash2, Calendar, FileText, ChevronRight, BookOpen } from "lucide-react";
 import { formatCurrency } from "@/shared/utils";
 import Modal from "@/shared/components/Modal";
-
 
 interface HistoryViewProps {
   reports: FinancialReport[];
@@ -19,11 +10,7 @@ interface HistoryViewProps {
   deleteReport: (id: string) => void;
 }
 
-const HistoryView: React.FC<HistoryViewProps> = ({
-  reports,
-  setActiveReportId,
-  deleteReport,
-}) => {
+const HistoryView: React.FC<HistoryViewProps> = ({ reports, setActiveReportId, deleteReport }) => {
   const [search, setSearch] = useState("");
   const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
@@ -47,10 +34,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
           </p>
         </div>
         <div className="relative w-full md:w-96 shadow-xl shadow-slate-200/50 dark:shadow-none">
-          <Search
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"
-            size={20}
-          />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
           <input
             type="text"
             placeholder="Search by ticker or company name..."
@@ -146,9 +130,7 @@ const HistoryView: React.FC<HistoryViewProps> = ({
                       <div className="p-6 bg-slate-50 dark:bg-slate-900 rounded-full mb-6">
                         <BookOpen size={48} className="text-slate-300" />
                       </div>
-                      <h4 className="text-xl font-bold text-slate-400 mb-2">
-                        No Records Detected
-                      </h4>
+                      <h4 className="text-xl font-bold text-slate-400 mb-2">No Records Detected</h4>
                       <p className="text-slate-500 max-w-xs mx-auto">
                         {search
                           ? `Your query "${search}" returned zero matches in the vault.`

@@ -90,11 +90,8 @@
 
     <script>
       try {
-        const store = JSON.parse(
-          localStorage.getItem("fin-analyzer-storage") || "{}",
-        );
-        if (store.state?.isDarkMode)
-          document.documentElement.classList.add("dark");
+        const store = JSON.parse(localStorage.getItem("fin-analyzer-storage") || "{}");
+        if (store.state?.isDarkMode) document.documentElement.classList.add("dark");
       } catch (e) {}
     </script>
   </head>

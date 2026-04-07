@@ -26,6 +26,7 @@ graph TD
 ```
 
 ### 🧠 Core Intelligence
+
 - **Primary Engine**: Gemini 2.0 Flash (Multimodal & TTS).
 - **Thinking Budget**: 16,000 tokens for surgical YoY reconciliation.
 - **Data Flow**: Reactive state management via Zustand with persistent local storage.
@@ -34,10 +35,10 @@ graph TD
 ---
 
 ## 🛡️ Security & Compliance
+
 - **Environment Protection**: Credentials are managed via root-level `.env` (git-ignored) and GitHub Secrets.
 - **MIT Licensed**: Open-source transparency for institutional auditing.
 - **Type Safety**: strict `NodeNext` TypeScript resolution across all feature domains.
-
 
 ---
 
@@ -55,6 +56,7 @@ graph TD
 ## 🛠️ Getting Started
 
 ### 📋 Prerequisites
+
 - **Node.js**: `v20.x` or `v22.x` (Recommended).
 - **Package Manager**: `npm` (v10+).
 - **API Key**: A valid [Google AI Studio](https://aistudio.google.com/) API Key.
@@ -62,6 +64,7 @@ graph TD
 ### ⚙️ Installation
 
 1. **Clone the Repository**:
+
    ```bash
    git clone https://github.com/darshil0/ai-financial-auditor.git
    cd ai-financial-auditor
@@ -69,19 +72,23 @@ graph TD
 
 2. **Configure Environment**:
    Create a `.env` file in the root:
+
    ```bash
    VITE_API_KEY="YOUR_GEMINI_API_KEY"
    ```
 
 3. **Install Dependencies**:
+
    ```bash
    npm install
    ```
 
 4. **Launch Development Server**:
+
    ```bash
    npm run dev
    ```
+
    Access the UI at `http://localhost:3000`.
 
 5. **Production Build**:
@@ -89,7 +96,6 @@ graph TD
    npm run build
    ```
    Deploy the resulting `dist/` directory to any static host (Vercel, Netlify, etc.).
-
 
 ---
 
@@ -110,22 +116,22 @@ The project follows a **Feature-Based Module** pattern:
 
 - `@/features/`: Fully encapsulated modules (Dashboard, Analyst, Comparison, History).
 - `@/shared/`: Cross-cutting concerns:
-    - `components/`: Generic UI (Modals, Icons, Header).
-    - `services/`: API (Gemini) and Store (Zustand) logic.
-    - `utils/`: Financial formatters and math utilities.
-    - `types/`: Domain-wide TypeScript interfaces.
+  - `components/`: Generic UI (Modals, Icons, Header).
+  - `services/`: API (Gemini) and Store (Zustand) logic.
+  - `utils/`: Financial formatters and math utilities.
+  - `types/`: Domain-wide TypeScript interfaces.
 - `@/test/`: Specialized test suites (Unit, E2E, Mocks).
 
 ---
 
 ## ⚠️ Troubleshooting
 
-| Issue | Resolution |
-| :--- | :--- |
-| **API Error (401/403)** | Ensure `VITE_API_KEY` is present in `.env` and has "Gemini API" enabled in Google AI Studio. |
-| **Playwright Fails in CI** | The project uses `npm run preview` in CI. Ensure your build has completed successfully. |
-| **"Cannot find module"** | Run `npm install`. The project uses `NodeNext` resolution; ensures your IDE supports TS 5.x. |
-| **PDF Parsing Issues** | Ensure the PDF is not password-protected and contains text/tables (not just images). |
+| Issue                      | Resolution                                                                                   |
+| :------------------------- | :------------------------------------------------------------------------------------------- |
+| **API Error (401/403)**    | Ensure `VITE_API_KEY` is present in `.env` and has "Gemini API" enabled in Google AI Studio. |
+| **Playwright Fails in CI** | The project uses `npm run preview` in CI. Ensure your build has completed successfully.      |
+| **"Cannot find module"**   | Run `npm install`. The project uses `NodeNext` resolution; ensures your IDE supports TS 5.x. |
+| **PDF Parsing Issues**     | Ensure the PDF is not password-protected and contains text/tables (not just images).         |
 
 ---
 
