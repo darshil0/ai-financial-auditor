@@ -1,67 +1,126 @@
 # 📈 FinAnalyzer Pro v1.5.0
 
-**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade analysis. It leverages **Gemini 2.0 Flash** to transform complex, multi-page corporate earnings PDFs into structured, actionable intelligence with surgical precision, visual analytics, and real-time market grounding.
+**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade earnings analysis. Leveraging **Gemini 2.0 Flash**, it transforms complex, multi-page corporate 10-Q/10-K PDFs into structured, actionable intelligence with visual analytics and real-time market grounding.
 
 [![CI Status](https://github.com/darshil0/ai-financial-auditor/actions/workflows/main.yml/badge.svg)](https://github.com/darshil0/ai-financial-auditor/actions)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
-
-
-## 🚀 Key Features
-
-- **Gemini 2.0 Flash Intelligence**: Uses specialized multimodal extraction to identify Revenue, Net Income, EPS, and Margins with sub-second latency and forensic accuracy.
-- **Feature-Based Architecture**: A modular, domain-driven structure (`src/features/*`) ensuring high scalability and maintainability.
-- **Financial Performance Trends**: Interactive area charts visualizing revenue and net income velocity across historical reporting periods.
-- **Management Commentary Insight**: AI-extracted executive narratives with instant clipboard integration for research portability.
-- **Universal Ticker Intelligence**: A centralized search hub with keyboard-first navigation for instant retrieval of historical analysis.
-- **Narrative Sentiment Analysis**: Quantifies management's verbal confidence into a 0-100 Bullishness score with an interactive gauge.
-- **Market Grounding**: Integrated Google Search tools to contrast historical report data with real-time market developments.
-- **Comparative Hub**: Side-by-side benchmarking with automatic delta variance modeling and chronological verification.
-- **Streaming AI Analyst**: Real-time voice-first advisor powered by Gemini 2.0 Flash for low-latency financial dialogue.
-- **GitHub Actions CI**: Automated testing and linting across multiple Node.js environments (20.x, 22.x).
-
-## 🛠️ Technical Architecture
-
-- **Reasoning Engine**: Gemini 2.0 Flash (Primary Analysis, TTS & Real-time Reasoning).
-- **Thinking Budget**: Configured for deep-dive financial reconciliation and YoY cross-verification (16k tokens).
-- **Frontend**: React 19 (Strict Mode) + Vanilla CSS (Premium Aesthetics).
-- **Domain Structure**: Feature-based reorganization with specialized layers:
-  - `@/features/*`: Business logic and UI for Dashboard, Comparison, Analyst, History, and Upload.
-  - `@/shared/*`: Reusable components (Modal, Header, etc.), services (Store, Gemini), and utilities.
-- **Charts**: Recharts (Responsive SVG with custom tooltips).
-
-- **Persistence**: LocalStorage with Zustand middleware for persistent session history.
-- **Testing**: Vitest (Unit), Playwright (E2E), and React Testing Library.
-- **CI/CD**: GitHub Actions for automated quality gates and regression testing.
-
-## 📦 Getting Started
-
-1. **API Configuration**: Create a `.env` file in the root directory and add `VITE_API_KEY="YOUR_API_KEY"`.
-2. **Install Dependencies**: Run `npm install`.
-3. **Development**: Run `npm run dev` to start the server on `http://localhost:5173`.
-4. **Analysis**: Navigate to **Upload Report** and drop a corporate 10-Q or 10-K PDF.
-5. **Benchmarking**: Use the **Comparison** tab to select two reports for variance analysis.
-
-## 🧪 Testing & Quality
-
-- **Execute All Tests**: `npm test`
-- **Unit & Component Tests**: `npm run test:unit`
-- **End-to-End (E2E) Tests**: `npm run test:e2e`
-- **Comprehensive Linting**: `npm run lint` (Typecheck + Format Check).
-
-## 📋 v1.5.0 Release Notes (2026-04-07)
-
-### ✨ Major Overhaul
-
-- **Project Restructuring**: Full migration to a domain-driven feature-based architecture.
-- **Engine Upgrade**: Switched to `gemini-2.0-flash` for superior speed and numerical precision.
-- **GitHub Integration**: Added automated CI workflows and MIT licensing.
-- **Defensive Engineering**: Hardened `.gitignore` and updated all unit tests for the new structure.
-
-### 🐛 Bug Fixes & Security
-
-- **Path Resolution**: Fixed all import aliasing issues after the directory migration.
-- **State Persistence**: Optimized Zustand storage with improved partialize logic.
+![React](https://img.shields.io/badge/react-19.0-blue)
+![Vite](https://img.shields.io/badge/vite-6.4-646CFF)
 
 ---
 
-_Institutional-grade financial analysis powered by Google GenAI._ Developed by Darshil with Precision.
+## 🏛️ Technical Architecture
+
+FinAnalyzer Pro uses a **Domain-Driven Feature Architecture** that isolates business logic into autonomous modules, ensuring high scalability and testability.
+
+```mermaid
+graph TD
+    A[Earnings PDF] -->|Upload| B(ReportUploader)
+    B -->|Gemini 2.0 Flash| C{Analysis Engine}
+    C -->|Structured JSON| D[Zustand Store]
+    D -->|Reactive State| E[Dashboard]
+    D -->|Historical Data| F[Comparison View]
+    C -->|Streaming Audio| G[Live Analyst]
+    E -->|Visuals| H[Recharts Trends]
+    F -->|Benchmarking| I[Variance Model]
+```
+
+### 🧠 Core Intelligence
+- **Primary Engine**: Gemini 2.0 Flash (Multimodal & TTS).
+- **Thinking Budget**: 16,000 tokens for surgical YoY reconciliation.
+- **Data Flow**: Reactive state management via Zustand with persistent local storage.
+
+---
+
+## 🚀 Key Features
+
+- **⚡ Sub-Second Extraction**: Specialized prompts for Revenue, Net Income, EPS, and Margins with forensic accuracy.
+- **📊 Interactive Trends**: Responsive Recharts visualizing revenue and net income velocity across historical quarters.
+- **🎙️ Streaming AI Analyst**: Real-time voice-first advisor for low-latency financial dialogue.
+- **⚖️ Comparative Hub**: Side-by-side benchmarking with automatic delta variance and growth modeling.
+- **🔍 Market Grounding**: Integrated Google Search tools to contrast report data with real-time market developments.
+- **Sentiment Gauge**: Quantifies management's verbal confidence into a 0-100 Bullishness score.
+
+---
+
+## 🛠️ Getting Started
+
+### 📋 Prerequisites
+- **Node.js**: `v20.x` or `v22.x` (Recommended).
+- **Package Manager**: `npm` (v10+).
+- **API Key**: A valid [Google AI Studio](https://aistudio.google.com/) API Key.
+
+### ⚙️ Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/darshil0/ai-financial-auditor.git
+   cd ai-financial-auditor
+   ```
+
+2. **Configure Environment**:
+   Create a `.env` file in the root:
+   ```bash
+   VITE_API_KEY="YOUR_GEMINI_API_KEY"
+   ```
+
+3. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
+
+4. **Launch Development Server**:
+   ```bash
+   npm run dev
+   ```
+   Access the UI at `http://localhost:3000`.
+
+---
+
+## 🧪 Testing & Quality Assurance
+
+FinAnalyzer Pro maintains a rigorous "Green-Build" policy via GitHub Actions.
+
+- **Full Suite**: `npm test` (Unit + E2E).
+- **Unit Tests**: `npm run test:unit` (Vitest & React Testing Library).
+- **E2E Tests**: `npm run test:e2e` (Playwright on production preview).
+- **Linting**: `npm run lint` (TypeScript NodeNext validation + Prettier).
+
+---
+
+## 📁 Directory Structure
+
+The project follows a **Feature-Based Module** pattern:
+
+- `@/features/`: Fully encapsulated modules (Dashboard, Analyst, Comparison, History).
+- `@/shared/`: Cross-cutting concerns:
+    - `components/`: Generic UI (Modals, Icons, Header).
+    - `services/`: API (Gemini) and Store (Zustand) logic.
+    - `utils/`: Financial formatters and math utilities.
+    - `types/`: Domain-wide TypeScript interfaces.
+- `@/test/`: Specialized test suites (Unit, E2E, Mocks).
+
+---
+
+## ⚠️ Troubleshooting
+
+| Issue | Resolution |
+| :--- | :--- |
+| **API Error (401/403)** | Ensure `VITE_API_KEY` is present in `.env` and has "Gemini API" enabled in Google AI Studio. |
+| **Playwright Fails in CI** | The project uses `npm run preview` in CI. Ensure your build has completed successfully. |
+| **"Cannot find module"** | Run `npm install`. The project uses `NodeNext` resolution; ensures your IDE supports TS 5.x. |
+| **PDF Parsing Issues** | Ensure the PDF is not password-protected and contains text/tables (not just images). |
+
+---
+
+## 🤝 Contributing
+
+1. **Fork** the project and create your feature branch: `git checkout -b feature/AmazingFeature`.
+2. **Commit** your changes: `git commit -m "feat: Add AmazingFeature"`.
+3. **Internal Tools**: Ensure `npm run lint` passes before pushing.
+4. **Push** to the branch: `git push origin feature/AmazingFeature`.
+5. Open a **Pull Request**.
+
+---
+
+_Institutional-grade financial analysis powered by Google GenAI._ Developed by **Darshil** with Precision.
