@@ -30,9 +30,13 @@ test-results/
 .env.*
 !.env.example
 
-# Test coverage
+# Test artifacts
 coverage/
 .nyc_output/
+.vitest-cache/
+playwright-report/
+test-results/
+.playwright/
 
 # OS files
 .DS_Store

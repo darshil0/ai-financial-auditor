@@ -1,3 +1,4 @@
+/// <reference types="vitest" />
 import path from "path";
 import { fileURLToPath } from "url";
 import { defineConfig, loadEnv } from "vite";
@@ -22,6 +23,12 @@ export default defineConfig(({ mode }) => {
         "@shared": path.resolve(__dirname, "./src/shared"),
         "@test": path.resolve(__dirname, "./src/test"),
       },
+    },
+    test: {
+      globals: true,
+      environment: "jsdom",
+      setupFiles: "./src/test/setup.ts",
+      exclude: ["src/test/e2e/**", "node_modules/**"],
     },
   };
 });
