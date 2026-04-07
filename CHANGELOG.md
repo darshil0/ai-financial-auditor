@@ -18,6 +18,13 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 - **Stale Import Paths**: Resolved all broken references resulting from the major directory migration.
 - **Git Ignore Security**: Comprehensive `.gitignore` update to protect sensitive environment and OS files.
+- **CI/CD Stabilization**: Resolved ESM-incompatible `node -p` scripts and modernized `tsconfig.json` to `NodeNext` for better dependency resolution.
+- **Dependency Alignment**: Fixed invalid `vitest` version in `package.json` and synchronized `package-lock.json`.
+
+### Changed
+- **E2E Test Strategy**: Shifted Playwright to test against the production `npm run preview` server in CI (port 4173) for increased fidelity.
+- **Modernized Typings**: Enhanced `src/vite-env.d.ts` with explicit JSX and environment variable definitions to clear CI linting errors.
+
 
 ## [1.4.2] - 2026-04-07
 
