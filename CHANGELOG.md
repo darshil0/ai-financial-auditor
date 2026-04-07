@@ -13,7 +13,10 @@ All notable changes to this project will be documented in this file.
 ### Changed
 - **Extraction Engine Upgrade**: Transitioned `analyzeEarningsReport` to `gemini-2.0-flash` for near-instant analysis and superior KPI extraction.
 - **Prompt Engineering 2.0**: Refined AI instructions for surgical precision in YoY metrics and sentiment analysis.
+- **Build Optimization**: Consolidated `vitest.config.ts` into a unified `vite.config.ts` to reduce project clutter and ensure unified path resolution.
+- **Modernized Typings**: Enhanced `src/vite-env.d.ts` with explicit JSX and environment variable definitions to clear CI linting errors.
 - **Unified Path Aliases**: Replaced brittle paths with clean `@/features`, `@/shared`, and `@/test` aliases.
+- **E2E Test Strategy**: Shifted Playwright to test against the production `npm run preview` server in CI (port 4173) for increased fidelity.
 
 ### Fixed
 - **Stale Import Paths**: Resolved all broken references resulting from the major directory migration.
@@ -22,10 +25,6 @@ All notable changes to this project will be documented in this file.
 - **Dependency Alignment**: Fixed invalid `vitest` version in `package.json` and synchronized `package-lock.json`.
 - **Legacy Cleanup**: Purged redundant root-level markdown files, stagnant metadata, and the `docs` directory.
 
-### Changed
-- **E2E Test Strategy**: Shifted Playwright to test against the production `npm run preview` server in CI (port 4173) for increased fidelity.
-- **Modernized Typings**: Enhanced `src/vite-env.d.ts` with explicit JSX and environment variable definitions to clear CI linting errors.
-- **Build Optimization**: Consolidated `vitest.config.ts` into a unified `vite.config.ts` to reduce project clutter and ensure unified path resolution.
 
 
 

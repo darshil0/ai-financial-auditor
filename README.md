@@ -29,6 +29,15 @@ graph TD
 - **Primary Engine**: Gemini 2.0 Flash (Multimodal & TTS).
 - **Thinking Budget**: 16,000 tokens for surgical YoY reconciliation.
 - **Data Flow**: Reactive state management via Zustand with persistent local storage.
+- **Unified Pipeline**: Consolidated `vite.config.ts` for synchronized build and test resolution.
+
+---
+
+## 🛡️ Security & Compliance
+- **Environment Protection**: Credentials are managed via root-level `.env` (git-ignored) and GitHub Secrets.
+- **MIT Licensed**: Open-source transparency for institutional auditing.
+- **Type Safety**: strict `NodeNext` TypeScript resolution across all feature domains.
+
 
 ---
 
@@ -74,6 +83,13 @@ graph TD
    npm run dev
    ```
    Access the UI at `http://localhost:3000`.
+
+5. **Production Build**:
+   ```bash
+   npm run build
+   ```
+   Deploy the resulting `dist/` directory to any static host (Vercel, Netlify, etc.).
+
 
 ---
 
