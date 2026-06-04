@@ -241,7 +241,7 @@ export async function connectLiveAnalyst(report: FinancialReport, callbacks: any
   Provide deep insights, answer complex questions about these results, and maintain a professional, helpful, and objective tone.`;
 
   return ai.live.connect({
-    model: "gemini-2.5-flash",
+    model: "gemini-2.0-flash",
     callbacks,
     config: {
       responseModalities: [Modality.AUDIO],

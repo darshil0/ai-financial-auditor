@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.2] - 2026-04-09
+
+### Changed
+
+- **Dependency Maintenance**: Updated core dependencies and devDependencies to their latest stable versions for improved security and performance.
+- **Model Alignment**: Standardized Gemini AI model references to official version strings (e.g., `gemini-2.0-flash`) across code and documentation.
+- **Codebase Formatting**: Applied project-wide Prettier formatting for consistent code style.
+
 ## [1.5.1] - 2026-04-08
 
 ### Fixed
@@ -102,7 +110,7 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- **Upgraded Reasoning Engine**: Transitioned core analysis and grounding to `gemini-2.5-pro` for improved numerical precision.
+- **Upgraded Reasoning Engine**: Transitioned core analysis and grounding to `gemini-1.5-pro` for improved numerical precision.
 - **Live Analyst UX**: Added connection states and readiness callbacks for the real-time AI advisor.
 - **Synchronous Dark Mode**: Eliminated theme flashing by applying dark class synchronously in `index.html`.
 - **Prior-Period Requirements**: Updated AI schema to mandate historical fields, preventing NaN and division-by-zero errors in growth calculations.
