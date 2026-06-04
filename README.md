@@ -1,6 +1,6 @@
-# 📈 FinAnalyzer Pro v1.5.1
+# 📈 FinAnalyzer Pro v1.5.2
 
-**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade earnings analysis. Leveraging **Gemini 2.5 Flash**, it transforms complex, multi-page corporate 10-Q/10-K PDFs into structured, actionable intelligence with visual analytics and real-time market grounding.
+**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade earnings analysis. Leveraging **Gemini 2.0 Flash**, it transforms complex, multi-page corporate 10-Q/10-K PDFs into structured, actionable intelligence with visual analytics and real-time market grounding.
 
 [![CI Status](https://github.com/darshil0/ai-financial-auditor/actions/workflows/main.yml/badge.svg)](https://github.com/darshil0/ai-financial-auditor/actions)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -27,7 +27,7 @@ graph TD
 
 ### 🧠 Core Intelligence
 
-- **Primary Engine**: Gemini 2.5 Flash (Live Analyst & Multimodal).
+- **Primary Engine**: Gemini 2.0 Flash (Live Analyst & Multimodal).
 - **Core Analysis**: Gemini 2.0 Flash (High-speed KPI extraction).
 - **Market Grounding**: Gemini 1.5 Pro (Google Search integrated).
 - **Thinking Budget**: 2,048 tokens for deep market reasoning.
@@ -48,7 +48,7 @@ graph TD
 
 - **⚡ Sub-Second Extraction**: Specialized prompts for Revenue, Net Income, EPS, and Margins with forensic accuracy using Gemini 2.0 Flash.
 - **📊 Interactive Trends**: Responsive Recharts visualizing revenue and net income velocity across historical quarters.
-- **🎙️ Streaming AI Analyst**: Real-time voice-first advisor using Gemini 2.5 Flash and `AudioWorklet` API for low-latency financial dialogue.
+- **🎙️ Streaming AI Analyst**: Real-time voice-first advisor using Gemini 2.0 Flash and `AudioWorklet` API for low-latency financial dialogue.
 - **⚖️ Comparative Hub**: Side-by-side benchmarking with automatic delta variance and growth modeling.
 - **🔍 Market Grounding**: Integrated Google Search tools via Gemini 1.5 Pro to contrast report data with real-time market developments.
 - **Sentiment Gauge**: Quantifies management's verbal confidence into a 0-100 Bullishness score.
