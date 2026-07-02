@@ -6,7 +6,7 @@
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React](https://img.shields.io/badge/react-19.0-blue)
 ![Vite](https://img.shields.io/badge/vite-6.4+-646CFF)
-![Node](https://img.shields.io/badge/node-20.x%20|%2022.x-339933)
+![Node](https://img.shields.io/badge/node-24.x%24-339933)
 
 ---
 
