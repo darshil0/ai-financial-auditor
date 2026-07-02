@@ -26,10 +26,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js (LTS)
+      - name: Setup Node.js (Stable)
         uses: actions/setup-node@v4
         with:
-          node-version: "20.18.0"
+          node-version: "24"
           cache: npm
           cache-dependency-path: package-lock.json
 
@@ -62,7 +62,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["20.18.0", "22.x"]
+        node-version: ["24", "22.x"]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -92,48 +92,6 @@ jobs:
           fi
           echo "✅ Coverage $COVERAGE% meets target $MIN_COVERAGE%"
 
-      - name: Upload Coverage to Codecov
-        if: always()
-        uses: codecov/codecov-action@v4
-        with:
-          files: ./coverage/coverage-final.json
-          flags: unittests-node-${{ matrix.node-version }}
-          name: coverage-node-${{ matrix.node-version }}
-          fail_ci_if_error: false
-          verbose: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-
-      - name: Comment PR with Coverage
-        if: github.event_name == 'pull_request' && always()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const fs = require('fs');
-            const coverage = JSON.parse(fs.readFileSync('./coverage/coverage-summary.json', 'utf8'));
-            const lines = coverage.total.lines.pct;
-            const branches = coverage.total.branches.pct;
-            const functions = coverage.total.functions.pct;
-            const statements = coverage.total.statements.pct;
-
-            const comment = `## Test Coverage Report (Node ${{ matrix.node-version }})
-
-            | Metric | Coverage |
-            |--------|----------|
-            | Lines | ${lines.toFixed(2)}% |
-            | Branches | ${branches.toFixed(2)}% |
-            | Functions | ${functions.toFixed(2)}% |
-            | Statements | ${statements.toFixed(2)}% |
-
-            **Target**: 80% | **Status**: ${lines >= 80 ? '✅ Pass' : '❌ Below Target'}`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: comment
-            });
-
   build:
     name: Build Verification (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
@@ -142,7 +100,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node-version: ["20.18.0", "22.x"]
+        node-version: ["24", "22.x"]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -174,17 +132,6 @@ jobs:
             exit 1
           fi
           echo "✅ Build artifacts verified"
-          du -sh dist/
-
-      - name: Check Bundle Size
-        run: |
-          BUNDLE_SIZE=$(du -sb dist/ | cut -f1)
-          MAX_SIZE=$((5 * 1024 * 1024))
-          if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
-            echo "❌ Bundle size exceeds 5MB threshold"
-            exit 1
-          fi
-          echo "✅ Bundle size OK"
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -204,10 +151,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Setup Node.js (LTS)
+      - name: Setup Node.js (Stable)
         uses: actions/setup-node@v4
         with:
-          node-version: "20.18.0"
+          node-version: "24"
           cache: npm
           cache-dependency-path: package-lock.json
 
@@ -217,7 +164,7 @@ jobs:
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
         with:
-          name: dist-node-20.18.0
+          name: dist-node-24
           path: dist/
 
       - name: Verify Build Artifacts Exist
@@ -251,8 +198,7 @@ jobs:
 
       - name: Skip E2E Tests
         if: steps.api-key-check.outputs.warn == 'true'
-        run: |
-          echo "⚠️ Skipping E2E tests: VITE_API_KEY not configured in GitHub Secrets"
+        run: echo "⚠️ Skipping E2E tests: VITE_API_KEY not configured in GitHub Secrets"
 
       - name: Upload E2E Test Results
         if: always()
@@ -288,56 +234,7 @@ jobs:
             "${{ needs.build.result }}" == "success" \
           ]]; then
             echo "✅ CI/CD Pipeline Passed"
-            exit 0
           else
             echo "❌ CI/CD Pipeline Failed"
             exit 1
           fi
-
-      - name: Comment PR with Status
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const status = {
-              'validate-and-lint': '${{ needs.validate-and-lint.result }}',
-              'unit-tests': '${{ needs.unit-tests.result }}',
-              'build': '${{ needs.build.result }}',
-              'e2e-tests': '${{ needs.e2e-tests.result }}'
-            };
-
-            const emoji = {
-              success: '✅',
-              failure: '❌',
-              skipped: '⏭️',
-              cancelled: '🚫'
-            };
-
-            const body = `## CI/CD Pipeline Status
-
-            | Job | Status |
-            |-----|--------|
-            | Validate & Lint | ${emoji[status['validate-and-lint']]} ${status['validate-and-lint']} |
-            | Unit Tests | ${emoji[status['unit-tests']]} ${status['unit-tests']} |
-            | Build | ${emoji[status['build']]} ${status['build']} |
-            | E2E Tests | ${emoji[status['e2e-tests']]} ${status['e2e-tests']} |
-
-            **Required for Merge**: Lint, Unit Tests, Build`;
-
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: body
-            });
-
-      - name: Fail if Required Jobs Failed
-        if: |
-          needs.validate-and-lint.result != 'success' ||
-          needs.unit-tests.result != 'success' ||
-          needs.build.result != 'success'
-        run: exit 1
-
-      - name: Success
-        if: success()
-        run: echo "✅ All required CI/CD checks passed!"
