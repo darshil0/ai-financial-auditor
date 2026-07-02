@@ -43,7 +43,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --no-audit
 
       - name: Check for Secrets in Code
         uses: trufflesecurity/trufflehog@main
@@ -90,7 +90,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --no-audit
 
       - name: Run Unit Tests with Coverage
         run: npm run test:unit -- --coverage
@@ -130,7 +130,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --no-audit
 
       - name: Build Application
         run: npm run build
@@ -173,7 +173,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Install Dependencies
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --no-audit
 
       - name: Download Build Artifacts
         uses: actions/download-artifact@v4
@@ -216,7 +216,7 @@ jobs:
       - name: Enforce API Key Presence
         if: steps.api-key-check.outputs.missing == 'true' && github.event.inputs.allow_skip_e2e != 'true'
         run: |
-          echo "::error::VITE_API_KEY is not configured in GitHub Secrets. Failing instead of silently skipping E2E coverage. Re-run via workflow_dispatch with allow_skip_e2e=true to intentionally bypass."
+          echo "::error::VITE_API_KEY is not configured in GitHub Secrets. Failing instead of silently skipping E2E coverage. Re-run via workflow_dispatch with allow_skip_e2e=true to intentionally skip."
           exit 1
 
       - name: Run E2E Tests
