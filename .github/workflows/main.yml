@@ -5,24 +5,17 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main, develop]
-  # Allow manual trigger for debugging
   workflow_dispatch:
 
-# Cancel in-progress runs when a new run is triggered
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-# Environment variables (available to all jobs)
 env:
   NODE_OPTIONS: --max-old-space-size=4096
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
 jobs:
-  # ============================================================================
-  # Job 1: Validate & Lint
-  # Purpose: Quick syntax and style checks (fails fast if issues)
-  # ============================================================================
   validate-and-lint:
     name: Validate & Lint
     runs-on: ubuntu-latest
@@ -31,29 +24,17 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          # Full history needed for proper linting
           fetch-depth: 0
 
       - name: Setup Node.js (LTS)
         uses: actions/setup-node@v4
         with:
           node-version: "20.18.0"
-          cache: "npm"
-          cache-dependency-path: "package-lock.json"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Restore Dependency Cache
-        id: cache-restore
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-20-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-20-
-
-      - name: Install Dependencies (if cache miss)
-        if: steps.cache-restore.outputs.cache-hit != 'true'
+      - name: Install Dependencies
         run: npm ci --prefer-offline --no-audit
-        continue-on-error: false
 
       - name: Check for Secrets in Code
         uses: trufflesecurity/trufflehog@main
@@ -65,27 +46,21 @@ jobs:
 
       - name: Run Security Audit
         run: npm audit --audit-level=moderate
-        continue-on-error: true  # Warn but don't block; maintainers review
+        continue-on-error: true
 
       - name: Lint Code (TypeScript + Prettier)
         run: npm run lint
-        continue-on-error: false
 
       - name: TypeScript Type Check
         run: npx tsc --noEmit
-        continue-on-error: false
 
-  # ============================================================================
-  # Job 2: Unit Tests & Coverage
-  # Purpose: Run unit tests with coverage reports
-  # ============================================================================
   unit-tests:
     name: Unit Tests (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
     needs: validate-and-lint
     timeout-minutes: 15
     strategy:
-      fail-fast: false  # Don't cancel other versions if one fails
+      fail-fast: false
       matrix:
         node-version: ["20.18.0", "22.x"]
     steps:
@@ -96,49 +71,19 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          cache-dependency-path: "package-lock.json"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Restore Dependency Cache
-        id: cache-restore
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-
-
-      - name: Install Dependencies (if cache miss)
-        if: steps.cache-restore.outputs.cache-hit != 'true'
+      - name: Install Dependencies
         run: npm ci --prefer-offline --no-audit
 
       - name: Run Unit Tests with Coverage
         run: npm run test:unit -- --coverage
         env:
-          # Use dummy key for tests (tests should mock API calls)
-          VITE_API_KEY: "test_key_for_ci_do_not_use"
-
-      - name: Generate Coverage Report
-        if: always()  # Run even if tests fail
-        run: npm run test:coverage
-        continue-on-error: true
-
-      - name: Upload Coverage to Codecov
-        uses: codecov/codecov-action@v4
-        if: always()
-        with:
-          files: ./coverage/coverage-final.json
-          flags: unittests-node-${{ matrix.node-version }}
-          name: coverage-node-${{ matrix.node-version }}
-          fail_ci_if_error: false  # Don't block if upload fails
-          verbose: true
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          VITE_API_KEY: test_key_for_ci_do_not_use
 
       - name: Validate Coverage Targets
-        if: always()
         run: |
-          # Parse coverage summary and validate against targets
           COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
           MIN_COVERAGE=80
           if (( $(echo "$COVERAGE < $MIN_COVERAGE" | bc -l) )); then
@@ -146,7 +91,18 @@ jobs:
             exit 1
           fi
           echo "✅ Coverage $COVERAGE% meets target $MIN_COVERAGE%"
-        continue-on-error: true
+
+      - name: Upload Coverage to Codecov
+        if: always()
+        uses: codecov/codecov-action@v4
+        with:
+          files: ./coverage/coverage-final.json
+          flags: unittests-node-${{ matrix.node-version }}
+          name: coverage-node-${{ matrix.node-version }}
+          fail_ci_if_error: false
+          verbose: true
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Comment PR with Coverage
         if: github.event_name == 'pull_request' && always()
@@ -161,6 +117,7 @@ jobs:
             const statements = coverage.total.statements.pct;
 
             const comment = `## Test Coverage Report (Node ${{ matrix.node-version }})
+
             | Metric | Coverage |
             |--------|----------|
             | Lines | ${lines.toFixed(2)}% |
@@ -177,10 +134,6 @@ jobs:
               body: comment
             });
 
-  # ============================================================================
-  # Job 3: Build Verification
-  # Purpose: Verify production build succeeds
-  # ============================================================================
   build:
     name: Build Verification (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest
@@ -198,27 +151,16 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: "npm"
-          cache-dependency-path: "package-lock.json"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Restore Dependency Cache
-        id: cache-restore
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ matrix.node-version }}-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-${{ matrix.node-version }}-
-
-      - name: Install Dependencies (if cache miss)
-        if: steps.cache-restore.outputs.cache-hit != 'true'
+      - name: Install Dependencies
         run: npm ci --prefer-offline --no-audit
 
       - name: Build Application
         run: npm run build
         env:
-          VITE_API_KEY: "dummy_key_for_build"
-          # Production build flags
+          VITE_API_KEY: dummy_key_for_build
           NODE_ENV: production
 
       - name: Verify Build Artifacts
@@ -237,12 +179,12 @@ jobs:
       - name: Check Bundle Size
         run: |
           BUNDLE_SIZE=$(du -sb dist/ | cut -f1)
-          MAX_SIZE=$((5 * 1024 * 1024))  # 5MB threshold
+          MAX_SIZE=$((5 * 1024 * 1024))
           if [ $BUNDLE_SIZE -gt $MAX_SIZE ]; then
-            echo "⚠️ Warning: Bundle size $(($BUNDLE_SIZE / 1024 / 1024))MB exceeds 5MB threshold"
+            echo "❌ Bundle size exceeds 5MB threshold"
             exit 1
           fi
-          echo "✅ Bundle size OK: $(($BUNDLE_SIZE / 1024 / 1024))MB"
+          echo "✅ Bundle size OK"
 
       - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
@@ -253,18 +195,11 @@ jobs:
           retention-days: 7
           if-no-files-found: warn
 
-  # ============================================================================
-  # Job 4: E2E Tests
-  # Purpose: Run end-to-end tests against production build
-  # Prerequisites: Build must succeed, API key must be available
-  # ============================================================================
   e2e-tests:
     name: E2E Tests
     runs-on: ubuntu-latest
     needs: [validate-and-lint, build]
-    timeout-minutes: 30  # E2E can be slow
-    strategy:
-      fail-fast: false
+    timeout-minutes: 30
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -273,20 +208,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20.18.0"
-          cache: "npm"
-          cache-dependency-path: "package-lock.json"
+          cache: npm
+          cache-dependency-path: package-lock.json
 
-      - name: Restore Dependency Cache
-        id: cache-restore
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-20-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-20-
-
-      - name: Install Dependencies (if cache miss)
-        if: steps.cache-restore.outputs.cache-hit != 'true'
+      - name: Install Dependencies
         run: npm ci --prefer-offline --no-audit
 
       - name: Download Build Artifacts
@@ -305,7 +230,6 @@ jobs:
 
       - name: Install Playwright Browsers
         run: npx playwright install --with-deps chromium
-        continue-on-error: false
 
       - name: Check for API Key
         id: api-key-check
@@ -318,23 +242,17 @@ jobs:
             echo "✅ API key available. E2E tests will run."
           fi
 
-      - name: Run E2E Tests (with API key)
+      - name: Run E2E Tests
         if: steps.api-key-check.outputs.warn == 'false'
         run: npm run test:e2e
         env:
           VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
-          # Playwright config
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: junit.xml
-        continue-on-error: true  # Warn if E2E fails; don't block entire pipeline
 
-      - name: Skip E2E Tests (API key missing)
+      - name: Skip E2E Tests
         if: steps.api-key-check.outputs.warn == 'true'
         run: |
           echo "⚠️ Skipping E2E tests: VITE_API_KEY not configured in GitHub Secrets"
-          echo "To enable E2E tests:"
-          echo "1. Go to Settings > Secrets and variables > Actions"
-          echo "2. Add secret: VITE_API_KEY = <your_gemini_api_key>"
-          echo "3. Re-run this workflow"
 
       - name: Upload E2E Test Results
         if: always()
@@ -356,15 +274,11 @@ jobs:
           reporter: "java-junit"
           fail-on-error: false
 
-  # ============================================================================
-  # Job 5: Status Summary
-  # Purpose: Provide clear pass/fail summary and block merge if needed
-  # ============================================================================
   ci-status:
     name: CI/CD Status
     runs-on: ubuntu-latest
     needs: [validate-and-lint, unit-tests, build, e2e-tests]
-    if: always()  # Run even if previous jobs fail
+    if: always()
     steps:
       - name: Determine CI Status
         run: |
@@ -374,10 +288,10 @@ jobs:
             "${{ needs.build.result }}" == "success" \
           ]]; then
             echo "✅ CI/CD Pipeline Passed"
-            echo "status=success" >> $GITHUB_ENV
+            exit 0
           else
             echo "❌ CI/CD Pipeline Failed"
-            echo "status=failure" >> $GITHUB_ENV
+            exit 1
           fi
 
       - name: Comment PR with Status
@@ -401,14 +315,14 @@ jobs:
 
             const body = `## CI/CD Pipeline Status
 
-| Job | Status |
-|-----|--------|
-| Validate & Lint | ${emoji[status['validate-and-lint']]} ${status['validate-and-lint']} |
-| Unit Tests | ${emoji[status['unit-tests']]} ${status['unit-tests']} |
-| Build | ${emoji[status['build']]} ${status['build']} |
-| E2E Tests | ${emoji[status['e2e-tests']]} ${status['e2e-tests']} |
+            | Job | Status |
+            |-----|--------|
+            | Validate & Lint | ${emoji[status['validate-and-lint']]} ${status['validate-and-lint']} |
+            | Unit Tests | ${emoji[status['unit-tests']]} ${status['unit-tests']} |
+            | Build | ${emoji[status['build']]} ${status['build']} |
+            | E2E Tests | ${emoji[status['e2e-tests']]} ${status['e2e-tests']} |
 
-**Required for Merge**: Lint, Unit Tests, Build (E2E tests are informational)`;
+            **Required for Merge**: Lint, Unit Tests, Build`;
 
             github.rest.issues.createComment({
               issue_number: context.issue.number,
@@ -422,9 +336,7 @@ jobs:
           needs.validate-and-lint.result != 'success' ||
           needs.unit-tests.result != 'success' ||
           needs.build.result != 'success'
-        run: |
-          echo "❌ Required jobs failed. See above for details."
-          exit 1
+        run: exit 1
 
       - name: Success
         if: success()
