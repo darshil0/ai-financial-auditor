@@ -1,4 +1,4 @@
-# 📈 FinAnalyzer Pro v1.5.2
+# 📈 FinAnalyzer Pro v1.5.3
 
 **FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade earnings analysis. Leveraging **Google Gemini API** (with extended thinking for deep financial reasoning), it transforms complex, multi-page corporate 10-Q/10-K PDFs into structured, actionable intelligence with visual analytics and real-time market grounding.
 
@@ -30,12 +30,12 @@ graph TD
 
 ### 🧠 Core Intelligence Components
 
-| Component | Model | Purpose | Constraints |
-|-----------|-------|---------|-------------|
-| **KPI Extraction** | `gemini-2.0-flash-exp` | Revenue, Net Income, EPS, Margins | Max tokens: 4,000 output |
-| **Deep Analysis** | `gemini-2.0-flash-exp` with extended thinking | Forensic financial narrative analysis | Budget: 10,000 thinking tokens (beta) |
-| **Live Analyst** | `gemini-2.0-flash-exp` with AudioWorklet | Streaming audio financial dialogue | Real-time constraint: <500ms latency |
-| **Market Grounding** | `gemini-1.5-pro` with Google Search tool | Compare SEC filings to real-time market data | Rate limited: 60 queries/min |
+| Component            | Model                                         | Purpose                                      | Constraints                           |
+| -------------------- | --------------------------------------------- | -------------------------------------------- | ------------------------------------- |
+| **KPI Extraction**   | `gemini-2.0-flash-exp`                        | Revenue, Net Income, EPS, Margins            | Max tokens: 4,000 output              |
+| **Deep Analysis**    | `gemini-2.0-flash-exp` with extended thinking | Forensic financial narrative analysis        | Budget: 10,000 thinking tokens (beta) |
+| **Live Analyst**     | `gemini-2.0-flash-exp` with AudioWorklet      | Streaming audio financial dialogue           | Real-time constraint: <500ms latency  |
+| **Market Grounding** | `gemini-1.5-pro` with Google Search tool      | Compare SEC filings to real-time market data | Rate limited: 60 queries/min          |
 
 **Note**: Extended thinking is currently in beta for Gemini. Production deployments should validate token consumption against quota limits before scaling.
 
@@ -71,7 +71,7 @@ graph TD
 
 - **Google AI Studio Account**: Sign up at [aistudio.google.com](https://aistudio.google.com/).
 - **Gemini API Key**: Generate from Google AI Studio console. Requires billing for production usage.
-- **Quota Requirements**: 
+- **Quota Requirements**:
   - KPI extraction: ~1–2 API calls per PDF.
   - Market grounding (Google Search): ~3–5 calls per earnings period.
   - **Free tier quota**: 60 requests/minute; **paid tier**: up to 10,000 requests/minute.
@@ -124,6 +124,7 @@ npm run dev
 ```
 
 The application will start at `http://localhost:5173` (Vite's default). Open in your browser and verify:
+
 - Dashboard loads without console errors.
 - PDF upload field is visible and clickable.
 - Global ticker search (`Cmd/Ctrl+K`) responds to input.
@@ -135,6 +136,7 @@ npm run build
 ```
 
 This generates an optimized `dist/` directory. Deploy to any static host:
+
 - **Vercel** (recommended for Next.js-free deployments): `vercel deploy`
 - **Netlify**: Drag-and-drop `dist/` folder.
 - **GitHub Pages**: Use GitHub Actions to auto-deploy on push.
@@ -157,18 +159,19 @@ npm run lint             # TypeScript + Prettier validation
 
 ### Test Coverage Requirements
 
-| Module | Target | Current | Status |
-|--------|--------|---------|--------|
-| Features | 80% | TBD | ⚠️ |
-| Services | 85% | TBD | ⚠️ |
-| Utils | 95% | TBD | ⚠️ |
-| **Overall** | **80%** | **TBD** | ⚠️ |
+| Module      | Target  | Current | Status |
+| ----------- | ------- | ------- | ------ |
+| Features    | 80%     | TBD     | ⚠️     |
+| Services    | 85%     | TBD     | ⚠️     |
+| Utils       | 95%     | TBD     | ⚠️     |
+| **Overall** | **80%** | **TBD** | ⚠️     |
 
 **Note**: Run `npm run test:coverage` locally to generate actual coverage metrics before deployment.
 
 ### E2E Test Preconditions
 
 E2E tests require:
+
 - A valid `VITE_API_KEY` in `.env` or GitHub Secrets.
 - Sample 10-Q PDF available at `src/test/fixtures/sample-10q.pdf`.
 - Internet connectivity (Google Search integration tests require live API calls).
@@ -219,6 +222,7 @@ FinAnalyzer Pro/
 **Requirement**: Extract Revenue, Net Income, EPS, and Operating Margins from 10-Q/10-K PDFs with forensic accuracy.
 
 **Validation**:
+
 - **Precondition**: PDF uploaded, < 25MB, contains OCR-readable tables.
 - **Implementation**: Gemini 2.0 Flash with structured JSON schema enforcement.
 - **Postcondition**: JSON response validated against schema; null values rejected.
@@ -229,6 +233,7 @@ FinAnalyzer Pro/
 **Requirement**: Display 8-quarter historical trends for Revenue and Net Income.
 
 **Validation**:
+
 - **Given**: User clicks "View Trends" after uploading report.
 - **When**: Dashboard loads comparison data from Zustand store.
 - **Then**: Recharts renders line chart with zoom, tooltip, and export-to-PNG.
@@ -239,6 +244,7 @@ FinAnalyzer Pro/
 **Requirement**: Real-time audio commentary on earnings trends.
 
 **Validation**:
+
 - **Input**: User activates "Live Analyst" button.
 - **Processing**: Gemini streams text → Web Audio API synthesizes voice.
 - **Output**: Audio plays through browser speaker with playback controls.
@@ -250,6 +256,7 @@ FinAnalyzer Pro/
 **Requirement**: Compare two earnings periods; quantify YoY growth and margins.
 
 **Validation**:
+
 - **Inputs**: Current period (Period A) and prior period (Period B).
 - **Calculation**: Delta = (A - B) / B × 100.
 - **Output**: Variance table with ▲/▼ icons and red/green highlighting.
@@ -260,6 +267,7 @@ FinAnalyzer Pro/
 **Requirement**: Ground SEC filing data in real-time market news.
 
 **Validation**:
+
 - **Search Query**: "[Company Name] earnings [quarter] [year] stock price".
 - **Results**: Return top 5 news articles with publication date and relevance score.
 - **Sync**: Compare SEC filing revenue to latest market data within 48 hours.
@@ -270,6 +278,7 @@ FinAnalyzer Pro/
 **Requirement**: Quantify management confidence from earnings call transcript or 10-K narrative.
 
 **Validation**:
+
 - **Metric**: 0–100 Bullishness score (50 = neutral, 75+ = optimistic, 25– = cautious).
 - **Method**: Keyword frequency analysis (positive: "growth", "exceeded"; negative: "headwind", "pressure").
 - **Output**: Score + color-coded indicator (🟢 Bullish, 🟡 Neutral, 🔴 Bearish).
@@ -277,17 +286,18 @@ FinAnalyzer Pro/
 
 ### Keyboard Shortcuts
 
-| Shortcut | Action | Context |
-|----------|--------|---------|
-| `Cmd/Ctrl+K` | Open global ticker search | Anywhere in app |
-| `Cmd/Ctrl+L` | Clear all reports from history | Dashboard only |
-| `Esc` | Close modal / Cancel upload | Modal open |
+| Shortcut     | Action                         | Context         |
+| ------------ | ------------------------------ | --------------- |
+| `Cmd/Ctrl+K` | Open global ticker search      | Anywhere in app |
+| `Cmd/Ctrl+L` | Clear all reports from history | Dashboard only  |
+| `Esc`        | Close modal / Cancel upload    | Modal open      |
 
 ### Diagnostic Export
 
 **Requirement**: Export dashboard UI as high-resolution PNG for reporting.
 
 **Validation**:
+
 - **Trigger**: User clicks "Export as PNG" in top-right menu.
 - **Output**: `html-to-image` library renders DOM → PNG (1920×1080, 150 DPI).
 - **File Size**: Typically 2–5MB per screenshot.
@@ -298,6 +308,7 @@ FinAnalyzer Pro/
 **Requirement**: Gracefully handle uncaught errors; prevent full app crash.
 
 **Validation**:
+
 - **Scope**: Wraps entire React tree; catches component errors.
 - **Recovery**: User sees error UI with "Reload App" button.
 - **Logging**: Errors sent to external service (Sentry, LogRocket) for debugging.
@@ -309,12 +320,12 @@ FinAnalyzer Pro/
 
 ### API Response Time SLA
 
-| Operation | Target | Max Timeout |
-|-----------|--------|------------|
-| PDF upload & parse | <3s | 10s |
-| KPI extraction | <5s | 15s |
-| Market grounding search | <2s | 8s |
-| Live Analyst (first token) | <500ms | 3s |
+| Operation                  | Target | Max Timeout |
+| -------------------------- | ------ | ----------- |
+| PDF upload & parse         | <3s    | 10s         |
+| KPI extraction             | <5s    | 15s         |
+| Market grounding search    | <2s    | 8s          |
+| Live Analyst (first token) | <500ms | 3s          |
 
 ### Concurrent User Limits
 
@@ -332,15 +343,15 @@ FinAnalyzer Pro/
 
 ## 🐛 Troubleshooting & Edge Cases
 
-| Issue | Symptom | Root Cause | Resolution |
-|-------|---------|-----------|-----------|
-| **API Error 401/403** | "Unauthorized" in browser console | Invalid or expired `VITE_API_KEY` | Regenerate key in Google AI Studio; verify billing is enabled. |
-| **PDF Parse Failure** | "Cannot extract text" warning | Password-protected or scanned (image-only) PDF | Use OCR preprocessing tool (Adobe, Google Docs); ensure PDF <25MB. |
-| **Playwright E2E Fails** | Tests timeout after 30s | API quota exhausted or network latency | Wait 1 minute for quota reset; check `npm run preview` build succeeded. |
-| **"Cannot find module"** | TypeScript error on import | Stale lockfile or incorrect Node version | Run `npm ci` (clean install); verify `node --version` matches v20.x or v22.x. |
-| **Recharts Not Rendering** | Charts show blank / "undefined" | Missing historical data or corrupted Zustand state | Clear browser localStorage (`DevTools > Application > Storage > Clear All`); re-upload report. |
-| **AudioWorklet Error** | "Audio context error" in console | Browser lacks Web Audio API (e.g., older Safari) | Upgrade browser to latest version; fallback to text-only mode if unavailable. |
-| **Market Grounding Returns No Results** | "0 articles found" | Google Search API rate-limited or quota exhausted | Retry after 60 seconds; check API billing in Google Cloud Console. |
+| Issue                                   | Symptom                           | Root Cause                                         | Resolution                                                                                     |
+| --------------------------------------- | --------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **API Error 401/403**                   | "Unauthorized" in browser console | Invalid or expired `VITE_API_KEY`                  | Regenerate key in Google AI Studio; verify billing is enabled.                                 |
+| **PDF Parse Failure**                   | "Cannot extract text" warning     | Password-protected or scanned (image-only) PDF     | Use OCR preprocessing tool (Adobe, Google Docs); ensure PDF <25MB.                             |
+| **Playwright E2E Fails**                | Tests timeout after 30s           | API quota exhausted or network latency             | Wait 1 minute for quota reset; check `npm run preview` build succeeded.                        |
+| **"Cannot find module"**                | TypeScript error on import        | Stale lockfile or incorrect Node version           | Run `npm ci` (clean install); verify `node --version` matches v20.x or v22.x.                  |
+| **Recharts Not Rendering**              | Charts show blank / "undefined"   | Missing historical data or corrupted Zustand state | Clear browser localStorage (`DevTools > Application > Storage > Clear All`); re-upload report. |
+| **AudioWorklet Error**                  | "Audio context error" in console  | Browser lacks Web Audio API (e.g., older Safari)   | Upgrade browser to latest version; fallback to text-only mode if unavailable.                  |
+| **Market Grounding Returns No Results** | "0 articles found"                | Google Search API rate-limited or quota exhausted  | Retry after 60 seconds; check API billing in Google Cloud Console.                             |
 
 ### Known Limitations
 
@@ -353,12 +364,12 @@ FinAnalyzer Pro/
 
 ## 📝 Version History
 
-| Version | Date | Changes |
-|---------|------|---------|
+| Version    | Date     | Changes                                                                         |
+| ---------- | -------- | ------------------------------------------------------------------------------- |
 | **v1.5.2** | Jun 2026 | Added extended thinking for forensic analysis; improved error boundary logging. |
-| **v1.5.0** | Dec 2025 | Live Analyst voice feature; AudioWorklet integration. |
-| **v1.4.0** | Nov 2025 | Market grounding via Google Search; Sentiment Gauge. |
-| **v1.0.0** | Oct 2024 | Initial release: KPI extraction, trends, comparative hub. |
+| **v1.5.0** | Dec 2025 | Live Analyst voice feature; AudioWorklet integration.                           |
+| **v1.4.0** | Nov 2025 | Market grounding via Google Search; Sentiment Gauge.                            |
+| **v1.0.0** | Oct 2024 | Initial release: KPI extraction, trends, comparative hub.                       |
 
 ---
 
@@ -389,6 +400,7 @@ FinAnalyzer Pro/
 **License**: MIT (Open-source, full transparency for institutional auditing).
 
 **Support**:
+
 - **Issues**: File a GitHub issue with error logs and reproduction steps.
 - **Security**: Report vulnerabilities privately to `darshil@email.com` (do not open public issues).
 - **Feedback**: Submit feature requests or questions via GitHub Discussions.
@@ -405,20 +417,23 @@ _Institutional-grade financial analysis powered by Google Gemini API._ Developed
 
 ```javascript
 // Example: Initialize Gemini client
-const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent', {
-  method: 'POST',
-  headers: {
-    'Content-Type': 'application/json',
-    'x-goog-api-key': import.meta.env.VITE_API_KEY,
-  },
-  body: JSON.stringify({
-    contents: [{ role: 'user', parts: [{ text: 'Extract revenue from this 10-Q...' }] }],
-    generationConfig: {
-      maxOutputTokens: 4000,
-      temperature: 0.2, // Low temperature for factual extraction
+const response = await fetch(
+  "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent",
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-goog-api-key": import.meta.env.VITE_API_KEY,
     },
-  }),
-});
+    body: JSON.stringify({
+      contents: [{ role: "user", parts: [{ text: "Extract revenue from this 10-Q..." }] }],
+      generationConfig: {
+        maxOutputTokens: 4000,
+        temperature: 0.2, // Low temperature for factual extraction
+      },
+    }),
+  },
+);
 ```
 
 ### Error Handling Best Practices
@@ -434,7 +449,7 @@ async function callGeminiWithRetry(prompt, maxRetries = 3) {
     } catch (error) {
       if (error.status === 429 && attempt < maxRetries) {
         const delayMs = Math.pow(2, attempt) * 1000; // Exponential backoff
-        await new Promise(resolve => setTimeout(resolve, delayMs));
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
       } else {
         throw error;
       }
