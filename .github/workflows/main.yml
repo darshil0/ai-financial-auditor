@@ -6,14 +6,23 @@ on:
   pull_request:
     branches: [main, develop]
   workflow_dispatch:
+    inputs:
+      allow_skip_e2e:
+        description: "Allow E2E job to skip (instead of fail) if VITE_API_KEY secret is missing"
+        type: boolean
+        default: false
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   NODE_OPTIONS: --max-old-space-size=4096
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+  MIN_COVERAGE: 80
 
 jobs:
   validate-and-lint:
@@ -42,11 +51,17 @@ jobs:
           path: ./
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
-          extra_args: --debug --only-verified
+          extra_args: --only-verified
+        timeout-minutes: 5
 
       - name: Run Security Audit
+        id: security-audit
         run: npm audit --audit-level=moderate
         continue-on-error: true
+
+      - name: Flag Security Audit Findings
+        if: steps.security-audit.outcome == 'failure'
+        run: echo "::warning::npm audit reported moderate+ vulnerabilities. Review before merging; this step is non-blocking by design."
 
       - name: Lint Code (TypeScript + Prettier)
         run: npm run lint
@@ -84,13 +99,15 @@ jobs:
 
       - name: Validate Coverage Targets
         run: |
-          COVERAGE=$(cat coverage/coverage-summary.json | jq '.total.lines.pct')
-          MIN_COVERAGE=80
-          if (( $(echo "$COVERAGE < $MIN_COVERAGE" | bc -l) )); then
-            echo "❌ Coverage $COVERAGE% is below target $MIN_COVERAGE%"
+          if [ ! -f coverage/coverage-summary.json ]; then
+            echo "❌ coverage/coverage-summary.json not found — test:unit did not emit a summary reporter."
             exit 1
           fi
-          echo "✅ Coverage $COVERAGE% meets target $MIN_COVERAGE%"
+          COVERAGE=$(node -p "require('./coverage/coverage-summary.json').total.lines.pct")
+          echo "Line coverage: ${COVERAGE}% (target: ${MIN_COVERAGE}%)"
+          awk -v cov="$COVERAGE" -v min="$MIN_COVERAGE" 'BEGIN { exit !(cov >= min) }' \
+            && echo "✅ Coverage meets target" \
+            || { echo "❌ Coverage ${COVERAGE}% is below target ${MIN_COVERAGE}%"; exit 1; }
 
   build:
     name: Build Verification (Node ${{ matrix.node-version }})
@@ -123,14 +140,8 @@ jobs:
 
       - name: Verify Build Artifacts
         run: |
-          if [ ! -d "dist" ]; then
-            echo "❌ Build failed: dist/ directory not created"
-            exit 1
-          fi
-          if [ ! -f "dist/index.html" ]; then
-            echo "❌ Build failed: dist/index.html not found"
-            exit 1
-          fi
+          test -d dist || { echo "❌ Build failed: dist/ directory not created"; exit 1; }
+          test -f dist/index.html || { echo "❌ Build failed: dist/index.html not found"; exit 1; }
           echo "✅ Build artifacts verified"
 
       - name: Upload Build Artifacts
@@ -147,6 +158,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: [validate-and-lint, build]
     timeout-minutes: 30
+    permissions:
+      contents: read
+      checks: write
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -175,30 +189,46 @@ jobs:
           fi
           echo "✅ Build artifacts ready for E2E testing"
 
+      - name: Cache Playwright Browsers
+        id: playwright-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+
       - name: Install Playwright Browsers
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
         run: npx playwright install --with-deps chromium
+
+      - name: Install Playwright OS Dependencies (cache hit)
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: npx playwright install-deps chromium
 
       - name: Check for API Key
         id: api-key-check
         run: |
           if [ -z "${{ secrets.VITE_API_KEY }}" ]; then
-            echo "warn=true" >> $GITHUB_OUTPUT
-            echo "⚠️ Warning: VITE_API_KEY not set. E2E tests will be skipped."
+            echo "missing=true" >> "$GITHUB_OUTPUT"
           else
-            echo "warn=false" >> $GITHUB_OUTPUT
-            echo "✅ API key available. E2E tests will run."
+            echo "missing=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Enforce API Key Presence
+        if: steps.api-key-check.outputs.missing == 'true' && github.event.inputs.allow_skip_e2e != 'true'
+        run: |
+          echo "::error::VITE_API_KEY is not configured in GitHub Secrets. Failing instead of silently skipping E2E coverage. Re-run via workflow_dispatch with allow_skip_e2e=true to intentionally bypass."
+          exit 1
+
       - name: Run E2E Tests
-        if: steps.api-key-check.outputs.warn == 'false'
+        if: steps.api-key-check.outputs.missing == 'false'
         run: npm run test:e2e
         env:
           VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: junit.xml
 
-      - name: Skip E2E Tests
-        if: steps.api-key-check.outputs.warn == 'true'
-        run: echo "⚠️ Skipping E2E tests: VITE_API_KEY not configured in GitHub Secrets"
+      - name: Skip E2E Tests (explicit opt-in only)
+        if: steps.api-key-check.outputs.missing == 'true' && github.event.inputs.allow_skip_e2e == 'true'
+        run: echo "::warning::Skipping E2E tests — VITE_API_KEY not configured and allow_skip_e2e was explicitly set."
 
       - name: Upload E2E Test Results
         if: always()
@@ -231,10 +261,15 @@ jobs:
           if [[ \
             "${{ needs.validate-and-lint.result }}" == "success" && \
             "${{ needs.unit-tests.result }}" == "success" && \
-            "${{ needs.build.result }}" == "success" \
+            "${{ needs.build.result }}" == "success" && \
+            "${{ needs.e2e-tests.result }}" == "success" \
           ]]; then
             echo "✅ CI/CD Pipeline Passed"
           else
             echo "❌ CI/CD Pipeline Failed"
+            echo "validate-and-lint: ${{ needs.validate-and-lint.result }}"
+            echo "unit-tests: ${{ needs.unit-tests.result }}"
+            echo "build: ${{ needs.build.result }}"
+            echo "e2e-tests: ${{ needs.e2e-tests.result }}"
             exit 1
           fi
