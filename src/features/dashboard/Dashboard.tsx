@@ -327,7 +327,7 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
                         backgroundColor: "rgba(255, 255, 255, 0.96)",
                       }}
                       itemStyle={{ fontWeight: 700, fontSize: "12px" }}
-                      formatter={(value: number) => formatCurrency(value, true)}
+                      formatter={(value: any) => formatCurrency(Number(value), true)}
                     />
                     <Area
                       type="monotone"
@@ -494,7 +494,7 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
                       backgroundColor: "rgba(255, 255, 255, 0.96)",
                     }}
                     itemStyle={{ fontWeight: 700 }}
-                    formatter={(value: number) => formatCurrency(value)}
+                    formatter={(value: any) => formatCurrency(Number(value))}
                   />
                   <Legend iconType="circle" wrapperStyle={{ paddingTop: "20px" }} />
                 </PieChart>

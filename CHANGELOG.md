@@ -8,6 +8,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ## [Unreleased]
 
+---
+
+## [1.5.3] - 2026-06-05
+
+**Status**: Current Release
+**Compatibility**: Node v20.18+, v22.x | React 19.0 | Vite 8.1+
+
+### Changed
+
+- **Dependency Overhaul**: Updated all core dependencies to their latest stable versions for improved performance and security.
+  - `vite`: ^6.4.3 → ^8.1.3
+  - `@google/genai`: ^1.52.0 → ^2.10.0
+  - `typescript`: ~5.8.3 → ~6.0.3
+  - `recharts`: ^3.8.1 → ^3.9.1
+  - `vitest`: ^4.1.8 → ^4.1.9
+- **TypeScript Optimization**:
+  - Removed deprecated `baseUrl` from `tsconfig.json`.
+  - Refined type definitions in `Dashboard.tsx` and `geminiService.ts` to ensure compatibility with latest Recharts and Gemini AI SDK.
+- **Code Hygiene**: Project-wide Prettier formatting applied.
+
+### Fixed
+
+- **Security Hardening**: Resolved all moderate and high-severity vulnerabilities identified in the dependency tree via `npm audit fix`.
+- **Runtime Stability**: Patched potential null-pointer exceptions in `geminiService.ts` when handling malformed AI responses.
+
 ### Planned
 
 - Multilingual earnings report support (Chinese, Japanese, Spanish).
@@ -187,18 +212,21 @@ If your project imports CommonJS modules, add:
 ⚠️ **Important**: Projects upgrading to v1.5.0 must update import statements.
 
 **Old Pattern (v1.4.x and earlier)**:
+
 ```typescript
-import { Dashboard } from '../features/dashboard/Dashboard';
-import { geminiService } from '../../../shared/services/geminiService';
+import { Dashboard } from "../features/dashboard/Dashboard";
+import { geminiService } from "../../../shared/services/geminiService";
 ```
 
 **New Pattern (v1.5.0+)**:
+
 ```typescript
-import { Dashboard } from '@/features/dashboard';
-import { geminiService } from '@/shared/services';
+import { Dashboard } from "@/features/dashboard";
+import { geminiService } from "@/shared/services";
 ```
 
 **Path Alias Configuration** (already in `tsconfig.json` and `vite.config.ts`):
+
 ```json
 {
   "paths": {
@@ -208,6 +236,7 @@ import { geminiService } from '@/shared/services';
 ```
 
 **Migration Steps**:
+
 1. Run `npm install` to sync dependencies.
 2. Update all imports to use `@/` aliases (IDE "Find and Replace" recommended).
 3. Run `npm run test:unit && npm run test:e2e` to validate.
@@ -391,13 +420,15 @@ import { geminiService } from '@/shared/services';
 ⚠️ **Important**: All relative imports must be updated to use `@/` aliases.
 
 **Old Pattern**:
+
 ```typescript
-import { analyzeEarningsReport } from '../services/geminiService';
+import { analyzeEarningsReport } from "../services/geminiService";
 ```
 
 **New Pattern**:
+
 ```typescript
-import { analyzeEarningsReport } from '@/shared/services/geminiService';
+import { analyzeEarningsReport } from "@/shared/services/geminiService";
 ```
 
 **Migration**: Use IDE find-and-replace to update all imports. See `MIGRATION.md` for detailed guide.
