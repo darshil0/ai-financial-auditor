@@ -14,7 +14,7 @@
 "format:check": "prettier "**/*.{ts,tsx,js,jsx,json,md,css,html}" --check",
 "typecheck": "tsc --noEmit",
 "lint": "tsc --noEmit && prettier --check ."
-},
+
 "dependencies": {
 "@google/genai": "^2.10.0",
 "html-to-image": "^1.11.13",
