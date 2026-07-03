@@ -1,13 +1,5 @@
 import React from "react";
-import {
-  FileQuestion,
-  Sparkles,
-  PieChart as PieChartIcon,
-  Activity,
-  MessageSquareText,
-  ImageIcon,
-  Globe,
-} from "lucide-react";
+import { FileQuestion, Sparkles } from "lucide-react";
 
 const SkeletonBlock = ({
   className,
