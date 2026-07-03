@@ -109,6 +109,11 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
       const url = URL.createObjectURL(blob);
       audioUrlRef.current = url;
 
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+      }
+      audioUrlRef.current = url;
+
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current.src = "";

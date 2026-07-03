@@ -39,7 +39,7 @@ const ReportUploader: React.FC<ReportUploaderProps> = ({ onReportAdded }) => {
     setStatus("Reading file and preparing for analysis...");
 
     try {
-      setStatus("Gemini 3 Pro is conducting a deep-dive analysis...");
+      setStatus("Gemini is conducting a deep-dive analysis...");
       const report = await analyzeEarningsReport(file);
       onReportAdded(report);
     } catch (err: any) {

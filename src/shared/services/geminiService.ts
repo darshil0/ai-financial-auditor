@@ -69,6 +69,9 @@ const reportSchema = {
     "eps",
     "epsPrior",
     "grossMargin",
+    "operatingMargin",
+    "netMargin",
+    "managementCommentary",
     "expenses",
     "trends",
     "highlights",
@@ -204,7 +207,6 @@ export async function getMarketContext(ticker: string, company: string) {
       contents: prompt,
       config: {
         tools: [{ googleSearch: {} }],
-        thinkingConfig: { thinkingBudget: 2048 },
       },
     });
 
