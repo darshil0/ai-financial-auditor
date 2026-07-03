@@ -36,6 +36,72 @@ interface MetricRowProps {
   invert?: boolean;
 }
 
+const MetricRow: React.FC<MetricRowProps> = ({
+  label,
+  v1,
+  v2,
+  format = "currency",
+  invert = false,
+}) => {
+  const delta = v2 - v1;
+  const pctChange = Math.abs(v1) > 0 ? (delta / Math.abs(v1)) * 100 : 0;
+
+  const displayV1 =
+    format === "currency"
+      ? formatCurrency(v1)
+      : `${v1.toFixed(2)}${format === "percent" ? "%" : ""}`;
+  const displayV2 =
+    format === "currency"
+      ? formatCurrency(v2)
+      : `${v2.toFixed(2)}${format === "percent" ? "%" : ""}`;
+
+  const isPositive = delta > 0;
+  const isNeutral = Math.abs(delta) < 0.001;
+  const isGood = invert ? !isPositive : isPositive;
+
+  const displayDelta =
+    format === "currency"
+      ? formatCurrency(delta)
+      : `${isPositive ? "+" : ""}${delta.toFixed(2)}${format === "percent" ? "%" : ""}`;
+
+  const colorClasses = isNeutral
+    ? "text-slate-500 bg-slate-100 dark:bg-slate-800"
+    : isGood
+      ? "text-emerald-700 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400"
+      : "text-rose-700 bg-rose-50 dark:bg-rose-900/30 dark:text-rose-400";
+
+  return (
+    <div className="grid grid-cols-4 py-4 border-b border-slate-100 dark:border-slate-800 items-center transition-all hover:bg-slate-50/50 dark:hover:bg-slate-900/30 px-4 -mx-4 rounded-lg">
+      <div className="text-slate-600 dark:text-slate-400 font-semibold text-xs md:text-sm">
+        {label}
+      </div>
+      <div className="text-right font-medium text-slate-700 dark:text-slate-300 text-xs md:text-sm">
+        {displayV1}
+      </div>
+      <div className="text-right font-bold text-slate-900 dark:text-white text-xs md:text-sm">
+        {displayV2}
+      </div>
+      <div className="flex flex-col items-end">
+        <div
+          className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-bold text-[10px] md:text-xs shadow-sm ${colorClasses}`}
+        >
+          {!isNeutral && (isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />)}
+          {isNeutral && <Minus size={14} />}
+          <span>{isNeutral ? "Flat" : displayDelta}</span>
+        </div>
+        {!isNeutral && format !== "percent" && (
+          <span
+            className={`text-[10px] font-bold mt-1 ${isGood ? "text-emerald-600/70" : "text-rose-600/70"}`}
+          >
+            {isPositive ? "+" : ""}
+            {pctChange.toFixed(1)}%
+          </span>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const ComparisonView: React.FC<ComparisonViewProps> = ({
   reports,
   report1Id: report1IdProp,
@@ -67,12 +133,12 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
 
   React.useEffect(() => {
     const ids = filteredReports.map((r) => r.id);
-    if (!ids.includes(report1Id) && ids.length > 0) setReport1Id(ids[0]);
-    if (!ids.includes(report2Id) && ids.length > 1) setReport2Id(ids[1]);
+    setReport1Id((prev) => (ids.includes(prev) ? prev : ids[0] || ""));
+    setReport2Id((prev) => (ids.includes(prev) ? prev : ids[1] || ""));
 
     // Reset dismissed warnings when the underlying report set or filter changes
     setDismissedWarnings(new Set());
-  }, [typeFilter, filteredReports, reports.length]);
+  }, [filteredReports]);
 
   const report1 = useMemo(() => reports.find((r) => r.id === report1Id), [reports, report1Id]);
   const report2 = useMemo(() => reports.find((r) => r.id === report2Id), [reports, report2Id]);
@@ -212,71 +278,6 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
     document.body.removeChild(link);
   };
 
-  const MetricRow: React.FC<MetricRowProps> = ({
-    label,
-    v1,
-    v2,
-    format = "currency",
-    invert = false,
-  }) => {
-    const delta = v2 - v1;
-    const pctChange = Math.abs(v1) > 0 ? (delta / Math.abs(v1)) * 100 : 0;
-
-    const displayV1 =
-      format === "currency"
-        ? formatCurrency(v1)
-        : `${v1.toFixed(2)}${format === "percent" ? "%" : ""}`;
-    const displayV2 =
-      format === "currency"
-        ? formatCurrency(v2)
-        : `${v2.toFixed(2)}${format === "percent" ? "%" : ""}`;
-
-    const isPositive = delta > 0;
-    const isNeutral = Math.abs(delta) < 0.001;
-    const isGood = invert ? !isPositive : isPositive;
-
-    const displayDelta =
-      format === "currency"
-        ? formatCurrency(delta)
-        : `${isPositive ? "+" : ""}${delta.toFixed(2)}${format === "percent" ? "%" : ""}`;
-
-    const colorClasses = isNeutral
-      ? "text-slate-500 bg-slate-100 dark:bg-slate-800"
-      : isGood
-        ? "text-emerald-700 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400"
-        : "text-rose-700 bg-rose-50 dark:bg-rose-900/30 dark:text-rose-400";
-
-    return (
-      <div className="grid grid-cols-4 py-4 border-b border-slate-100 dark:border-slate-800 items-center transition-all hover:bg-slate-50/50 dark:hover:bg-slate-900/30 px-4 -mx-4 rounded-lg">
-        <div className="text-slate-600 dark:text-slate-400 font-semibold text-xs md:text-sm">
-          {label}
-        </div>
-        <div className="text-right font-medium text-slate-700 dark:text-slate-300 text-xs md:text-sm">
-          {displayV1}
-        </div>
-        <div className="text-right font-bold text-slate-900 dark:text-white text-xs md:text-sm">
-          {displayV2}
-        </div>
-        <div className="flex flex-col items-end">
-          <div
-            className={`flex items-center gap-1 px-2.5 py-1 rounded-full font-bold text-[10px] md:text-xs shadow-sm ${colorClasses}`}
-          >
-            {!isNeutral && (isPositive ? <ArrowUpRight size={14} /> : <ArrowDownRight size={14} />)}
-            {isNeutral && <Minus size={14} />}
-            <span>{isNeutral ? "Flat" : displayDelta}</span>
-          </div>
-          {!isNeutral && format !== "percent" && (
-            <span
-              className={`text-[10px] font-bold mt-1 ${isGood ? "text-emerald-600/70" : "text-rose-600/70"}`}
-            >
-              {isPositive ? "+" : ""}
-              {pctChange.toFixed(1)}%
-            </span>
-          )}
-        </div>
-      </div>
-    );
-  };
 
   if (reports.length < 2) {
     return (

@@ -4,7 +4,7 @@ import { FinancialReport } from "@/shared/types";
 
 interface HeaderProps {
   isDarkMode: boolean;
-  setIsDarkMode: (val: boolean) => void;
+  onToggleDarkMode: () => void;
   companyName?: string;
   ticker?: string;
   reports: FinancialReport[];
@@ -14,7 +14,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({
   isDarkMode,
-  setIsDarkMode,
+  onToggleDarkMode,
   companyName,
   ticker,
   reports,
@@ -232,7 +232,7 @@ const Header: React.FC<HeaderProps> = ({
 
         <div className="flex items-center gap-1 md:gap-3 bg-slate-100 dark:bg-slate-800 p-1 rounded-2xl">
           <button
-            onClick={() => setIsDarkMode(false)}
+            onClick={() => isDarkMode && onToggleDarkMode()}
             className={`p-2 md:p-2.5 rounded-xl transition-all ${!isDarkMode ? "bg-white text-blue-600 shadow-md" : "text-slate-500 hover:text-slate-200"}`}
             title="Light Mode"
             aria-label="Switch to Light Mode"
@@ -240,7 +240,7 @@ const Header: React.FC<HeaderProps> = ({
             <Sun size={18} />
           </button>
           <button
-            onClick={() => setIsDarkMode(true)}
+            onClick={() => !isDarkMode && onToggleDarkMode()}
             className={`p-2 md:p-2.5 rounded-xl transition-all ${isDarkMode ? "bg-slate-700 text-blue-400 shadow-md" : "text-slate-500 hover:text-slate-700"}`}
             title="Dark Mode"
             aria-label="Switch to Dark Mode"
