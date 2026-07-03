@@ -54,6 +54,7 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
   const [isPlayingAudio, setIsPlayingAudio] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioUrlRef = useRef<string | null>(null);
 
   useEffect(() => {
     setIsLoading(true);
@@ -106,6 +107,7 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
       const audioBytes = decodeBase64(audioData);
       const blob = createWaveBlob(audioBytes);
       const url = URL.createObjectURL(blob);
+      audioUrlRef.current = url;
 
       if (audioRef.current) {
         audioRef.current.pause();
@@ -120,7 +122,10 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
 
       audio.onended = () => {
         setIsPlayingAudio(false);
-        URL.revokeObjectURL(url);
+        if (audioUrlRef.current === url) {
+          URL.revokeObjectURL(url);
+          audioUrlRef.current = null;
+        }
       };
     })().finally(() => setIsGeneratingBriefing(false));
 
@@ -137,6 +142,10 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
         audioRef.current.pause();
         audioRef.current.src = "";
         audioRef.current = null;
+      }
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = null;
       }
     };
   }, [report?.id]);
