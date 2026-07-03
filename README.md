@@ -1,4 +1,4 @@
-# 📈 FinAnalyzer Pro v1.5.3
+# 📈 FinAnalyzer Pro v1.5.4
 
 **FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade earnings analysis. Leveraging **Google Gemini API** (with extended thinking for deep financial reasoning), it transforms complex, multi-page corporate 10-Q/10-K PDFs into structured, actionable intelligence with visual analytics and real-time market grounding.
 
