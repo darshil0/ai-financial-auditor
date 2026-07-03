@@ -24,6 +24,7 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected 
   const inputContextRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const isMutedRef = useRef(false);
+  const reportIdRef = useRef(report.id);
 
   useEffect(() => {
     const startSession = async () => {
@@ -43,11 +44,13 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected 
         streamRef.current = stream;
 
         const sessionPromise = connectLiveAnalyst(report, {
-          onopen: () => {
+          onopen: async () => {
             setIsConnecting(false);
             setIsActive(true);
             setStatus("Analyst connected. You can speak now.");
             if (onConnected) onConnected();
+
+            const session = await sessionPromise;
 
             // Stream microphone
             const source = inputContextRef.current!.createMediaStreamSource(stream);
@@ -56,9 +59,7 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected 
               if (isMutedRef.current) return;
               const inputData = e.inputBuffer.getChannelData(0);
               const pcmBlob = createPcmBlob(inputData);
-              sessionPromise.then((session) => {
-                session.sendRealtimeInput({ media: pcmBlob });
-              });
+              session.sendRealtimeInput({ media: pcmBlob });
             };
             source.connect(scriptProcessor);
             scriptProcessor.connect(inputContextRef.current!.destination);
@@ -105,7 +106,13 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected 
     startSession();
 
     return () => {
-      if (sessionRef.current) sessionRef.current.close();
+      if (sessionRef.current) {
+        try {
+          sessionRef.current.close();
+        } catch (e) {
+          console.error("Error closing session:", e);
+        }
+      }
       if (audioContextRef.current && audioContextRef.current.state !== "closed") {
         audioContextRef.current.close();
       }
@@ -125,7 +132,7 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected 
       });
       sourcesRef.current.clear();
     };
-  }, [report]);
+  }, [report.id]);
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
