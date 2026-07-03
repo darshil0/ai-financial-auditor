@@ -3,6 +3,7 @@
 Thank you for your interest in contributing to FinAnalyzer Pro! This document outlines the standards, workflows, and expectations for all contributors.
 
 **Contents:**
+
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
 - [Development Workflow](#development-workflow)
@@ -59,18 +60,21 @@ Verify your development environment before cloning:
 1. **Fork the repository** on GitHub (top-right corner).
 
 2. **Clone your fork**:
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/ai-financial-auditor.git
    cd ai-financial-auditor
    ```
 
 3. **Add upstream remote** (to stay synced with main repo):
+
    ```bash
    git remote add upstream https://github.com/darshil0/ai-financial-auditor.git
    git fetch upstream
    ```
 
 4. **Create `.env` file** for local development:
+
    ```bash
    cp .env.example .env
    # Edit .env and add your VITE_API_KEY from Google AI Studio
@@ -78,11 +82,13 @@ Verify your development environment before cloning:
    ```
 
 5. **Install dependencies**:
+
    ```bash
    npm ci  # Use 'ci' (clean install) instead of 'install' for reproducible builds
    ```
 
 6. **Verify setup**:
+
    ```bash
    npm run dev
    npm run lint
@@ -148,6 +154,7 @@ Examples:
 ```
 
 **Types**:
+
 - `feature/`: New functionality
 - `fix/`: Bug fixes
 - `docs/`: Documentation only
@@ -238,10 +245,11 @@ Fixes #156
 - **Type** (`feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `chore`): Required
 - **Scope** (e.g., `analyzer`, `utils`, `store`): Recommended
 - **Subject**: Imperative mood ("add" not "added"), <50 characters, lowercase
-- **Body**: Explain *why* the change, not just *what*; wrap at 72 characters
+- **Body**: Explain _why_ the change, not just _what_; wrap at 72 characters
 - **Footer**: Reference issues (`Closes #123`, `Fixes #456`)
 
 **Bad Commits**:
+
 ```
 ❌ "fixed stuff"
 ❌ "update dependencies"  # Too vague
@@ -249,6 +257,7 @@ Fixes #156
 ```
 
 **Good Commits**:
+
 ```
 ✅ feat(dashboard): add revenue trend visualization
 ✅ fix(analyst): resolve audio cleanup memory leak
@@ -282,12 +291,15 @@ GitHub will show a prompt to open a PR. Click it, or go to https://github.com/da
 
 ```markdown
 ## Description
+
 Brief explanation of changes and their purpose.
 
 ## Related Issue
+
 Closes #123
 
 ## Type of Change
+
 - [ ] Feature
 - [ ] Bug fix
 - [ ] Documentation
@@ -295,9 +307,11 @@ Closes #123
 - [ ] Performance
 
 ## How to Test
+
 Step-by-step instructions for reviewers to verify the changes.
 
 ## Checklist
+
 - [ ] Tests pass (`npm test`)
 - [ ] E2E tests pass (`npm run test:e2e`)
 - [ ] Code is formatted (`npm run lint`)
@@ -309,12 +323,14 @@ Step-by-step instructions for reviewers to verify the changes.
 ### Step 6: Code Review & Iteration
 
 **Expectations**:
+
 - Maintainers will review within 48 hours
 - Address feedback by adding new commits (don't force-push unless asked)
 - Re-request review after addressing comments
 - Be patient; maintainers have limited bandwidth
 
 **Review Checklist** (what maintainers evaluate):
+
 - ✅ Code follows style guidelines (`npm run lint` passes)
 - ✅ Tests are included and passing
 - ✅ Documentation is updated
@@ -325,6 +341,7 @@ Step-by-step instructions for reviewers to verify the changes.
 ### Step 7: Merge & Cleanup
 
 Once approved:
+
 1. Maintainers will squash and merge your PR
 2. Delete your feature branch:
    ```bash
@@ -354,6 +371,7 @@ function calculateGrowth(current, prior) {
 ```
 
 **Naming Conventions**:
+
 - Components: `PascalCase` (e.g., `Dashboard`, `LiveAnalyst`)
 - Functions/utilities: `camelCase` (e.g., `formatCurrency`, `analyzeReport`)
 - Constants: `SCREAMING_SNAKE_CASE` (e.g., `MAX_PDF_SIZE_MB`)
@@ -499,8 +517,8 @@ async function analyzeReport(pdfFile: File): Promise<Analysis> {
     }
     return response.data;
   } catch (error) {
-    logger.error('Report analysis failed', { fileName: pdfFile.name, error });
-    throw new Error('Failed to analyze report. Please try again.');
+    logger.error("Report analysis failed", { fileName: pdfFile.name, error });
+    throw new Error("Failed to analyze report. Please try again.");
   }
 }
 
@@ -515,10 +533,10 @@ async function analyzeReport(pdfFile: File) {
 
 ```typescript
 // ✅ GOOD: Actionable
-throw new Error('PDF exceeds 25MB limit. Compress your file and try again.');
+throw new Error("PDF exceeds 25MB limit. Compress your file and try again.");
 
 // ❌ BAD: Vague
-throw new Error('Error');
+throw new Error("Error");
 ```
 
 ---
@@ -527,23 +545,25 @@ throw new Error('Error');
 
 ### Coverage Targets
 
-| Category | Target | Enforcement |
-|----------|--------|-------------|
-| **Utilities** | 95% | Block PR if <95% |
-| **Services** | 85% | Block PR if <85% |
-| **Components** | 80% | Block PR if <80% |
-| **Overall** | 80% | Block PR if <80% |
+| Category       | Target | Enforcement      |
+| -------------- | ------ | ---------------- |
+| **Utilities**  | 95%    | Block PR if <95% |
+| **Services**   | 85%    | Block PR if <85% |
+| **Components** | 80%    | Block PR if <80% |
+| **Overall**    | 80%    | Block PR if <80% |
 
 ### Unit Tests
 
 **Tool**: Vitest + React Testing Library
 
 **Requirements**:
+
 - Test user behavior, not implementation details
 - Mock external dependencies (API, file system)
 - Avoid testing React internals
 
 **Test File Placement**:
+
 ```
 src/
 ├── shared/
@@ -556,9 +576,9 @@ src/
 **Test Structure** (AAA Pattern):
 
 ```typescript
-describe('formatCurrency', () => {
+describe("formatCurrency", () => {
   // ✅ GOOD: Clear test name, AAA pattern
-  it('should format valid numbers with dollar sign and commas', () => {
+  it("should format valid numbers with dollar sign and commas", () => {
     // Arrange
     const input = 1234567.89;
 
@@ -566,18 +586,18 @@ describe('formatCurrency', () => {
     const result = formatCurrency(input);
 
     // Assert
-    expect(result).toBe('$1,234,567.89');
+    expect(result).toBe("$1,234,567.89");
   });
 
   // ✅ GOOD: Edge case with clear expectation
-  it('should return $0.00 when passed NaN', () => {
+  it("should return $0.00 when passed NaN", () => {
     const result = formatCurrency(NaN);
-    expect(result).toBe('$0.00');
+    expect(result).toBe("$0.00");
   });
 
   // ❌ BAD: Test name too vague
-  it('tests formatCurrency', () => {
-    expect(formatCurrency(1234567.89)).toBe('$1,234,567.89');
+  it("tests formatCurrency", () => {
+    expect(formatCurrency(1234567.89)).toBe("$1,234,567.89");
   });
 });
 ```
@@ -621,6 +641,7 @@ npm run test:coverage
 **Scope**: Critical user workflows only; not all features.
 
 **Test File Placement**:
+
 ```
 src/test/e2e/
 ├── upload-and-analyze.spec.ts
@@ -629,6 +650,7 @@ src/test/e2e/
 ```
 
 **Critical Workflows to Test**:
+
 1. ✅ Upload PDF → Extract KPIs → Display Dashboard
 2. ✅ Upload two reports → Compare → View variance
 3. ✅ Activate Live Analyst → Stream audio commentary
@@ -638,16 +660,16 @@ src/test/e2e/
 **Test Structure**:
 
 ```typescript
-import { test, expect } from '@playwright/test';
+import { test, expect } from "@playwright/test";
 
-test.describe('Upload & Analyze Workflow', () => {
-  test('should upload PDF and display extracted KPIs', async ({ page }) => {
+test.describe("Upload & Analyze Workflow", () => {
+  test("should upload PDF and display extracted KPIs", async ({ page }) => {
     // Navigate to app
-    await page.goto('http://localhost:4173');
+    await page.goto("http://localhost:4173");
 
     // Upload PDF (assuming file exists at fixtures path)
     const fileInput = page.locator('input[type="file"]');
-    await fileInput.setInputFiles('src/test/fixtures/sample-10q.pdf');
+    await fileInput.setInputFiles("src/test/fixtures/sample-10q.pdf");
 
     // Wait for analysis to complete (up to 10 seconds)
     await page.waitForSelector('[data-testid="kpi-revenue"]', { timeout: 10000 });
@@ -675,6 +697,7 @@ npm run test:e2e -- --debug
 ```
 
 **Preconditions for E2E**:
+
 - Valid `VITE_API_KEY` in `.env`
 - Sample PDF at `src/test/fixtures/sample-10q.pdf`
 - Internet connectivity (Google Search tests require live API)
@@ -712,6 +735,7 @@ npm run build
 ### Commit Message Format
 
 **Structure**:
+
 ```
 <type>(<scope>): <subject>
 
@@ -721,6 +745,7 @@ npm run build
 ```
 
 **Types**:
+
 - `feat`: New feature
 - `fix`: Bug fix
 - `docs`: Documentation only
@@ -731,20 +756,24 @@ npm run build
 - `chore`: Build, dependencies, tooling
 
 **Scope**: Affected area (optional but recommended)
+
 - Examples: `analyzer`, `dashboard`, `utils`, `store`
 
 **Subject**:
+
 - Imperative mood: "add" not "added"
 - Lowercase
 - No period at end
 - <50 characters
 
 **Body** (optional):
-- Explain *why*, not *what*
+
+- Explain _why_, not _what_
 - Wrap at 72 characters
 - Separate from subject with blank line
 
 **Footer**:
+
 - Reference issues: `Closes #123`, `Fixes #456`
 - Breaking changes: `BREAKING CHANGE: description`
 
@@ -789,13 +818,16 @@ Fixes #156
 
 ```markdown
 ## Description
+
 Brief explanation of what this PR does and why.
 
 ## Related Issues
+
 Closes #123
 Fixes #456
 
 ## Type of Change
+
 - [ ] Feature
 - [ ] Bug fix
 - [ ] Documentation
@@ -803,6 +835,7 @@ Fixes #456
 - [ ] Performance
 
 ## How to Test
+
 Step-by-step instructions for reviewers:
 
 1. Check out this branch
@@ -811,6 +844,7 @@ Step-by-step instructions for reviewers:
 4. Verify the new feature works as expected
 
 ## Checklist
+
 - [ ] Tests added/updated (`npm test` passes)
 - [ ] E2E tests updated (if user-facing change)
 - [ ] Code formatted (`npm run lint` passes)
@@ -893,7 +927,7 @@ npm audit --audit-level=moderate  # Fail CI if moderate+ vulns
 ```typescript
 // ✅ GOOD: Validated input
 function calculateGrowth(current: number, prior: number): number | null {
-  if (typeof current !== 'number' || typeof prior !== 'number') {
+  if (typeof current !== "number" || typeof prior !== "number") {
     return null;
   }
   if (prior === 0) return null;
@@ -943,12 +977,14 @@ Format: `MAJOR.MINOR.PATCH`
 ### Release Checklist (Maintainers Only)
 
 1. **Prepare Release Branch**:
+
    ```bash
    git checkout -b release/v1.6.0
    git pull upstream main
    ```
 
 2. **Update Version**:
+
    ```bash
    npm version minor  # or patch, major
    # Updates package.json, package-lock.json, tags commit
@@ -960,6 +996,7 @@ Format: `MAJOR.MINOR.PATCH`
    - Include all features, fixes, breaking changes
 
 4. **Run Full Test Suite**:
+
    ```bash
    npm test
    npm run test:e2e
@@ -972,6 +1009,7 @@ Format: `MAJOR.MINOR.PATCH`
    - Require approval before merge
 
 6. **Merge & Tag**:
+
    ```bash
    git checkout main
    git pull origin main
@@ -992,16 +1030,16 @@ Format: `MAJOR.MINOR.PATCH`
 
 ### Common Issues
 
-| Problem | Solution |
-|---------|----------|
-| **"Cannot find module @/shared"** | Run `npm install`. Ensure `tsconfig.json` has paths configured. |
-| **Tests fail with "API quota exceeded"** | Wait 1 minute for quota reset. Use mock API for tests. |
-| **Playwright E2E times out** | Ensure dev server is NOT running. E2E tests start their own server on port 4173. |
-| **"VITE_API_KEY is not defined"** | Create `.env` file with `VITE_API_KEY="your_key_here"`. |
-| **Dark mode flashing** | This is a known issue on mobile Safari. Upstream fix pending. |
-| **Memory leak warning in LiveAnalyst** | Known issue; cleanup fix scheduled for v1.6.0. Safe to ignore for now. |
-| **"Cannot find PDF file"** | Ensure `src/test/fixtures/sample-10q.pdf` exists. Create if missing. |
-| **TypeScript errors in IDE** | Reload TypeScript server: `Cmd/Ctrl+Shift+P` → "TypeScript: Restart TS Server" |
+| Problem                                  | Solution                                                                         |
+| ---------------------------------------- | -------------------------------------------------------------------------------- |
+| **"Cannot find module @/shared"**        | Run `npm install`. Ensure `tsconfig.json` has paths configured.                  |
+| **Tests fail with "API quota exceeded"** | Wait 1 minute for quota reset. Use mock API for tests.                           |
+| **Playwright E2E times out**             | Ensure dev server is NOT running. E2E tests start their own server on port 4173. |
+| **"VITE_API_KEY is not defined"**        | Create `.env` file with `VITE_API_KEY="your_key_here"`.                          |
+| **Dark mode flashing**                   | This is a known issue on mobile Safari. Upstream fix pending.                    |
+| **Memory leak warning in LiveAnalyst**   | Known issue; cleanup fix scheduled for v1.6.0. Safe to ignore for now.           |
+| **"Cannot find PDF file"**               | Ensure `src/test/fixtures/sample-10q.pdf` exists. Create if missing.             |
+| **TypeScript errors in IDE**             | Reload TypeScript server: `Cmd/Ctrl+Shift+P` → "TypeScript: Restart TS Server"   |
 
 ### Getting Help
 
@@ -1013,6 +1051,7 @@ Format: `MAJOR.MINOR.PATCH`
 ### Reporting Issues
 
 Include:
+
 1. **Steps to reproduce** (exact, step-by-step)
 2. **Expected behavior** (what should happen)
 3. **Actual behavior** (what actually happened)
@@ -1021,6 +1060,7 @@ Include:
 6. **Screenshots** (if visual issue)
 
 **Example**:
+
 ```
 ## Issue: Dashboard crashes when uploading large PDF
 
@@ -1043,9 +1083,12 @@ White screen; console shows "Uncaught TypeError: Cannot read property 'data' of 
 
 ### Console Error
 ```
+
 TypeError: Cannot read property 'data' of undefined
-  at analyzeReport (geminiService.ts:45)
+at analyzeReport (geminiService.ts:45)
+
 ```
+
 ```
 
 ---
@@ -1064,4 +1107,4 @@ Thank you for helping make FinAnalyzer Pro better! 🚀
 
 ---
 
-**Last Updated**: June 2026 | **Maintainer**: Darshil
+**Last Updated**: July 2026 | **Maintainer**: Darshil
