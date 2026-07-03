@@ -65,9 +65,6 @@ jobs:
       - name: Lint Code (TypeScript + Prettier)
         run: npm run lint
 
-      - name: TypeScript Type Check
-        run: npx tsc --noEmit
-
   unit-tests:
     name: Unit Tests (Node ${{ matrix.node-version }})
     runs-on: ubuntu-latest

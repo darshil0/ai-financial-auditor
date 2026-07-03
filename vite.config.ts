@@ -28,6 +28,11 @@ export default defineConfig(({ mode }) => {
       environment: "jsdom",
       setupFiles: "./src/test/setup.ts",
       exclude: ["src/test/e2e/**", "node_modules/**"],
+      coverage: {
+        reporter: ["text", "json", "html", "json-summary"],
+        include: ["src/**"],
+        exclude: ["src/test/**", "**/*.d.ts"],
+      },
     },
   };
 });
