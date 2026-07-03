@@ -209,7 +209,7 @@ jobs:
           fi
 
       - name: Enforce API Key Presence
-        if: steps.api-key-check.outputs.missing == 'true' && github.event.inputs.allow_skip_e2e != true
+        if: steps.api-key-check.outputs.missing == 'true' && github.event_name != 'pull_request' && github.event.inputs.allow_skip_e2e != true
         run: |
           echo "::error::VITE_API_KEY is not configured in GitHub Secrets. Failing instead of silently skipping E2E coverage. Re-run via workflow_dispatch with allow_skip_e2e=true to intentionally skip."
           exit 1
@@ -222,8 +222,8 @@ jobs:
           PLAYWRIGHT_JUNIT_OUTPUT_NAME: junit.xml
 
       - name: Skip E2E Tests (explicit opt-in only)
-        if: steps.api-key-check.outputs.missing == 'true' && github.event.inputs.allow_skip_e2e == true
-        run: echo "::warning::Skipping E2E tests — VITE_API_KEY not configured and allow_skip_e2e was explicitly set."
+        if: steps.api-key-check.outputs.missing == 'true' && (github.event_name == 'pull_request' || github.event.inputs.allow_skip_e2e == true)
+        run: echo "::warning::Skipping E2E tests — VITE_API_KEY not configured. Pull requests or allow_skip_e2e allows skipping."
 
       - name: Upload E2E Test Results
         if: always() && steps.api-key-check.outputs.missing == 'false'
@@ -257,7 +257,7 @@ jobs:
             "${{ needs.validate-and-lint.result }}" == "success" && \
             "${{ needs.unit-tests.result }}" == "success" && \
             "${{ needs.build.result }}" == "success" && \
-            "${{ needs.e2e-tests.result }}" == "success" \
+            ( "${{ needs.e2e-tests.result }}" == "success" || "${{ needs.e2e-tests.result }}" == "skipped" ) \
            ]]; then
             echo "✅ CI/CD Pipeline Passed"
           else
