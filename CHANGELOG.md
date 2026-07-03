@@ -28,6 +28,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
   - Cleaned up `vite.config.ts` by removing unused environment variable logic.
   - Added missing SEO meta description tag to `index.html`.
   - Standardized project formatting to ensure CI linting passes.
+- **CI/CD Pipeline**:
+  - Enabled `json-summary` reporter in Vitest to satisfy CI coverage validation requirements.
+  - Configured Playwright JUnit reporter for automated test results publishing in GitHub Actions.
+  - Optimized CI workflow by consolidating linting and type-checking steps.
 
 ---
 
