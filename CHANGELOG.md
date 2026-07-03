@@ -35,6 +35,31 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.5.4] - 2026-07-03
+
+**Status**: Current Release
+**Compatibility**: Node v20.18+, v24.x | React 18.2 | Vite 8.1+
+
+### Fixed
+
+- **Critical Bug Fixes**:
+  - Corrected "Gemini 3 Pro" hallucination to "Gemini" in `ReportUploader.tsx`.
+  - Fixed `getMarketContext` API error by removing `thinkingConfig` when using Gemini 1.5 Pro.
+  - Stabilized `LiveAnalyst.tsx` by fixing `useEffect` dependencies and async session handling, preventing unnecessary restarts and race conditions.
+  - Resolved Dark Mode toggle bug where clicking "Light Mode" twice could erroneously activate Dark Mode.
+  - Fixed audio memory leak in `Dashboard.tsx` by ensuring proper Blob URL revocation.
+  - Hardened AI extraction schema by making `operatingMargin`, `netMargin`, and `managementCommentary` required fields to prevent UI crashes.
+- **Performance Optimizations**:
+  - Refactored `ComparisonView.tsx` to lift `MetricRow` out of the parent component, eliminating redundant re-mounts on every render.
+  - Optimized `useEffect` hooks in `ComparisonView.tsx` to eliminate infinite loop risks.
+- **Code Quality & Maintenance**:
+  - Removed multiple unused imports across `DashboardSkeleton.tsx` and `HistoryView.tsx`.
+  - Cleaned up `vite.config.ts` by removing unused environment variable logic.
+  - Added missing SEO meta description tag to `index.html`.
+  - Standardized project formatting to ensure CI linting passes.
+
+---
+
 ## [1.5.3] - 2026-06-05
 
 **Status**: Current Release
