@@ -278,7 +278,6 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
     document.body.removeChild(link);
   };
 
-
   if (reports.length < 2) {
     return (
       <div className="h-full flex flex-col items-center justify-center py-32 text-center px-4">
