@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 
 ---
 
+## [1.5.5] - 2026-08-09
+
+**Status**: Current Release
+**Compatibility**: Node v22.x, v24.x LTS | React 18.2 | Vite 8.1+
+
+### Fixed
+
+- **Audio Briefing Playback (Critical)** — `Dashboard.tsx`: Resolved a race condition where `URL.revokeObjectURL` was called immediately after `URL.createObjectURL`, invalidating the Blob URL before `Audio.play()` could load it. The active Object URL is now revoked only _before_ creating the next one, and cleaned up on playback end or component unmount.
+- **Audio Buffer Alignment (Critical)** — `audioUtils.ts`: `decodeAudioData` previously constructed `Int16Array(data.buffer)` from the raw backing `ArrayBuffer`, ignoring any `byteOffset` or `byteLength` on the Uint8Array slice. This caused corrupted audio output and potential `RangeError` on non-zero-aligned slices. Fixed by passing `data.byteOffset` and `Math.floor(data.byteLength / 2)` explicitly. Likewise, `createPcmBlob` now encodes from the correct typed-array region and clamps sample values with `Math.max/min` to prevent integer overflow.
+- **Web Audio Memory Leak (Critical)** — `LiveAnalyst.tsx`: `AudioContext` objects were instantiated before `getUserMedia` resolved; on microphone denial the contexts remained open and untracked. The `MediaStreamSourceNode` and `ScriptProcessorNode` were created inside the `onopen` callback with no persistent references, making them impossible to disconnect on unmount. Fixes: AudioContexts are now created only after the microphone stream is granted; source and processor nodes are stored in `sourceNodeRef` / `scriptProcessorRef`; the `useEffect` cleanup function disconnects both nodes and nulls the refs. An `isSubscribed` guard prevents stale state updates after unmount.
+- **CSV Export Division-by-Zero** — `ComparisonView.tsx`: `handleExportCSV` computed percentage deltas for Revenue, Net Income, and EPS with unconditional division by the baseline value. When any baseline was `0`, the result was `Infinity` or `NaN`, producing invalid CSV rows. All three calculations are now guarded — if `Math.abs(baseline) === 0` the percentage column shows `"N/A"` instead.
+- **Gemini Response JSON Parsing** — `geminiService.ts`: The Gemini API may occasionally wrap structured JSON output in a markdown code fence (` ```json … ``` `). `JSON.parse` would throw a `SyntaxError` in those cases, surfacing as a generic extraction failure. The raw response text is now sanitised with a regex strip before parsing.
+- **Accessibility** — `Sidebar.tsx`: Active navigation buttons now carry `aria-current="page"` so screen readers correctly announce the current view.
+
+### Changed
+
+- **Node.js requirement updated**: Minimum recommended version is now `v24.x` LTS (Node v22.x remains supported). The development environment prerequisites in the README reflect this.
+
+---
+
 ## [1.5.4] - 2026-07-03
 
 **Status**: Current Release
