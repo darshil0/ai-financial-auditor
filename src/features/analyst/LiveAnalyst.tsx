@@ -23,12 +23,24 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected 
   const sourcesRef = useRef<Set<AudioBufferSourceNode>>(new Set());
   const inputContextRef = useRef<AudioContext | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const sourceNodeRef = useRef<MediaStreamAudioSourceNode | null>(null);
+  const scriptProcessorRef = useRef<ScriptProcessorNode | null>(null);
   const isMutedRef = useRef(false);
-  const reportIdRef = useRef(report.id);
 
   useEffect(() => {
+    let isSubscribed = true;
+
     const startSession = async () => {
       try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          audio: true,
+        });
+        if (!isSubscribed) {
+          stream.getTracks().forEach((t) => t.stop());
+          return;
+        }
+        streamRef.current = stream;
+
         audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
           sampleRate: 24000,
         });
@@ -38,13 +50,10 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected 
         inputContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({
           sampleRate: 16000,
         });
-        const stream = await navigator.mediaDevices.getUserMedia({
-          audio: true,
-        });
-        streamRef.current = stream;
 
         const sessionPromise = connectLiveAnalyst(report, {
           onopen: async () => {
+            if (!isSubscribed) return;
             setIsConnecting(false);
             setIsActive(true);
             setStatus("Analyst connected. You can speak now.");
@@ -52,19 +61,23 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected 
 
             const session = await sessionPromise;
 
-            // Stream microphone
-            const source = inputContextRef.current!.createMediaStreamSource(stream);
-            const scriptProcessor = inputContextRef.current!.createScriptProcessor(4096, 1, 1);
-            scriptProcessor.onaudioprocess = (e) => {
-              if (isMutedRef.current) return;
-              const inputData = e.inputBuffer.getChannelData(0);
-              const pcmBlob = createPcmBlob(inputData);
-              session.sendRealtimeInput({ media: pcmBlob });
-            };
-            source.connect(scriptProcessor);
-            scriptProcessor.connect(inputContextRef.current!.destination);
+            if (inputContextRef.current && streamRef.current) {
+              const source = inputContextRef.current.createMediaStreamSource(streamRef.current);
+              sourceNodeRef.current = source;
+              const scriptProcessor = inputContextRef.current.createScriptProcessor(4096, 1, 1);
+              scriptProcessorRef.current = scriptProcessor;
+              scriptProcessor.onaudioprocess = (e) => {
+                if (isMutedRef.current) return;
+                const inputData = e.inputBuffer.getChannelData(0);
+                const pcmBlob = createPcmBlob(inputData);
+                session.sendRealtimeInput({ media: pcmBlob });
+              };
+              source.connect(scriptProcessor);
+              scriptProcessor.connect(inputContextRef.current.destination);
+            }
           },
           onmessage: async (message: any) => {
+            if (!isSubscribed) return;
             const base64Audio = message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data;
             if (base64Audio && audioContextRef.current) {
               const ctx = audioContextRef.current;
@@ -87,25 +100,43 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected 
           },
           onerror: (e: any) => {
             console.error("Live Analyst Error:", e);
-            setStatus("Connection error. Please try again.");
+            if (isSubscribed) setStatus("Connection error. Please try again.");
           },
           onclose: () => {
-            setIsActive(false);
-            setStatus("Session closed.");
+            if (isSubscribed) {
+              setIsActive(false);
+              setStatus("Session closed.");
+            }
           },
         });
 
         sessionRef.current = await sessionPromise;
       } catch (err) {
         console.error("Failed to start Live Analyst:", err);
-        setStatus("Failed to access microphone or connect.");
-        setIsConnecting(false);
+        if (isSubscribed) {
+          setStatus("Failed to access microphone or connect.");
+          setIsConnecting(false);
+        }
       }
     };
 
     startSession();
 
     return () => {
+      isSubscribed = false;
+      if (scriptProcessorRef.current) {
+        scriptProcessorRef.current.onaudioprocess = null;
+        try {
+          scriptProcessorRef.current.disconnect();
+        } catch (e) {}
+        scriptProcessorRef.current = null;
+      }
+      if (sourceNodeRef.current) {
+        try {
+          sourceNodeRef.current.disconnect();
+        } catch (e) {}
+        sourceNodeRef.current = null;
+      }
       if (sessionRef.current) {
         try {
           sessionRef.current.close();
@@ -122,13 +153,10 @@ const LiveAnalyst: React.FC<LiveAnalystProps> = ({ report, onClose, onConnected 
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((t) => t.stop());
       }
-      // Stop all active audio buffer sources to prevent memory leaks
       sourcesRef.current.forEach((source) => {
         try {
           source.stop();
-        } catch (e) {
-          // Source might have already stopped
-        }
+        } catch (e) {}
       });
       sourcesRef.current.clear();
     };
