@@ -43,7 +43,7 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      # Note: We run clean install (npm ci) without caching node_modules to guarantee
+      # Note: We run clean install (npm ci) without caching node_modules to guarantee 
       # build correctness and avoid stale package state, as jobs run in parallel environments.
       - name: Install Dependencies
         run: npm ci --no-audit
@@ -92,7 +92,7 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      # Note: We run clean install (npm ci) without caching node_modules to guarantee
+      # Note: We run clean install (npm ci) without caching node_modules to guarantee 
       # build correctness and avoid stale package state, as jobs run in parallel environments.
       - name: Install Dependencies
         run: npm ci --no-audit
@@ -139,7 +139,7 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      # Note: We run clean install (npm ci) without caching node_modules to guarantee
+      # Note: We run clean install (npm ci) without caching node_modules to guarantee 
       # build correctness and avoid stale package state, as jobs run in parallel environments.
       - name: Install Dependencies
         run: npm ci --no-audit
@@ -180,7 +180,7 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      # Note: We run clean install (npm ci) without caching node_modules to guarantee
+      # Note: We run clean install (npm ci) without caching node_modules to guarantee 
       # build correctness and avoid stale package state, as jobs run in parallel environments.
       - name: Install Dependencies
         run: npm ci --no-audit
@@ -216,7 +216,7 @@ jobs:
           cache: npm
           cache-dependency-path: package-lock.json
 
-      # Note: We run clean install (npm ci) without caching node_modules to guarantee
+      # Note: We run clean install (npm ci) without caching node_modules to guarantee 
       # build correctness and avoid stale package state, as jobs run in parallel environments.
       - name: Install Dependencies
         run: npm ci --no-audit
