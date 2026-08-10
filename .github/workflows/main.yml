@@ -40,10 +40,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -66,10 +66,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -85,6 +85,8 @@ jobs:
 
       - name: Validate coverage threshold
         shell: bash
+        env:
+          MIN_COVERAGE: ${{ env.MIN_COVERAGE }}
         run: |
           set -euo pipefail
 
@@ -109,7 +111,7 @@ jobs:
 
       - name: Upload coverage report
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage/
@@ -124,10 +126,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -158,7 +160,7 @@ jobs:
           fi
 
       - name: Upload build artifact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: application-dist
           path: dist/
@@ -173,10 +175,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v7
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v7
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -186,7 +188,7 @@ jobs:
         run: npm ci --no-audit
 
       - name: Download build artifact
-        uses: actions/download-artifact@v8
+        uses: actions/download-artifact@v4
         with:
           name: application-dist
           path: dist/
@@ -196,11 +198,12 @@ jobs:
         shell: bash
         env:
           E2E_API_KEY: ${{ secrets.E2E_API_KEY }}
-          RUN_E2E:
-            ${{ github.event_name == 'workflow_dispatch' && inputs.run_e2e
-            || true }}
+          IS_WORKFLOW_DISPATCH: ${{ github.event_name == 'workflow_dispatch' }}
+          DISPATCH_RUN_E2E: ${{ inputs.run_e2e }}
         run: |
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" && "$RUN_E2E" != "true" ]]; then
+          set -euo pipefail
+
+          if [[ "$IS_WORKFLOW_DISPATCH" == "true" && "$DISPATCH_RUN_E2E" != "true" ]]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
           elif [[ -z "$E2E_API_KEY" ]]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
@@ -222,7 +225,7 @@ jobs:
 
       - name: Upload E2E test results
         if: always() && steps.e2e-config.outputs.run == 'true'
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           name: e2e-test-results
           path: |
