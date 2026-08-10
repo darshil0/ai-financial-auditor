@@ -343,19 +343,19 @@ FinAnalyzer Pro/
 
 ## 🐛 Troubleshooting & Edge Cases
 
-| Issue                                   | Symptom                           | Root Cause                                         | Resolution                                                                                     |
-| --------------------------------------- | --------------------------------- | -------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
-| **API Error 401/403**                   | "Unauthorized" in browser console | Invalid or expired `VITE_API_KEY`                  | Regenerate key in Google AI Studio; verify billing is enabled.                                 |
-| **PDF Parse Failure**                   | "Cannot extract text" warning     | Password-protected or scanned (image-only) PDF     | Use OCR preprocessing tool (Adobe, Google Docs); ensure PDF <25MB.                             |
-| **Gemini JSON Parse Error**             | "SyntaxError" after PDF analysis  | Gemini response wrapped in markdown code fences    | Fixed in v1.5.5. If persisting, regenerate the API key and retry.                             |
-| **Audio Briefing Silent / No Playback** | Button spins but no audio plays   | Object URL was revoked before `Audio.play()` loaded | Fixed in v1.5.5. If persisting, ensure browser allows audio autoplay.                         |
-| **Audio Corruption in Live Analyst**    | Garbled or clipped voice output   | `Int16Array` read wrong buffer region on sliced data | Fixed in v1.5.5 via correct `byteOffset` / `byteLength` handling.                            |
-| **Playwright E2E Fails**                | Tests timeout after 30s           | API quota exhausted or network latency             | Wait 1 minute for quota reset; check `npm run preview` build succeeded.                        |
-| **"Cannot find module"**                | TypeScript error on import        | Stale lockfile or incorrect Node version           | Run `npm ci` (clean install); verify `node --version` matches v22.x or v24.x.                 |
-| **Recharts Not Rendering**              | Charts show blank / "undefined"   | Missing historical data or corrupted Zustand state | Clear browser localStorage (`DevTools > Application > Storage > Clear All`); re-upload report. |
-| **AudioWorklet Error**                  | "Audio context error" in console  | Browser lacks Web Audio API (e.g., older Safari)   | Upgrade browser to latest version; fallback to text-only mode if unavailable.                  |
-| **Market Grounding Returns No Results** | "0 articles found"                | Google Search API rate-limited or quota exhausted  | Retry after 60 seconds; check API billing in Google Cloud Console.                             |
-| **CSV Export Shows NaN% / Infinity**    | Blank or invalid delta column     | Division by zero when baseline metric is 0         | Fixed in v1.5.5. Reports with zero-value baselines now show "N/A" for that column.            |
+| Issue                                   | Symptom                           | Root Cause                                           | Resolution                                                                                     |
+| --------------------------------------- | --------------------------------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| **API Error 401/403**                   | "Unauthorized" in browser console | Invalid or expired `VITE_API_KEY`                    | Regenerate key in Google AI Studio; verify billing is enabled.                                 |
+| **PDF Parse Failure**                   | "Cannot extract text" warning     | Password-protected or scanned (image-only) PDF       | Use OCR preprocessing tool (Adobe, Google Docs); ensure PDF <25MB.                             |
+| **Gemini JSON Parse Error**             | "SyntaxError" after PDF analysis  | Gemini response wrapped in markdown code fences      | Fixed in v1.5.5. If persisting, regenerate the API key and retry.                              |
+| **Audio Briefing Silent / No Playback** | Button spins but no audio plays   | Object URL was revoked before `Audio.play()` loaded  | Fixed in v1.5.5. If persisting, ensure browser allows audio autoplay.                          |
+| **Audio Corruption in Live Analyst**    | Garbled or clipped voice output   | `Int16Array` read wrong buffer region on sliced data | Fixed in v1.5.5 via correct `byteOffset` / `byteLength` handling.                              |
+| **Playwright E2E Fails**                | Tests timeout after 30s           | API quota exhausted or network latency               | Wait 1 minute for quota reset; check `npm run preview` build succeeded.                        |
+| **"Cannot find module"**                | TypeScript error on import        | Stale lockfile or incorrect Node version             | Run `npm ci` (clean install); verify `node --version` matches v22.x or v24.x.                  |
+| **Recharts Not Rendering**              | Charts show blank / "undefined"   | Missing historical data or corrupted Zustand state   | Clear browser localStorage (`DevTools > Application > Storage > Clear All`); re-upload report. |
+| **AudioWorklet Error**                  | "Audio context error" in console  | Browser lacks Web Audio API (e.g., older Safari)     | Upgrade browser to latest version; fallback to text-only mode if unavailable.                  |
+| **Market Grounding Returns No Results** | "0 articles found"                | Google Search API rate-limited or quota exhausted    | Retry after 60 seconds; check API billing in Google Cloud Console.                             |
+| **CSV Export Shows NaN% / Infinity**    | Blank or invalid delta column     | Division by zero when baseline metric is 0           | Fixed in v1.5.5. Reports with zero-value baselines now show "N/A" for that column.             |
 
 ### Known Limitations
 
@@ -368,15 +368,15 @@ FinAnalyzer Pro/
 
 ## 📝 Version History
 
-| Version    | Date     | Changes                                                                                                    |
-| ---------- | -------- | ---------------------------------------------------------------------------------------------------------- |
+| Version    | Date     | Changes                                                                                                                   |
+| ---------- | -------- | ------------------------------------------------------------------------------------------------------------------------- |
 | **v1.5.5** | Aug 2026 | Defect fixes: audio URL bug, buffer alignment, Web Audio memory leaks, CSV division-by-zero, JSON parsing, accessibility. |
-| **v1.5.4** | Jul 2026 | Critical bug fixes: Gemini hallucination, dark mode toggle, schema hardening, CI/CD pipeline improvements.  |
-| **v1.5.3** | Jun 2026 | Dependency overhaul (Vite 8, Gemini SDK 2.x); TypeScript optimisation; security hardening.                 |
-| **v1.5.2** | Jun 2026 | Added extended thinking for forensic analysis; improved error boundary logging.                             |
-| **v1.5.0** | Dec 2025 | Live Analyst voice feature; AudioWorklet integration.                                                       |
-| **v1.4.0** | Nov 2025 | Market grounding via Google Search; Sentiment Gauge.                                                        |
-| **v1.0.0** | Oct 2024 | Initial release: KPI extraction, trends, comparative hub.                                                   |
+| **v1.5.4** | Jul 2026 | Critical bug fixes: Gemini hallucination, dark mode toggle, schema hardening, CI/CD pipeline improvements.                |
+| **v1.5.3** | Jun 2026 | Dependency overhaul (Vite 8, Gemini SDK 2.x); TypeScript optimisation; security hardening.                                |
+| **v1.5.2** | Jun 2026 | Added extended thinking for forensic analysis; improved error boundary logging.                                           |
+| **v1.5.0** | Dec 2025 | Live Analyst voice feature; AudioWorklet integration.                                                                     |
+| **v1.4.0** | Nov 2025 | Market grounding via Google Search; Sentiment Gauge.                                                                      |
+| **v1.0.0** | Oct 2024 | Initial release: KPI extraction, trends, comparative hub.                                                                 |
 
 ---
 
