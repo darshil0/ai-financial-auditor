@@ -48,8 +48,8 @@ Violations will be addressed by maintainers with a focus on education and resolu
 
 Verify your development environment before cloning:
 
-- **Node.js**: `v20.18.0` (LTS) or `v22.x` (Latest). Run `node --version` to verify.
-- **npm**: `v10.2.0+` (ships with Node). Run `npm --version` to verify.
+- **Node.js**: `v24.x` (LTS, recommended) or `v22.x`. Run `node --version` to verify.
+- **npm**: `v10.x` or `v11.x+` (ships with Node). Run `npm --version` to verify.
 - **Git**: `v2.34+`. Run `git --version` to verify.
 - **Memory**: 4GB RAM minimum; 8GB recommended for PDF parsing + model inference.
 - **Browser**: Chrome 120+, Firefox 121+, Safari 17+, Edge 120+ (for E2E testing).
@@ -96,7 +96,7 @@ Verify your development environment before cloning:
    ```
 
    **Expected Output**:
-   - Dev server starts on `http://localhost:5173`
+   - Dev server starts on `http://localhost:3000`
    - Lint completes with 0 errors
    - Unit tests pass (or show baseline if new)
 
@@ -1030,16 +1030,17 @@ Format: `MAJOR.MINOR.PATCH`
 
 ### Common Issues
 
-| Problem                                  | Solution                                                                         |
-| ---------------------------------------- | -------------------------------------------------------------------------------- |
-| **"Cannot find module @/shared"**        | Run `npm install`. Ensure `tsconfig.json` has paths configured.                  |
-| **Tests fail with "API quota exceeded"** | Wait 1 minute for quota reset. Use mock API for tests.                           |
-| **Playwright E2E times out**             | Ensure dev server is NOT running. E2E tests start their own server on port 4173. |
-| **"VITE_API_KEY is not defined"**        | Create `.env` file with `VITE_API_KEY="your_key_here"`.                          |
-| **Dark mode flashing**                   | This is a known issue on mobile Safari. Upstream fix pending.                    |
-| **Memory leak warning in LiveAnalyst**   | Known issue; cleanup fix scheduled for v1.6.0. Safe to ignore for now.           |
-| **"Cannot find PDF file"**               | Ensure `src/test/fixtures/sample-10q.pdf` exists. Create if missing.             |
-| **TypeScript errors in IDE**             | Reload TypeScript server: `Cmd/Ctrl+Shift+P` → "TypeScript: Restart TS Server"   |
+| Problem                                  | Solution                                                                                      |
+| ---------------------------------------- | --------------------------------------------------------------------------------------------- |
+| **"Cannot find module @/shared"**        | Run `npm install`. Ensure `tsconfig.json` has paths configured.                               |
+| **Tests fail with "API quota exceeded"** | Wait 1 minute for quota reset. Use mock API for tests.                                        |
+| **Playwright E2E times out**             | Ensure dev server is NOT running. E2E tests start their own server on port 4173.              |
+| **Dev server port mismatch**             | The dev server runs on port 3000 (configured in `vite.config.ts`), not the Vite default 5173. |
+| **"VITE_API_KEY is not defined"**        | Create `.env` file with `VITE_API_KEY="your_key_here"`.                                       |
+| **Dark mode flashing**                   | This is a known issue on mobile Safari. Upstream fix pending.                                 |
+| **Memory leak warning in LiveAnalyst**   | Fixed in v1.5.5. If still occurring, ensure you're on the latest version.                     |
+| **"Cannot find PDF file"**               | Ensure `src/test/fixtures/sample-10q.pdf` exists. Create if missing.                          |
+| **TypeScript errors in IDE**             | Reload TypeScript server: `Cmd/Ctrl+Shift+P` → "TypeScript: Restart TS Server"                |
 
 ### Getting Help
 
@@ -1107,4 +1108,4 @@ Thank you for helping make FinAnalyzer Pro better! 🚀
 
 ---
 
-**Last Updated**: July 2026 | **Maintainer**: Darshil
+**Last Updated**: August 2026 | **Maintainer**: Darshil

@@ -5,7 +5,7 @@
 [![CI Status](https://github.com/darshil0/ai-financial-auditor/actions/workflows/main.yml/badge.svg)](https://github.com/darshil0/ai-financial-auditor/actions)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React](https://img.shields.io/badge/react-18.2-blue)
-![Vite](https://img.shields.io/badge/vite-5.4+-646CFF)
+![Vite](https://img.shields.io/badge/vite-8.1+-646CFF)
 ![Node](https://img.shields.io/badge/node-24.x-339933?logo=node.js)
 
 ---
@@ -67,7 +67,7 @@ The application employs a tiered AI model approach inside `src/shared/services/g
 - **npm**: `v10.x` or `v11.x+` (ships with Node v24.x).
 - **Git**: `v2.34+` for shallow clones.
 - **Memory**: Minimum 4 GB RAM; 8 GB recommended.
-- **Packages**: Vite 5.4.x, TypeScript 5.6.x, Recharts 2.12.x, Vitest 2.1.x.
+- **Packages**: Vite 8.1.x, TypeScript 5.4.x, Recharts 3.9.x, Vitest 4.1.x.
 
 ### API & Integrations
 
@@ -112,7 +112,7 @@ This installs all required packages and downloads Playwright browser binaries fo
 npm run dev
 ```
 
-The application will start at `http://localhost:5173` (Vite's default port). Open it in your browser and verify:
+The application will start at `http://localhost:3000`. Open it in your browser and verify:
 
 - Dashboard loads without console errors.
 - Dark mode toggle applies synchronously via an inline script in `index.html` to prevent initial load flashing.
