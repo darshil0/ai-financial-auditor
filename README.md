@@ -247,4 +247,5 @@ We welcome professional contributions. Before opening a pull request:
 3. Follow the repository's standard Git commit structure.
 
 ---
+
 Institutional-grade financial analysis powered by Google Gemini API. Developed with precision and forensic attention to detail.
