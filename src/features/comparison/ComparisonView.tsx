@@ -242,7 +242,10 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
         report1.revenue,
         report2.revenue,
         report2.revenue - report1.revenue,
-        (((report2.revenue - report1.revenue) / Math.abs(report1.revenue)) * 100).toFixed(2) + "%",
+        Math.abs(report1.revenue) > 0
+          ? (((report2.revenue - report1.revenue) / Math.abs(report1.revenue)) * 100).toFixed(2) +
+            "%"
+          : "N/A",
       ],
       [
         "Revenue Growth (YoY) (%)",
@@ -256,15 +259,20 @@ const ComparisonView: React.FC<ComparisonViewProps> = ({
         report1.netIncome,
         report2.netIncome,
         report2.netIncome - report1.netIncome,
-        (((report2.netIncome - report1.netIncome) / Math.abs(report1.netIncome)) * 100).toFixed(2) +
-          "%",
+        Math.abs(report1.netIncome) > 0
+          ? (((report2.netIncome - report1.netIncome) / Math.abs(report1.netIncome)) * 100).toFixed(
+              2,
+            ) + "%"
+          : "N/A",
       ],
       [
         "EPS (Diluted)",
         report1.eps,
         report2.eps,
         (report2.eps - report1.eps).toFixed(2),
-        (((report2.eps - report1.eps) / Math.abs(report1.eps)) * 100).toFixed(2) + "%",
+        Math.abs(report1.eps) > 0
+          ? (((report2.eps - report1.eps) / Math.abs(report1.eps)) * 100).toFixed(2) + "%"
+          : "N/A",
       ],
     ];
 
