@@ -32,12 +32,12 @@ graph TD
 
 The application employs a tiered AI model approach inside `src/shared/services/geminiService.ts`:
 
-| Component            | Model              | Purpose                                  | Constraints / Configuration                                                   |
-| -------------------- | ------------------ | ----------------------------------------- | ------------------------------------------------------------------------------ |
-| **KPI Extraction**   | `gemini-2.0-flash` | Revenue, Net Income, EPS, Margins        | Max tokens: 4,000 output. Uses low temperature (0.1) for surgical precision.   |
-| **Deep Analysis**    | `gemini-2.0-flash` | Forensic financial narrative analysis    | Budget: 10,000 thinking tokens.                                               |
-| **Live Analyst**     | `gemini-2.0-flash` | Real-time streaming voice advisory       | Utilizes `ScriptProcessorNode` to stream low-latency PCM audio blocks.        |
-| **Market Grounding** | `gemini-1.5-pro`   | Compare SEC filings to real-time context | Google Search tool. Rate limited: 60 queries/min. Omit `thinkingConfig`.      |
+| Component            | Model              | Purpose                                  | Constraints / Configuration                                                  |
+| -------------------- | ------------------ | ---------------------------------------- | ---------------------------------------------------------------------------- |
+| **KPI Extraction**   | `gemini-2.0-flash` | Revenue, Net Income, EPS, Margins        | Max tokens: 4,000 output. Uses low temperature (0.1) for surgical precision. |
+| **Deep Analysis**    | `gemini-2.0-flash` | Forensic financial narrative analysis    | Budget: 10,000 thinking tokens.                                              |
+| **Live Analyst**     | `gemini-2.0-flash` | Real-time streaming voice advisory       | Utilizes `AudioWorkletNode` to stream low-latency PCM audio.                 |
+| **Market Grounding** | `gemini-1.5-pro`   | Compare SEC filings to real-time context | Google Search tool. Rate limited: 60 queries/min. Omit `thinkingConfig`.     |
 
 ---
 
