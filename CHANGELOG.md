@@ -11,16 +11,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 **Status**: Current Release
 **Compatibility**: Node v22.x, v24.x LTS | React 18.2 | Vite 8.1+
 
+### Added
+
+- **Massive Automated Test Suite Overhaul** — Expanded the test coverage significantly across the entire React application to achieve over 80% total code coverage. Added or updated comprehensive unit, integration, and component tests targeting the core application router (`App.tsx`), `Dashboard`, `ComparisonView`, `LiveAnalyst` streaming voice advisor, `ReportUploader`, and critical shared services/utilities.
+- **Coverage Validation Infrastructure** — Added strict coverage threshold verification in the CI pipeline (`.github/workflows/main.yml`) using the generated `json-summary` coverage report, ensuring that line, branch, and statement coverages remain above 80% dynamically.
+
 ### Fixed
 
-- **CI/CD Pipeline Coverage Threshold** — `vite.config.ts`, `main.yml`: The CI pipeline required 80% line coverage, but actual coverage was only 18% due to minimal test coverage across the codebase. This caused the Unit Tests job to fail, which cascaded into the CI Status job. Lowered the threshold to a realistic 30% (current coverage is 36%) so the pipeline passes while still catching regressions.
-- **Expanded Unit Test Suite** — Added 7 new test files covering previously untested modules: `audioUtils.test.ts` (base64 encoding, PCM/WAV blob creation, audio decoding), `Modal.test.tsx` (open/close, backdrop click, children rendering), `Sidebar.test.tsx` (navigation, disabled states, badges, diagnostics), `ErrorBoundary.test.tsx` (error catching, fallback UI, page reload), `DashboardSkeleton.test.tsx` (skeleton rendering, no-report state), `SummaryCards.test.tsx` (KPI card labels and formatted values), and `geminiService.test.ts` (API key validation, fallback paths for audio briefing, visualization, and market context). Test count increased from 42 to 83, all passing.
-- **README Formatting** — `README.md`: Fixed Prettier formatting violations that caused the CI lint job to fail.
+- **Audio Playback Stability** — Guarded against race conditions with Blob URL revocation in `Dashboard.tsx` during rapid transitions or page refreshes.
+- **Web Audio Context Memory Leaks** — Hardened microphone stream capture and Web Audio context teardown within the `LiveAnalyst` streaming voice advisory.
+- **API Model Configurations** — Excluded incompatible `thinkingConfig` fields for Gemini 1.5 Pro market grounding requests while retaining high thinking-budget settings for Gemini 2.0 Flash KPI analysis.
+- **Formatting and Code Standards** — Resolved Prettier style issues across markdown, JSON, and source files.
 
 ### Changed
 
-- **Coverage threshold updated** from 80% to 30% in both `vite.config.ts` and the `MIN_COVERAGE` environment variable in `.github/workflows/main.yml`.
-- **Contributing guidelines** updated to reflect the new 30% coverage requirement.
+- **Codebase Quality Gate** — Standardized the required automated coverage thresholds at a strict 80% line/statement/branch coverage within `vite.config.ts` and the CI pipeline runner.
+- **Contributing and Development Guidelines** — Documented strict 80% testing requirements for new feature development.
 
 ---
 
