@@ -40,10 +40,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -66,10 +66,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -124,10 +124,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -173,10 +173,10 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Set up Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
@@ -196,7 +196,7 @@ jobs:
         shell: bash
         env:
           E2E_API_KEY: ${{ secrets.E2E_API_KEY }}
-          RUN_E2E: ${{ inputs.run_e2e }}
+          RUN_E2E: ${{ github.event_name == 'workflow_dispatch' && inputs.run_e2e || true }}
         run: |
           if [[ "${{ github.event_name }}" == "workflow_dispatch" && "$RUN_E2E" != "true" ]]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
@@ -254,6 +254,10 @@ jobs:
           [[ "${{ needs.validate.result }}" == "success" ]] || exit 1
           [[ "${{ needs.unit-tests.result }}" == "success" ]] || exit 1
           [[ "${{ needs.build.result }}" == "success" ]] || exit 1
-          [[ "${{ needs.e2e-tests.result }}" == "success" ]] || exit 1
+          
+          # Allow e2e-tests to be skipped/neutral without failing the pipeline status check
+          if [[ "${{ needs.e2e-tests.result }}" != "success" && "${{ needs.e2e-tests.result }}" != "skipped" ]]; then
+            exit 1
+          fi
 
           echo "CI/CD Pipeline Passed"
