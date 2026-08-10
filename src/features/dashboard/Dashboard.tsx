@@ -66,6 +66,20 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
     }
   }, [report]);
 
+  useEffect(() => {
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current.src = "";
+        audioRef.current = null;
+      }
+      if (audioUrlRef.current) {
+        URL.revokeObjectURL(audioUrlRef.current);
+        audioUrlRef.current = null;
+      }
+    };
+  }, [report?.id]);
+
   if (isLoading) return <DashboardSkeleton />;
   if (!report) return <NoReportState onSwitchToUpload={onSwitchToUpload} />;
 
@@ -140,20 +154,6 @@ const Dashboard: React.FC<DashboardProps> = ({ report, onSwitchToUpload, onUpdat
       error: (err: any) => err?.message || "Failed to generate audio briefing.",
     });
   };
-
-  useEffect(() => {
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current.src = "";
-        audioRef.current = null;
-      }
-      if (audioUrlRef.current) {
-        URL.revokeObjectURL(audioUrlRef.current);
-        audioUrlRef.current = null;
-      }
-    };
-  }, [report?.id]);
 
   const handleVisualizeGuidance = async () => {
     setIsGeneratingVisual(true);

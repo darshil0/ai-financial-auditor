@@ -33,7 +33,10 @@ export default defineConfig(({ mode }) => {
         include: ["src/**"],
         exclude: ["src/test/**", "**/*.d.ts"],
         thresholds: {
-          lines: 30,
+          lines: 80,
+          statements: 80,
+          branches: 80,
+          functions: 79,
         },
       },
     },
