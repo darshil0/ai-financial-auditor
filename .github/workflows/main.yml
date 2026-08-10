@@ -14,7 +14,7 @@ on:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -22,6 +22,7 @@ permissions:
 env:
   NODE_OPTIONS: --max-old-space-size=4096
   MIN_COVERAGE: 80
+  CI: "true"
 
 jobs:
   validate-and-lint:
@@ -30,39 +31,45 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
+          # Required: TruffleHog needs full history to diff branches
           fetch-depth: 0
 
       - name: Setup Node.js (Stable)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@3922559a24c298d840349463028d33340cd3e116 # v4.2.0
         with:
           node-version: "24"
           cache: npm
           cache-dependency-path: package-lock.json
 
+      # Note: We run clean install (npm ci) without caching node_modules to guarantee
+      # build correctness and avoid stale package state, as jobs run in parallel environments.
       - name: Install Dependencies
         run: npm ci --no-audit
 
       - name: Check for Secrets in Code
-        uses: trufflesecurity/trufflehog@main
+        uses: trufflesecurity/trufflehog@68b8ab11649f395d8869c9eb3b1bbcfda4809ca1 # v3.88.2
         with:
           path: ./
-          base: ${{ github.event.repository.default_branch }}
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.event.before }}
           head: HEAD
           extra_args: --only-verified
         timeout-minutes: 5
 
-      - name: Run Security Audit
-        id: security-audit
+      - name: Run Blocking Security Audit (Critical)
+        run: npm audit --audit-level=critical
+
+      - name: Run Non-Blocking Security Audit (Moderate)
+        id: security-audit-moderate
         run: npm audit --audit-level=moderate
         continue-on-error: true
 
-      - name: Flag Security Audit Findings
-        if: steps.security-audit.outcome == 'failure'
-        run: echo "::warning::npm audit reported moderate+ vulnerabilities. Review before merging; this step is non-blocking by design."
+      - name: Flag Security Audit Findings (Moderate)
+        if: steps.security-audit-moderate.outcome == 'failure'
+        run: echo "::warning::npm audit reported moderate+ vulnerabilities. Review before merging."
 
-      - name: Lint Code (TypeScript + Prettier)
+      - name: Type Check & Format (TypeScript + Prettier)
         run: npm run lint
 
   unit-tests:
@@ -76,22 +83,24 @@ jobs:
         node-version: ["24", "22.x"]
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@3922559a24c298d840349463028d33340cd3e116 # v4.2.0
         with:
           node-version: ${{ matrix.node-version }}
           cache: npm
           cache-dependency-path: package-lock.json
 
+      # Note: We run clean install (npm ci) without caching node_modules to guarantee
+      # build correctness and avoid stale package state, as jobs run in parallel environments.
       - name: Install Dependencies
         run: npm ci --no-audit
 
       - name: Run Unit Tests with Coverage
         run: npm run test:unit -- --coverage
         env:
-          VITE_API_KEY: test_key_for_ci_do_not_use
+          VITE_API_KEY: AIzaSy_dummy_ci_key_invalid
 
       - name: Validate Coverage Targets
         run: |
@@ -105,33 +114,40 @@ jobs:
             && echo "✅ Coverage meets target" \
             || { echo "❌ Coverage ${COVERAGE}% is below target ${MIN_COVERAGE}%"; exit 1; }
 
+      - name: Upload Coverage Artifacts
+        if: always()
+        uses: actions/upload-artifact@65c4c4a1d4117827c211e4957f08e86913745a9b # v4.5.0
+        with:
+          name: vitest-coverage-${{ matrix.node-version }}
+          path: coverage/
+          retention-days: 7
+          if-no-files-found: ignore
+
   build:
-    name: Build Verification (Node ${{ matrix.node-version }})
+    name: Build Verification (Node 24)
     runs-on: ubuntu-latest
     needs: validate-and-lint
     timeout-minutes: 15
-    strategy:
-      fail-fast: false
-      matrix:
-        node-version: ["24", "22.x"]
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      - name: Setup Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+      - name: Setup Node.js (Stable)
+        uses: actions/setup-node@3922559a24c298d840349463028d33340cd3e116 # v4.2.0
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: "24"
           cache: npm
           cache-dependency-path: package-lock.json
 
+      # Note: We run clean install (npm ci) without caching node_modules to guarantee
+      # build correctness and avoid stale package state, as jobs run in parallel environments.
       - name: Install Dependencies
         run: npm ci --no-audit
 
       - name: Build Application
         run: npm run build
         env:
-          VITE_API_KEY: dummy_key_for_build
+          VITE_API_KEY: AIzaSy_dummy_ci_key_invalid
           NODE_ENV: production
 
       - name: Verify Build Artifacts
@@ -141,12 +157,45 @@ jobs:
           echo "✅ Build artifacts verified"
 
       - name: Upload Build Artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1d4117827c211e4957f08e86913745a9b # v4.5.0
         with:
-          name: dist-node-${{ matrix.node-version }}
+          name: dist-node-24
           path: dist/
           retention-days: 7
           if-no-files-found: error
+
+  build-compat:
+    name: Build Compatibility (Node 22.x)
+    runs-on: ubuntu-latest
+    needs: validate-and-lint
+    timeout-minutes: 15
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+
+      - name: Setup Node.js (Compat)
+        uses: actions/setup-node@3922559a24c298d840349463028d33340cd3e116 # v4.2.0
+        with:
+          node-version: "22.x"
+          cache: npm
+          cache-dependency-path: package-lock.json
+
+      # Note: We run clean install (npm ci) without caching node_modules to guarantee
+      # build correctness and avoid stale package state, as jobs run in parallel environments.
+      - name: Install Dependencies
+        run: npm ci --no-audit
+
+      - name: Build Application
+        run: npm run build
+        env:
+          VITE_API_KEY: AIzaSy_dummy_ci_key_invalid
+          NODE_ENV: production
+
+      - name: Verify Build Artifacts
+        run: |
+          test -d dist || { echo "❌ Build failed: dist/ directory not created"; exit 1; }
+          test -f dist/index.html || { echo "❌ Build failed: dist/index.html not found"; exit 1; }
+          echo "✅ Build artifacts verified"
 
   e2e-tests:
     name: E2E Tests
@@ -158,20 +207,22 @@ jobs:
       checks: write
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup Node.js (Stable)
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@3922559a24c298d840349463028d33340cd3e116 # v4.2.0
         with:
           node-version: "24"
           cache: npm
           cache-dependency-path: package-lock.json
 
+      # Note: We run clean install (npm ci) without caching node_modules to guarantee
+      # build correctness and avoid stale package state, as jobs run in parallel environments.
       - name: Install Dependencies
         run: npm ci --no-audit
 
       - name: Download Build Artifacts
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372ec80611c # v4.1.8
         with:
           name: dist-node-24
           path: dist/
@@ -184,12 +235,19 @@ jobs:
           fi
           echo "✅ Build artifacts ready for E2E testing"
 
+      # Playwright browser cache strategy:
+      # Key is based on package-lock.json to avoid reinstalling on every run.
+      # restore-keys fallback allows utilizing previous browsers if lockfile changes,
+      # but Playwright handles version checking. If a major Playwright version bump occurs,
+      # a clean cache key or a modified prefix can be used to prevent stale binary issues.
       - name: Cache Playwright Browsers
         id: playwright-cache
-        uses: actions/cache@v4
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: ~/.cache/ms-playwright
           key: playwright-${{ runner.os }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            playwright-${{ runner.os }}-
 
       - name: Install Playwright Browsers
         if: steps.playwright-cache.outputs.cache-hit != 'true'
@@ -201,15 +259,17 @@ jobs:
 
       - name: Check for API Key
         id: api-key-check
+        env:
+          VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
         run: |
-          if [ -z "${{ secrets.VITE_API_KEY }}" ]; then
+          if [ -z "$VITE_API_KEY" ]; then
             echo "missing=true" >> "$GITHUB_OUTPUT"
           else
             echo "missing=false" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Enforce API Key Presence
-        if: steps.api-key-check.outputs.missing == 'true' && github.event_name != 'pull_request' && inputs.allow_skip_e2e != true
+        if: steps.api-key-check.outputs.missing == 'true' && github.event_name != 'pull_request' && !(github.event_name == 'workflow_dispatch' && inputs.allow_skip_e2e == true)
         run: |
           echo "::error::VITE_API_KEY is not configured in GitHub Secrets. Failing instead of silently skipping E2E coverage. Re-run via workflow_dispatch with allow_skip_e2e=true to intentionally skip."
           exit 1
@@ -219,15 +279,15 @@ jobs:
         run: npm run test:e2e
         env:
           VITE_API_KEY: ${{ secrets.VITE_API_KEY }}
-          PLAYWRIGHT_JUNIT_OUTPUT_NAME: junit.xml
+          CI: "true"
 
       - name: Skip E2E Tests (explicit opt-in only)
-        if: steps.api-key-check.outputs.missing == 'true' && (github.event_name == 'pull_request' || inputs.allow_skip_e2e == true)
+        if: steps.api-key-check.outputs.missing == 'true' && (github.event_name == 'pull_request' || (github.event_name == 'workflow_dispatch' && inputs.allow_skip_e2e == true))
         run: echo "::warning::Skipping E2E tests — VITE_API_KEY not configured. Pull requests or allow_skip_e2e allows skipping."
 
       - name: Upload E2E Test Results
         if: always() && steps.api-key-check.outputs.missing == 'false'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@65c4c4a1d4117827c211e4957f08e86913745a9b # v4.5.0
         with:
           name: e2e-test-results
           path: |
@@ -238,7 +298,7 @@ jobs:
 
       - name: Publish E2E Test Report
         if: always() && steps.api-key-check.outputs.missing == 'false'
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@3a4aa4e1de1ddf604b320d7537cb90b628795da3 # v1.9.1
         with:
           name: E2E Test Results
           path: "test-results/junit.xml"
@@ -248,7 +308,8 @@ jobs:
   ci-status:
     name: CI/CD Status
     runs-on: ubuntu-latest
-    needs: [validate-and-lint, unit-tests, build, e2e-tests]
+    timeout-minutes: 5
+    needs: [validate-and-lint, unit-tests, build, build-compat, e2e-tests]
     if: always()
     steps:
       - name: Determine CI Status
@@ -257,14 +318,16 @@ jobs:
             "${{ needs.validate-and-lint.result }}" == "success" && \
             "${{ needs.unit-tests.result }}" == "success" && \
             "${{ needs.build.result }}" == "success" && \
-            ( "${{ needs.e2e-tests.result }}" == "success" || "${{ needs.e2e-tests.result }}" == "skipped" ) \
-           ]]; then
+            "${{ needs.build-compat.result }}" == "success" && \
+            "${{ needs.e2e-tests.result }}" == "success" \
+          ]]; then
             echo "✅ CI/CD Pipeline Passed"
           else
             echo "❌ CI/CD Pipeline Failed"
             echo "validate-and-lint: ${{ needs.validate-and-lint.result }}"
             echo "unit-tests: ${{ needs.unit-tests.result }}"
             echo "build: ${{ needs.build.result }}"
+            echo "build-compat: ${{ needs.build-compat.result }}"
             echo "e2e-tests: ${{ needs.e2e-tests.result }}"
             exit 1
           fi

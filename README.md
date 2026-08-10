@@ -150,7 +150,7 @@ FinAnalyzer Pro maintains a **"Green-Build" policy**: all CI checks must pass be
 ### Full Test Suite
 
 ```bash
-npm test                  # Run all tests (unit + e2e)
+npm run test:all          # Run all tests (unit + e2e) - Note: requires `npm run build` first
 npm run test:unit        # Unit tests only (Vitest + React Testing Library)
 npm run test:e2e         # E2E tests only (Playwright)
 npm run test:coverage    # Generate coverage report

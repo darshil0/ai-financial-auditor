@@ -32,6 +32,9 @@ export default defineConfig(({ mode }) => {
         reporter: ["text", "json", "html", "json-summary"],
         include: ["src/**"],
         exclude: ["src/test/**", "**/*.d.ts"],
+        thresholds: {
+          lines: 80,
+        },
       },
     },
   };
