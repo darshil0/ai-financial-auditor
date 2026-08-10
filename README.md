@@ -5,7 +5,7 @@
 [![CI Status](https://github.com/darshil0/ai-financial-auditor/actions/workflows/main.yml/badge.svg)](https://github.com/darshil0/ai-financial-auditor/actions)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
 ![React](https://img.shields.io/badge/react-18.2-blue)
-![Vite](https://img.shields.io/badge/vite-8.1+-646CFF)
+![Vite](https://img.shields.io/badge/vite-5.4+-646CFF)
 ![Node](https://img.shields.io/badge/node-24.x-339933?logo=node.js)
 
 ---
@@ -33,10 +33,10 @@ graph TD
 The application employs a tiered AI model approach inside `src/shared/services/geminiService.ts`:
 
 | Component            | Model              | Purpose                                  | Constraints / Configuration                                                   |
-| -------------------- | ------------------ | ---------------------------------------- | ----------------------------------------------------------------------------- |
-| **KPI Extraction**   | `gemini-2.0-flash` | Revenue, Net Income, EPS, Margins        | Max tokens: 4,000 output. Uses low temperature (0.1) for surgical precision. |
+| -------------------- | ------------------ | ----------------------------------------- | ------------------------------------------------------------------------------ |
+| **KPI Extraction**   | `gemini-2.0-flash` | Revenue, Net Income, EPS, Margins        | Max tokens: 4,000 output. Uses low temperature (0.1) for surgical precision.   |
 | **Deep Analysis**    | `gemini-2.0-flash` | Forensic financial narrative analysis    | Budget: 10,000 thinking tokens.                                               |
-| **Live Analyst**     | `gemini-2.0-flash` | Real-time streaming voice advisory       | Utilizes `ScriptProcessorNode` to stream low-latency PCM audio blocks.       |
+| **Live Analyst**     | `gemini-2.0-flash` | Real-time streaming voice advisory       | Utilizes `ScriptProcessorNode` to stream low-latency PCM audio blocks.        |
 | **Market Grounding** | `gemini-1.5-pro`   | Compare SEC filings to real-time context | Google Search tool. Rate limited: 60 queries/min. Omit `thinkingConfig`.      |
 
 ---
@@ -54,7 +54,7 @@ The application employs a tiered AI model approach inside `src/shared/services/g
 
 - **License**: MIT (full source transparency for institutional auditing).
 - **Type Safety**: Strict TypeScript compilation with path aliases (`@/` mapping to `src/`).
-- **Module Resolution**: Configured with `moduleResolution: "Bundler"` (with `baseUrl` removed from `tsconfig.json` to guarantee proper path resolution).
+- **Module Resolution**: Configured with `moduleResolution: "Bundler"`. `baseUrl` is retained in `tsconfig.json`, as `Bundler` resolution requires it for path alias resolution to work correctly.
 - **CI/CD Auditing**: Continuous auditing via `.github/workflows/main.yml`, featuring blocking critical `npm audit`, pinned GitHub Actions with hash verification, and weekly Dependabot updates.
 
 ---
@@ -67,7 +67,7 @@ The application employs a tiered AI model approach inside `src/shared/services/g
 - **npm**: `v10.x` or `v11.x+` (ships with Node v24.x).
 - **Git**: `v2.34+` for shallow clones.
 - **Memory**: Minimum 4 GB RAM; 8 GB recommended.
-- **Packages**: Vite 8.1.3, TypeScript 6.0.3, Recharts 3.9.1, Vitest 4.1.9.
+- **Packages**: Vite 5.4.x, TypeScript 5.6.x, Recharts 2.12.x, Vitest 2.1.x.
 
 ### API & Integrations
 
@@ -112,7 +112,7 @@ This installs all required packages and downloads Playwright browser binaries fo
 npm run dev
 ```
 
-The application will start at `http://localhost:3000`. Open it in your browser and verify:
+The application will start at `http://localhost:5173` (Vite's default port). Open it in your browser and verify:
 
 - Dashboard loads without console errors.
 - Dark mode toggle applies synchronously via an inline script in `index.html` to prevent initial load flashing.
@@ -201,7 +201,7 @@ FinAnalyzer Pro/
 ### Streaming AI Analyst Voice
 
 - **Requirement**: Interactive real-time audio dialogue on earnings trends.
-- **Implementation**: Powered by the `gemini-2.0-flash` real-time API. Captures microphone inputs using a low-latency Web Audio `ScriptProcessorNode` to stream PCM audio.
+- **Implementation**: Powered by the `gemini-2.0-flash` real-time API. Captures microphone input using the `AudioWorkletNode` API to stream low-latency PCM audio, since `ScriptProcessorNode` is deprecated and runs on the main thread.
 - **Robust Session Stability**: Uses a stable report ID reference in dependency arrays within `src/features/analyst/LiveAnalyst.tsx` to prevent connection restarts.
 
 ### Comparative Hub with Delta Variance
@@ -244,7 +244,7 @@ We welcome professional contributions. Before opening a pull request:
 
 1. Ensure unit tests pass and coverage remains at or above **80%**.
 2. Format changes using `npm run format`.
-3. Follow the repository’s standard Git commit structure.
+3. Follow the repository's standard Git commit structure.
 
 ---
 Institutional-grade financial analysis powered by Google Gemini API. Developed with precision and forensic attention to detail.
