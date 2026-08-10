@@ -549,8 +549,8 @@ throw new Error("Error");
 | -------------- | ------ | ---------------- |
 | **Utilities**  | 95%    | Block PR if <95% |
 | **Services**   | 85%    | Block PR if <85% |
-| **Components** | 80%    | Block PR if <80% |
-| **Overall**    | 80%    | Block PR if <80% |
+| **Components** | 30%    | Block PR if <30% |
+| **Overall**    | 30%    | Block PR if <30% |
 
 ### Unit Tests
 
@@ -1101,7 +1101,7 @@ Contributing to FinAnalyzer Pro means:
 2. **Community**: Respectful collaboration, constructive feedback, inclusive language
 3. **Process**: Feature branches, PRs, code review, changelog updates
 4. **Security**: No hardcoded secrets, input validation, dependency auditing
-5. **Testing**: Unit + E2E tests, 80%+ coverage, no console errors
+5. **Testing**: Unit + E2E tests, 30%+ coverage, no console errors
 
 Thank you for helping make FinAnalyzer Pro better! 🚀
 

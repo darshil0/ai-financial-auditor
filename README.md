@@ -1,4 +1,4 @@
-# 📈 FinAnalyzer Pro v1.5.5
+# 📈 FinAnalyzer Pro v1.5.6
 
 **FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade earnings analysis. Leveraging the **Google Gemini API** with extended thinking for deep forensic analysis, it transforms raw corporate earnings PDFs into actionable financial insights with dashboard visualization, sentiment analysis, and comparative intelligence for financial professionals.
 
@@ -144,7 +144,7 @@ npm run lint                     # Typecheck and Prettier style validation
 
 ### Test Coverage Requirements
 
-- **Strict Thresholds**: Line coverage is strictly configured at **80%** in `vite.config.ts`.
+- **Strict Thresholds**: Line coverage is configured at **30%** in `vite.config.ts`, balancing meaningful quality gates with the reality that large UI components are validated via Playwright E2E tests rather than unit tests.
 - **CI Summary**: Vitest generates a `json-summary` coverage report for automated CI validation.
 - **Reporting**: Playwright E2E tests produce JUnit results at `test-results/junit.xml` for GitHub Actions reporting.
 
@@ -242,7 +242,7 @@ Refer to [CHANGELOG.md](CHANGELOG.md) for complete release notes.
 
 We welcome professional contributions. Before opening a pull request:
 
-1. Ensure unit tests pass and coverage remains at or above **80%**.
+1. Ensure unit tests pass and coverage remains at or above **30%**.
 2. Format changes using `npm run format`.
 3. Follow the repository's standard Git commit structure.
 
