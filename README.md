@@ -40,7 +40,7 @@ The application employs a tiered AI model approach inside `src/shared/services/g
 
 | Component            | Model              | Purpose                                  | Constraints / Configuration                                                      |
 | -------------------- | ------------------ | ---------------------------------------- | -------------------------------------------------------------------------------- |
-| **KPI Extraction**   | `gemini-2.0-flash` | Revenue, Net Income, EPS, Margins        | Max tokens: 4,000 output. Uses low temperature (0.1) for surgical precision.    |
+| **KPI Extraction**   | `gemini-2.0-flash` | Revenue, Net Income, EPS, Margins        | Max tokens: 4,000 output. Uses low temperature (0.1) for surgical precision.     |
 | **Deep Analysis**    | `gemini-2.0-flash` | Forensic financial narrative analysis    | Budget: 10,000 thinking tokens.                                                  |
 | **Live Analyst**     | `gemini-2.0-flash` | Real-time streaming voice advisory       | Utilizes `ScriptProcessorNode` to stream low-latency PCM audio blocks.           |
 | **Market Grounding** | `gemini-1.5-pro`   | Compare SEC filings to real-time context | Google Search tool. Rate limited: 60 queries/min. Omit `thinkingConfig` for 1.5. |
@@ -161,7 +161,8 @@ npm run lint             # Typecheck (tsc --noEmit) & Prettier style validation
 
 ### Test Coverage Requirements
 
-- **Strict Thresholds**: Line coverage is strictly configured at **80%** in `vite.config.ts`.
+- **Strict Thresholds**: Line coverage is strictly configured at **80%** in `vite.config.ts` for core libraries and logic (e.g. state management, utility helpers, and comparison logic), keeping our critical shared systems securely gated.
+- **Testing Separation**: Complex visual features, interactive dashboards, and media capture APIs (like Web Audio capture in `LiveAnalyst.tsx` or Recharts integration) are comprehensively validated using high-level Playwright E2E integration tests to ensure production stability without brittle unit mocks.
 - **CI Summary**: Vitest generates `json-summary` coverage report for automated CI
   validation.
 - **Reporting**: Playwright E2E tests produce JUnit results at `test-results/junit.xml` for
