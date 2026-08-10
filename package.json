@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run && playwright test",
+    "test:all": "vitest run && playwright test",
     "test:unit": "vitest run",
     "test:e2e": "playwright test",
     "format": "prettier \"**/*.{ts,tsx,js,jsx,json,md,css,html}\" --write",
