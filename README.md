@@ -32,12 +32,12 @@ graph TD
 
 The application employs a tiered AI model approach inside `src/shared/services/geminiService.ts`:
 
-| Component            | Model              | Purpose                                      | Constraints / Configuration                                                                                                      |
-| -------------------- | ------------------ | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- |
-| **KPI Extraction**   | `gemini-2.0-flash` | Revenue, Net Income, EPS, Margins            | Max tokens: 4,000 output. Uses low temperature (0.1) for surgical precision.                                                     |
-| **Deep Analysis**    | `gemini-2.0-flash` | Forensic financial narrative analysis        | Budget: 10,000 thinking tokens.                                                                                                  |
-| **Live Analyst**     | `gemini-2.0-flash` | Real-time streaming voice advisory           | Utilizes `ScriptProcessorNode` to stream low-latency PCM audio blocks to/from the Gemini live session.                           |
-| **Market Grounding** | `gemini-1.5-pro`   | Compare SEC filings to real-time market data | Google Search tool. Rate limited: 60 queries/min. **Note**: `thinkingConfig` must be omitted as it is incompatible with 1.5 Pro. |
+| Component            | Model                                         | Purpose                                      | Constraints / Configuration                           |
+| -------------------- | --------------------------------------------- | -------------------------------------------- | ----------------------------------------------------- |
+| **KPI Extraction**   | `gemini-2.0-flash`                            | Revenue, Net Income, EPS, Margins            | Max tokens: 4,000 output. Uses low temperature (0.1) for surgical precision. |
+| **Deep Analysis**    | `gemini-2.0-flash`                            | Forensic financial narrative analysis        | Budget: 10,000 thinking tokens.                       |
+| **Live Analyst**     | `gemini-2.0-flash`                            | Real-time streaming voice advisory            | Utilizes `ScriptProcessorNode` to stream low-latency PCM audio blocks to/from the Gemini live session. |
+| **Market Grounding** | `gemini-1.5-pro`                              | Compare SEC filings to real-time market data | Google Search tool. Rate limited: 60 queries/min. **Note**: `thinkingConfig` must be omitted as it is incompatible with 1.5 Pro. |
 
 ---
 
@@ -113,7 +113,6 @@ npm run dev
 ```
 
 The application will start at `http://localhost:3000` (Vite dev server default). Open in your browser and verify:
-
 - Dashboard loads without console errors.
 - Dark mode toggle applies synchronously via an inline script in `index.html` to prevent initial load flashing.
 
@@ -241,7 +240,6 @@ Refer to [CHANGELOG.md](CHANGELOG.md) for full release logs.
 ## 🤝 Contributing
 
 We welcome professional contributions. Please ensure that:
-
 1. Unit tests pass and coverage remains at or above the required **80%**.
 2. Code conforms to project Prettier style parameters via `npm run format`.
 3. Standard Git commit structure is followed.
