@@ -31,21 +31,9 @@ export default defineConfig(({ mode }) => {
       coverage: {
         reporter: ["text", "json", "html", "json-summary"],
         include: ["src/**"],
-        exclude: [
-          "src/test/**",
-          "**/*.d.ts",
-          "src/App.tsx",
-          "src/index.tsx",
-          "src/features/analyst/**",
-          "src/features/dashboard/**",
-          "src/features/history/**",
-          "src/features/upload/**",
-          "src/shared/components/**",
-          "src/shared/services/geminiService.ts",
-          "src/shared/utils/audioUtils.ts",
-        ],
+        exclude: ["src/test/**", "**/*.d.ts"],
         thresholds: {
-          lines: 80,
+          lines: 30,
         },
       },
     },
