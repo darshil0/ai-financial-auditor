@@ -1,6 +1,10 @@
 # 📈 FinAnalyzer Pro v1.5.5
 
-**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for institutional-grade earnings analysis. Leveraging the **Google Gemini API** (with extended thinking for deep financial reasoning), it transforms complex, multi-page corporate 10-Q/10-K PDFs into structured, actionable intelligence with visual analytics and real-time market grounding.
+**FinAnalyzer Pro** is a high-performance financial intelligence platform designed for
+institutional-grade earnings analysis. Leveraging the **Google Gemini API** (with extended
+thinking for deep forensic analysis), it transforms raw corporate earnings PDFs into
+actionable financial insights with dashboard visualization, sentiment analysis, and
+comparative intelligence for financial professionals.
 
 [![CI Status](https://github.com/darshil0/ai-financial-auditor/actions/workflows/main.yml/badge.svg)](https://github.com/darshil0/ai-financial-auditor/actions)
 ![License](https://img.shields.io/badge/license-MIT-blue.svg)
@@ -12,7 +16,9 @@
 
 ## 🏛️ Technical Architecture
 
-FinAnalyzer Pro uses a **Domain-Driven Feature Architecture** that isolates business logic into autonomous feature modules and shared, cross-cutting services, ensuring high scalability and testability.
+FinAnalyzer Pro uses a **Domain-Driven Feature Architecture** that isolates business logic
+into autonomous feature modules and shared, cross-cutting services, ensuring high
+scalability and testability.
 
 ```mermaid
 graph TD
@@ -32,12 +38,12 @@ graph TD
 
 The application employs a tiered AI model approach inside `src/shared/services/geminiService.ts`:
 
-| Component            | Model                                         | Purpose                                      | Constraints / Configuration                           |
-| -------------------- | --------------------------------------------- | -------------------------------------------- | ----------------------------------------------------- |
-| **KPI Extraction**   | `gemini-2.0-flash`                            | Revenue, Net Income, EPS, Margins            | Max tokens: 4,000 output. Uses low temperature (0.1) for surgical precision. |
-| **Deep Analysis**    | `gemini-2.0-flash`                            | Forensic financial narrative analysis        | Budget: 10,000 thinking tokens.                       |
-| **Live Analyst**     | `gemini-2.0-flash`                            | Real-time streaming voice advisory            | Utilizes `ScriptProcessorNode` to stream low-latency PCM audio blocks to/from the Gemini live session. |
-| **Market Grounding** | `gemini-1.5-pro`                              | Compare SEC filings to real-time market data | Google Search tool. Rate limited: 60 queries/min. **Note**: `thinkingConfig` must be omitted as it is incompatible with 1.5 Pro. |
+| Component            | Model              | Purpose                                  | Constraints / Configuration                                                      |
+| -------------------- | ------------------ | ---------------------------------------- | -------------------------------------------------------------------------------- |
+| **KPI Extraction**   | `gemini-2.0-flash` | Revenue, Net Income, EPS, Margins        | Max tokens: 4,000 output. Uses low temperature (0.1) for surgical precision.    |
+| **Deep Analysis**    | `gemini-2.0-flash` | Forensic financial narrative analysis    | Budget: 10,000 thinking tokens.                                                  |
+| **Live Analyst**     | `gemini-2.0-flash` | Real-time streaming voice advisory       | Utilizes `ScriptProcessorNode` to stream low-latency PCM audio blocks.           |
+| **Market Grounding** | `gemini-1.5-pro`   | Compare SEC filings to real-time context | Google Search tool. Rate limited: 60 queries/min. Omit `thinkingConfig` for 1.5. |
 
 ---
 
@@ -45,17 +51,23 @@ The application employs a tiered AI model approach inside `src/shared/services/g
 
 ### Credentials Management
 
-- **API Key Storage**: Store in root-level `.env` file (git-ignored). Never commit credentials.
+- **API Key Storage**: Store in root-level `.env` file (git-ignored). Never commit
+  credentials.
 - **CI/CD**: Use GitHub Secrets for `VITE_API_KEY`.
 - **Key Rotation**: If a key is exposed in logs, revoke immediately via Google AI Studio.
-- **Error Handling**: Never log full API responses; sanitize stack traces before rendering or logging.
+- **Error Handling**: Never log full API responses; sanitize stack traces before rendering
+  or logging.
 
 ### Code Quality & Audit Trail
 
 - **License**: MIT (full source transparency for institutional auditing).
-- **Type Safety**: Strict TypeScript compilation with path aliases (`@/` mapping to `src/`).
-- **Module Resolution**: Configured with `moduleResolution: "Bundler"` (with `baseUrl` removed from `tsconfig.json` to guarantee proper path resolution).
-- **CI/CD Auditing**: Continuous auditing configured via `.github/workflows/main.yml`, featuring a blocking critical `npm audit`, pinned third-party GitHub Actions via SHAs (with weekly Dependabot updates in `.github/dependabot.yml`), isolated Node 24 and Node 22 build verification jobs, and robust status gates.
+- **Type Safety**: Strict TypeScript compilation with path aliases (`@/` mapping to
+  `src/`).
+- **Module Resolution**: Configured with `moduleResolution: "Bundler"` (with `baseUrl`
+  removed from `tsconfig.json` to guarantee proper path resolution).
+- **CI/CD Auditing**: Continuous auditing via `.github/workflows/main.yml`, featuring
+  blocking critical `npm audit`, pinned GitHub Actions with hash verification, and weekly
+  Dependabot updates.
 
 ---
 
@@ -67,13 +79,14 @@ The application employs a tiered AI model approach inside `src/shared/services/g
 - **npm**: `v10.x` or `v11.x+` (ships with Node v24.x).
 - **Git**: `v2.34+` for shallow clones.
 - **Memory**: Minimum 4GB RAM; 8GB recommended.
-- **Future-Dated Context (2026)**: Configured with modern package registries providing modern packages like Vite 8.1.3, TypeScript 6.0.3, Recharts 3.9.1, and Vitest 4.1.9.
+- **Packages**: Vite 8.1.3, TypeScript 6.0.3, Recharts 3.9.1, Vitest 4.1.9.
 
 ### API & Integrations
 
 - **Google AI Studio Account**: Sign up at [aistudio.google.com](https://aistudio.google.com/).
 - **Gemini API Key**: Required for earnings analysis and the real-time AI analyst.
-- **Browser Support**: Chrome 120+, Firefox 121+, Safari 17+, Edge 120+ (WebGL required for Recharts; Web Audio API required for the Live Analyst).
+- **Browser Support**: Chrome 120+, Firefox 121+, Safari 17+, Edge 120+ (WebGL for
+  Recharts; Web Audio API for Live Analyst).
 
 ---
 
@@ -104,7 +117,8 @@ npm install
 npx playwright install
 ```
 
-This installs all required packages and downloads the required Playwright browser binaries for end-to-end testing.
+This installs all required packages and downloads Playwright browser binaries for
+end-to-end testing.
 
 ### Step 4: Launch Development Server
 
@@ -112,9 +126,12 @@ This installs all required packages and downloads the required Playwright browse
 npm run dev
 ```
 
-The application will start at `http://localhost:3000` (Vite dev server default). Open in your browser and verify:
+The application will start at `http://localhost:3000` (Vite dev server default). Open in
+your browser and verify:
+
 - Dashboard loads without console errors.
-- Dark mode toggle applies synchronously via an inline script in `index.html` to prevent initial load flashing.
+- Dark mode toggle applies synchronously via an inline script in `index.html` to prevent
+  initial load flashing.
 
 ### Step 5: Build for Production
 
@@ -128,24 +145,27 @@ This generates an optimized `dist/` directory. Deploy to any static hosting prov
 
 ## 🧪 Testing & Quality Assurance
 
-FinAnalyzer Pro enforces a **"Green-Build" policy**: all CI checks must pass before merging to main.
+FinAnalyzer Pro enforces a **"Green-Build" policy**: all CI checks must pass before
+merging to main.
 
 ### Full Test Suite
 
 ```bash
-npm run test:all          # Run all tests (unit + E2E) - Note: requires `npm run build` first
+npm run test:all          # Run all tests (unit + E2E) - requires `npm run build` first
 npm run test:unit        # Run unit & component tests (Vitest + React Testing Library)
 npm run test:e2e         # Run Playwright E2E tests
 npm run test:unit -- --coverage  # Generate code coverage reports
 npm run format           # Format codebase using Prettier
-npm run lint             # Typecheck (tsc --noEmit) & Prettier code style validation
+npm run lint             # Typecheck (tsc --noEmit) & Prettier style validation
 ```
 
 ### Test Coverage Requirements
 
-- **Strict Thresholds**: Line coverage is strictly configured at **80%** directly inside `vite.config.ts`.
-- **CI Summary**: Vitest generates a `json-summary` coverage report to support automated CI coverage validation.
-- **Reporting**: Playwright E2E tests are configured in `playwright.config.ts` to produce JUnit test results at `test-results/junit.xml` during CI runs for automated reporting in GitHub Actions.
+- **Strict Thresholds**: Line coverage is strictly configured at **80%** in `vite.config.ts`.
+- **CI Summary**: Vitest generates `json-summary` coverage report for automated CI
+  validation.
+- **Reporting**: Playwright E2E tests produce JUnit results at `test-results/junit.xml` for
+  GitHub Actions reporting.
 
 ---
 
@@ -177,7 +197,7 @@ FinAnalyzer Pro/
 ├── vite.config.ts                # Integrated Vite build and Vitest configuration
 ├── playwright.config.ts          # E2E Playwright test configurations
 ├── .github/workflows/
-│   └── main.yml                  # Secure CI/CD Workflow (Node 22/24 Matrix)
+│   └── main.yml                  # Secure CI/CD Workflow
 └── package.json                  # Script & dependency configurations
 ```
 
@@ -187,9 +207,12 @@ FinAnalyzer Pro/
 
 ### Revenue/KPI Extraction
 
-- **Requirement**: Extract Revenue, Net Income, EPS, and Operating Margins from corporate PDFs with forensic accuracy.
-- **Implementation**: Handled via `gemini-2.0-flash` with a strict JSON schema in `src/shared/services/geminiService.ts` requiring `netIncomePrior`, `epsPrior`, `revenuePrior`, `operatingMargin`, `netMargin`, and `managementCommentary` fields to guarantee extraction completeness.
-- **Validation**: Rejects incomplete or malformed AI payloads, preventing calculations on partial data.
+- **Requirement**: Extract Revenue, Net Income, EPS, and Operating Margins from corporate
+  PDFs with forensic accuracy.
+- **Implementation**: Handled via `gemini-2.0-flash` with strict JSON schema in
+  `src/shared/services/geminiService.ts` requiring structured financial metrics.
+- **Validation**: Rejects incomplete or malformed AI payloads, preventing calculations on
+  partial data.
 
 ### Interactive Trends & Visualization
 
@@ -200,14 +223,19 @@ FinAnalyzer Pro/
 ### Streaming AI Analyst (Voice)
 
 - **Requirement**: Interactive real-time audio dialogue on earnings trends.
-- **Implementation**: Powered by `gemini-2.0-flash` real-time API. Captures microphone inputs using a low-latency Web Audio `ScriptProcessorNode` to stream PCM audio, and plays back received audio chunks.
-- **Robust Session Stability**: Utilizes a stable reference for the report ID in its dependency arrays (`src/features/analyst/LiveAnalyst.tsx`) to prevent connection restarts when the parent report object reference changes without content updates.
+- **Implementation**: Powered by `gemini-2.0-flash` real-time API. Captures microphone
+  inputs using a low-latency Web Audio `ScriptProcessorNode` to stream PCM audio.
+- **Robust Session Stability**: Utilizes a stable reference for the report ID in
+  dependency arrays (`src/features/analyst/LiveAnalyst.tsx`) to prevent connection
+  restarts.
 
 ### Comparative Hub with Delta Variance
 
 - **Requirement**: Benchmark reports side-by-side with automatic growth computation.
-- **Guardrails**: Restricted in `src/shared/components/Sidebar.tsx` unless at least two reports are uploaded to prevent invalid comparative states.
-- **Performance**: In `src/features/comparison/ComparisonView.tsx`, the `MetricRow` component is defined outside the main functional component to eliminate redundant re-mounts and optimize rendering performance.
+- **Guardrails**: Restricted in `src/shared/components/Sidebar.tsx` unless at least two
+  reports are uploaded.
+- **Performance**: In `src/features/comparison/ComparisonView.tsx`, the `MetricRow`
+  component is defined outside the main function to eliminate redundant re-mounts.
 
 ### Market Grounding via Google Search
 
@@ -217,17 +245,26 @@ FinAnalyzer Pro/
 
 ### User Accessibility & Control
 
-- **Shortcuts**: Implements a `Cmd/Ctrl+K` keyboard shortcut to immediately focus the header search input on desktop devices.
-- **Client-Side Size Limits**: Enforces a strict 25MB file size limit for PDF uploads in `src/features/upload/ReportUploader.tsx`.
-- **Memory Safety**: To prevent memory leaks, `Dashboard.tsx` explicitly revokes Blob URLs created for audio briefings using `URL.revokeObjectURL` during component unmount or briefing updates.
-- **Utilities Protection**: The financial formatters and calculators in `src/shared/utils/index.ts` include safety guards for `NaN` and `Infinity` to prevent UI crashes. Conditionally joins Tailwind classes using the custom `cn` utility function.
-- **Diagnostics**: Supports exporting analyzed reports to standard JSON formats directly from the Dashboard.
+- **Shortcuts**: Implements a `Cmd/Ctrl+K` keyboard shortcut to focus the header search
+  input on desktop devices.
+- **Client-Side Size Limits**: Enforces a strict 25MB file size limit for PDF uploads in
+  `src/features/upload/ReportUploader.tsx`.
+- **Memory Safety**: `Dashboard.tsx` explicitly revokes Blob URLs created for audio
+  briefings using `URL.revokeObjectURL` during unmount to prevent memory leaks.
+- **Utilities Protection**: Financial formatters and calculators in
+  `src/shared/utils/index.ts` include safety guards for `NaN` and `Infinity` to prevent
+  UI crashes.
+- **Diagnostics**: Supports exporting analyzed reports to standard JSON formats from the
+  Dashboard.
 
 ### Resilience & Crash Prevention
 
-- **Global Error Boundary**: Implemented in `src/shared/components/ErrorBoundary.tsx` wrapping the entire main content area inside `src/App.tsx`.
-- **Custom Modals**: Uses a custom `Modal` component and `showErrorModal` in `src/App.tsx` for clean application-wide error handling without native alerts.
-- **TypeScript Generic Support**: Class-based React components (such as the ErrorBoundary) explicitly declare generic Props and State type parameters in their definition to ensure flawless compilation.
+- **Global Error Boundary**: Implemented in `src/shared/components/ErrorBoundary.tsx`
+  wrapping the entire main content area inside `src/App.tsx`.
+- **Custom Modals**: Uses a custom `Modal` component and `showErrorModal` in `src/App.tsx`
+  for clean application-wide error handling.
+- **TypeScript Generic Support**: Class-based React components (such as ErrorBoundary)
+  explicitly declare generic Props and State type parameters.
 
 ---
 
@@ -240,10 +277,12 @@ Refer to [CHANGELOG.md](CHANGELOG.md) for full release logs.
 ## 🤝 Contributing
 
 We welcome professional contributions. Please ensure that:
+
 1. Unit tests pass and coverage remains at or above the required **80%**.
 2. Code conforms to project Prettier style parameters via `npm run format`.
 3. Standard Git commit structure is followed.
 
 ---
 
-_Institutional-grade financial analysis powered by Google Gemini API._ Developed with precision and forensic attention to detail.
+_Institutional-grade financial analysis powered by Google Gemini API._ Developed with
+precision and forensic attention to detail.
