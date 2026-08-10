@@ -117,7 +117,11 @@ export async function analyzeEarningsReport(file: File): Promise<FinancialReport
 
     const text = response.text;
     if (!text) throw new Error("Empty response from Gemini");
-    const rawData = JSON.parse(text);
+    const cleanText = text
+      .replace(/^```(?:json)?\s*/i, "")
+      .replace(/\s*```$/, "")
+      .trim();
+    const rawData = JSON.parse(cleanText);
 
     return {
       ...rawData,
